@@ -1,15 +1,32 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="car"
+            type="com.andrei.carrental.entities.Car" />
+    </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.andrei.UI.fragments.ExpandedCarFragment">
 
+    <ImageView
+        android:id="@+id/back_button_expanded"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/ic_baseline_arrow_back_ios_32"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.jama.carouselview.CarouselView
         android:id="@+id/carousel_car_expanded"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:cropToPadding="false"
         app:carouselOffset="center"
@@ -20,15 +37,51 @@
         app:indicatorSelectedColor="@color/black"
         app:indicatorUnselectedColor="@color/purple_200"
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/back_button_expanded"
         app:resource="@layout/layout_carousel"
         app:setAutoPlay="false"
         app:size="10"
         tools:src="@tools:sample/backgrounds/scenic"
         tools:srcCompat="@drawable/app_poster" />
+
+    <TextView
+        style="@style/important_text"
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/rented_by_text"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/carousel_car_expanded" />
+
+    <TextView
+        android:id="@+id/tv_lender_name"
+        style="@style/important_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:text="@{car.user.username}"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        tools:text="Andrei" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/round_image"
+        app:imageFromURL="@{car.user.profilePicturePath}"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_lender_name"
+        app:layout_constraintStart_toEndOf="@+id/tv_lender_name"
+        app:layout_constraintTop_toTopOf="@+id/tv_lender_name"
+        tools:srcCompat="@tools:sample/avatars" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

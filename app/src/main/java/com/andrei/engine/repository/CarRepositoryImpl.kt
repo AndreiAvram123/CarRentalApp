@@ -1,6 +1,7 @@
 package com.andrei.engine.repository
 
 import androidx.lifecycle.MutableLiveData
+import com.andrei.carrental.entities.Car
 import com.andrei.carrental.entities.CarSearchEntity
 import com.andrei.engine.CallRunner
 import com.andrei.engine.CarToRent
@@ -9,6 +10,7 @@ import com.andrei.engine.configuration.AuthInterceptor
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.flow
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -43,6 +45,12 @@ class CarRepositoryImpl {
     suspend fun fetchSuggestions(query:String, position: LatLng){
         callRunner.makeCall(repo.search(latitude = position.latitude, longitude = position.longitude,query = query)){
             searchSuggestions.postValue(it)
+        }
+    }
+
+    fun fetchCarById(id:Long) = flow {
+        callRunner.makeCall(repo.fetchCarByID(id)){
+            emit(it)
         }
     }
 }
