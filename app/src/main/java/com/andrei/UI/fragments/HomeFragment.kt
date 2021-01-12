@@ -17,7 +17,9 @@ import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentHomeBinding
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.engine.State
+import com.andrei.utils.hide
 import com.andrei.utils.reObserve
+import com.andrei.utils.show
 import com.google.android.gms.maps.model.LatLng
 
 class HomeFragment : Fragment() {
@@ -67,9 +69,14 @@ class HomeFragment : Fragment() {
         }
         viewModelCar.searchSuggestions.reObserve(viewLifecycleOwner){
             when(it){
-                is State.Success -> suggestionsAdapter.setData(it.data)
-                is State.Loading -> {}
-                is State.Error ->{}
+                is State.Success -> {
+                      suggestionsAdapter.setData(it.data)
+                       binding.pbSearch.hide()
+                }
+                is State.Loading -> binding.pbSearch.show()
+                is State.Error ->{
+                    binding.pbSearch.hide()
+                }
             }
         }
     }

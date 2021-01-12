@@ -13,8 +13,10 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
     </androidx.fragment.app.FragmentContainerView>
 
@@ -26,18 +28,42 @@
         app:layout_constraintStart_toStartOf="@+id/fragment2"
         app:layout_constraintTop_toTopOf="@+id/fragment2">
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchViewCars"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/search_background"
-            android:elevation="10px"
-            android:queryHint="Search for a friend...">
+            android:layout_height="wrap_content">
 
-        </androidx.appcompat.widget.SearchView>
+            <ProgressBar
+                android:id="@+id/pb_search"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:elevation="4dp"
+                android:indeterminateTint="#2196F3"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/searchViewCars"
+                app:layout_constraintTop_toTopOf="@+id/searchViewCars"
+                tools:visibility="visible" />
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchViewCars"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/search_background"
+                android:elevation="10px"
+                android:queryHint="Search for a friend..."
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_suggestions"
@@ -45,7 +71,9 @@
             android:layout_height="match_parent"
             android:layout_marginStart="24dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="24dp" />
+            android:layout_marginEnd="24dp">
+
+        </androidx.recyclerview.widget.RecyclerView>
 
     </LinearLayout>
 
