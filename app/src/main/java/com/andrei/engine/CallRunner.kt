@@ -19,11 +19,12 @@ class CallRunner {
                 if(body !=null){
                     update(responseHandler.handleSuccess(body))
                 }
+            }else{
+                update( responseHandler.handleRequestException(Exception("Unknown"),url))
             }
         } catch (e: Exception) {
              update(responseHandler.handleRequestException(e,url))
         }
-        update( responseHandler.handleRequestException(Exception("Unknown"),url))
     }
 
 

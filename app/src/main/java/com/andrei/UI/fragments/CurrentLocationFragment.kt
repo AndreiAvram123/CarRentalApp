@@ -50,6 +50,7 @@ class CurrentLocationFragment : Fragment() {
     @SuppressLint("MissingPermission")
     private fun enableLocation (){
         map.isMyLocationEnabled = true
+        map.uiSettings.isMyLocationButtonEnabled = false
         getDeviceLocation()
     }
 

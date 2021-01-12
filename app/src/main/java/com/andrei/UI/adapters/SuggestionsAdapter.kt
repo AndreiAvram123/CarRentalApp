@@ -4,9 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.andrei.carrental.databinding.SuggestionItemCarBinding
+import com.andrei.carrental.entities.CarSearchEntity
 
 class SuggestionsAdapter : RecyclerView.Adapter<SuggestionsAdapter.ViewHolder>() {
-   private val items = ArrayList<String>()
+   private val items = ArrayList<CarSearchEntity>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = SuggestionItemCarBinding.inflate(LayoutInflater.from(parent.context),parent,false)
@@ -20,7 +21,7 @@ class SuggestionsAdapter : RecyclerView.Adapter<SuggestionsAdapter.ViewHolder>()
     override fun getItemCount(): Int =
        items.size
 
-    fun setData(list:List<String>) {
+    fun setData(list:List<CarSearchEntity>) {
         items.clear()
         items.addAll(list)
         notifyDataSetChanged()
@@ -33,8 +34,9 @@ class SuggestionsAdapter : RecyclerView.Adapter<SuggestionsAdapter.ViewHolder>()
 
     inner class ViewHolder(private val binding:SuggestionItemCarBinding) :RecyclerView.ViewHolder (binding.root){
 
-        fun bind(suggestion:String){
-            binding.tvDeal.text = suggestion
+        fun bind(carSearchEntity: CarSearchEntity){
+            binding.car = carSearchEntity
+
          }
     }
 

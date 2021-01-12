@@ -5,14 +5,8 @@ import android.database.Cursor
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.CursorAdapter
-import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.marginStart
 import com.andrei.carrental.R
 
 class CustomCursorAdapter( context: Context, cursor: Cursor, private val  searchView: SearchView) : androidx.cursoradapter.widget.CursorAdapter(context,cursor,false) {
@@ -26,7 +20,7 @@ class CustomCursorAdapter( context: Context, cursor: Cursor, private val  search
 
     override fun bindView(view: View, context: Context?, cursor: Cursor) {
         val name :String = cursor.getString(cursor.getColumnIndex("name"))
-        view.findViewById<TextView>(R.id.tv_deal).text = name
+        view.findViewById<TextView>(R.id.tv_car_name).text = name
         view.setOnClickListener{
             searchView.isIconified = true
         }
