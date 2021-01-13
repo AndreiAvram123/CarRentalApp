@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentExpandedCarBinding
 import com.andrei.carrental.entities.Car
@@ -23,20 +25,35 @@ class ExpandedCarFragment : Fragment() {
 
     private val viewModelCar:ViewModelCar by activityViewModels()
 
+    private val navArgs:ExpandedCarFragmentArgs by navArgs()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         binding = FragmentExpandedCarBinding.inflate(inflater,container,false)
 
 
-        viewModelCar.fetchCarById(1).reObserve(viewLifecycleOwner){
-            when(it){
-                is State.Success -> updateUI(it.data)
-                is State.Loading -> {}
-                is State.Error -> {}
-            }
-        }
+        fetchCar()
+        initializeUI()
 
         return binding.root
+    }
+
+    private fun initializeUI() {
+        binding.backButtonExpanded.setOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun fetchCar() {
+        viewModelCar.fetchCarById(navArgs.carID).reObserve(viewLifecycleOwner) {
+            when (it) {
+                is State.Success -> updateUI(it.data)
+                is State.Loading -> {
+                }
+                is State.Error -> {
+                }
+            }
+        }
     }
 
     private fun updateUI(car:Car){

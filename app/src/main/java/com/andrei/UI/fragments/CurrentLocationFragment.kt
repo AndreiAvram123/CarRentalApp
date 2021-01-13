@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.utils.PermissionHandlerFragment
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
 class CurrentLocationFragment : Fragment() {
@@ -33,6 +35,7 @@ class CurrentLocationFragment : Fragment() {
     private lateinit var map :GoogleMap
     private var lastKnownLocation: Location? = null
     private lateinit var  permissionHandlerFragment:PermissionHandlerFragment
+    private val markersOnMap:MutableMap<Marker,Long> = mutableMapOf()
 
 
     private val callback = OnMapReadyCallback { googleMap ->
@@ -46,6 +49,14 @@ class CurrentLocationFragment : Fragment() {
                     enableLocation()
                 }
             }
+        }
+        map.setOnMarkerClickListener {
+                 val id = markersOnMap[it]
+                 if(id != null){
+                  findNavController().navigate( CurrentLocationFragmentDirections.actionGlobalToExpandedCarFragment(id))
+                 }
+
+            true
         }
     }
 
@@ -98,18 +109,8 @@ class CurrentLocationFragment : Fragment() {
                                        latLng, 15.toFloat()
                                 )
                         )
-                       viewModelCar.nearbyCars.reObserve(viewLifecycleOwner){carsToRent->
-                           carsToRent?.forEach {
-                               fetchBitmap(requireContext(),it.imagePath){bitmap->
-                                   map.addMarker(MarkerOptions().position(LatLng(
-                                           location.latitude,
-                                           location.longitude
-                                   ))).setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                               }
-                           }
-                           }
-                        viewModelCar.fetchNearbyCars(latLng)
-                       }
+                        fetchNearbyCars(location, latLng)
+                    }
                 } else {
                     map.moveCamera(
                         CameraUpdateFactory
@@ -122,9 +123,31 @@ class CurrentLocationFragment : Fragment() {
         }
     }
 
+    private fun fetchNearbyCars(location: Location, latLng: LatLng) {
+        viewModelCar.nearbyCars.reObserve(viewLifecycleOwner) { carsToRent ->
+            map.clear()
+            markersOnMap.clear()
+            carsToRent?.forEach {
+                fetchBitmap(requireContext(), it.imagePath) { bitmap ->
+
+                  val marker=  map.addMarker(MarkerOptions().position(LatLng(
+                            location.latitude,
+                            location.longitude
+                    ))).apply {
+                      setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                   }
+                    markersOnMap[marker] = it.id
+                }
+            }
+        }
+        viewModelCar.fetchNearbyCars(latLng)
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) = permissionHandlerFragment.notifyChange(requestCode, grantResults)
+
+
 }
