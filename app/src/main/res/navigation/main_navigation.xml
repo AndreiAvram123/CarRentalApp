@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/example4Fragment">
+    app:startDestination="@id/chooseDatesFragment">
 
     <fragment
         android:id="@+id/expanded"
@@ -30,12 +30,23 @@
         android:id="@+id/action_global_to_expanded_car_fragment"
         app:destination="@id/expanded" />
     <fragment
-        android:id="@+id/availableDatesFragment"
-        android:name="com.andrei.UI.fragments.AvailableDatesFragment"
-        android:label="fragment_available_dates"
-        tools:layout="@layout/fragment_available_dates" />
+        android:id="@+id/chooseDatesFragment"
+        android:name="com.andrei.UI.fragments.ChooseDateFragment"
+        android:label="Example4Fragment" >
+        <action
+            android:id="@+id/action_chooseDatesFragment_to_confirmSelectionFragment"
+            app:destination="@id/confirmSelectionFragment" />
+    </fragment>
     <fragment
-        android:id="@+id/example4Fragment"
-        android:name="com.andrei.UI.fragments.Example4Fragment"
-        android:label="Example4Fragment" />
+        android:id="@+id/confirmSelectionFragment"
+        android:name="com.andrei.UI.fragments.ConfirmSelectionFragment"
+        android:label="fragment_confirm_selection"
+        tools:layout="@layout/fragment_confirm_selection" >
+        <argument
+            android:name="startDate"
+            app:argType="long" />
+        <argument
+            android:name="endDate"
+            app:argType="long" />
+    </fragment>
 </navigation>

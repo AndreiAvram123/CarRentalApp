@@ -1,19 +1,16 @@
 package com.andrei.UI.fragments
 
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
-import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContentProviderCompat.requireContext
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.Example4CalendarDayBinding
 import com.andrei.carrental.databinding.Example4FragmentBinding
@@ -34,7 +31,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 import java.time.temporal.ChronoUnit
-class Example4Fragment : Fragment (){
+class ChooseDateFragment : Fragment (){
 
 
     private val today = LocalDate.now()
@@ -109,7 +106,7 @@ class Example4Fragment : Fragment (){
                         } else {
                             startDate = date
                         }
-                        this@Example4Fragment.binding.exFourCalendar.notifyCalendarChanged()
+                        this@ChooseDateFragment.binding.exFourCalendar.notifyCalendarChanged()
                         bindSummaryViews()
                     }
                 }
@@ -195,12 +192,14 @@ class Example4Fragment : Fragment (){
 
         binding.exFourSaveButton.setOnClickListener click@{
             val startDate = startDate
-            val endDate = endDate
 
-            if (startDate != null && endDate != null) {
-                val text = "You have selected ${ChronoUnit.DAYS.between(startDate,endDate ) + 1}"
-                Snackbar.make(requireView(), text, Snackbar.LENGTH_LONG).show()
+            if(startDate != null){
+               val action = ChooseDateFragmentDirections.actionChooseDatesFragmentToConfirmSelectionFragment(
+                       startDate.toUnix(),  (endDate ?: startDate).toUnix())
+                findNavController().navigate(action)
+
             }
+
 
         }
 
