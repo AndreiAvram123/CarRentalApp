@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.andrei.carrental.R
 import com.andrei.carrental.viewmodels.ViewModelCar
-import com.andrei.utils.PermissionHandler
+import com.andrei.utils.PermissionHandlerFragment
 import com.andrei.utils.fetchBitmap
 import com.andrei.utils.reObserve
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -32,17 +32,19 @@ class CurrentLocationFragment : Fragment() {
     private val defaultLocation = LatLng(-33.8523341, 151.2106085)
     private lateinit var map :GoogleMap
     private var lastKnownLocation: Location? = null
-    private lateinit var  permissionHandler:PermissionHandler
+    private lateinit var  permissionHandlerFragment:PermissionHandlerFragment
 
 
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
 
-        if(permissionHandler.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)){
+        if(permissionHandlerFragment.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)){
             enableLocation()
         }else{
-            permissionHandler.requestPermission(this,Manifest.permission.ACCESS_FINE_LOCATION){
-                enableLocation()
+            permissionHandlerFragment.requestPermission(Manifest.permission.ACCESS_FINE_LOCATION){
+                if(it) {
+                    enableLocation()
+                }
             }
         }
     }
@@ -59,7 +61,7 @@ class CurrentLocationFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        permissionHandler = PermissionHandler(requireContext())
+        permissionHandlerFragment = PermissionHandlerFragment(this)
         return inflater.inflate(R.layout.fragment_current_location, container, false)
     }
 
@@ -124,5 +126,5 @@ class CurrentLocationFragment : Fragment() {
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
-    ) = permissionHandler.notifyChange(requestCode, grantResults)
+    ) = permissionHandlerFragment.notifyChange(requestCode, grantResults)
 }

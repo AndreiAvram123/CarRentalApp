@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 
-class PermissionHandler(private val context:Context){
+class PermissionHandlerFragment(private val fragment: Fragment){
 
     private val requestPermissionMap :MutableMap<Int,(permissionGranted:Boolean)->Unit> = mutableMapOf()
 
@@ -14,12 +14,12 @@ class PermissionHandler(private val context:Context){
 
     fun hasPermission(permission:String) : Boolean{
        return ContextCompat.checkSelfPermission(
-                context,
+                fragment.requireContext(),
                 permission
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestPermission(fragment: Fragment, permission: String, callback: (permissionGranted:Boolean)-> Unit){
+    fun requestPermission(permission: String, callback: (permissionGranted:Boolean)-> Unit){
         requestPermissionMap[currentRequestCode] = callback
         fragment.requestSinglePermission(permission,currentRequestCode)
         currentRequestCode ++
