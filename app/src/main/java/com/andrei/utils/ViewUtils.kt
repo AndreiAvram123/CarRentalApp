@@ -1,6 +1,7 @@
 package com.andrei.utils
 
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
@@ -32,3 +33,18 @@ fun daysOfWeekFromLocale(): Array<DayOfWeek> {
 internal fun Context.getColorCompat(@ColorRes color: Int) = ContextCompat.getColor(this, color)
 
 internal fun TextView.setTextColorRes(@ColorRes color: Int) = setTextColor(context.getColorCompat(color))
+
+
+fun GradientDrawable.setCornerRadius(
+        topLeft: Float = 0F,
+        topRight: Float = 0F,
+        bottomRight: Float = 0F,
+        bottomLeft: Float = 0F
+) {
+    cornerRadii = arrayOf(
+            topLeft, topLeft,
+            topRight, topRight,
+            bottomRight, bottomRight,
+            bottomLeft, bottomLeft
+    ).toFloatArray()
+}

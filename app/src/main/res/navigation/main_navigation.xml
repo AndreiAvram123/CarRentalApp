@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/availableDatesFragment">
+    app:startDestination="@id/example4Fragment">
 
     <fragment
         android:id="@+id/expanded"
@@ -34,4 +34,8 @@
         android:name="com.andrei.UI.fragments.AvailableDatesFragment"
         android:label="fragment_available_dates"
         tools:layout="@layout/fragment_available_dates" />
+    <fragment
+        android:id="@+id/example4Fragment"
+        android:name="com.andrei.UI.fragments.Example4Fragment"
+        android:label="Example4Fragment" />
 </navigation>
