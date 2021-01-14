@@ -1,6 +1,7 @@
 package com.andrei.engine.repository
 
 import com.andrei.engine.CallRunner
+import com.andrei.engine.DTOEntities.CheckoutRequest
 import com.andrei.engine.configuration.AuthInterceptor
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
 import com.andrei.engine.repositoryInterfaces.PaymentRepoInterface
@@ -24,5 +25,10 @@ class PaymentRepository {
        }
    }.flowOn(GlobalScope.coroutineContext)
 
+fun makePayment(checkoutRequest: CheckoutRequest) = flow{
+    callRunner.makeCall(repo.checkout(checkoutRequest)){
+        emit(it)
+    }
+}.flowOn(GlobalScope.coroutineContext)
 
 }

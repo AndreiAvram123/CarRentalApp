@@ -39,7 +39,10 @@ android {
 
 dependencies {
     implementation 'com.braintreepayments.api:drop-in:5.0.2'
-    
+
+    implementation 'com.braintreepayments.api:data-collector:2.22.0'
+
+
     implementation 'com.google.android.material:material:1.2.1'
 
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.andrei.engine.State
 
 fun <T> LiveData<T>.reObserve(owner: LifecycleOwner, observer: Observer<T>) {
     removeObserver(observer)
@@ -30,10 +31,9 @@ fun <T> MutableLiveData<T>.postAndReset(value: T, resetTo: T? = null) {
 
 fun <T> LiveData<T>.observeRequest(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
     observe(lifecycleOwner, object : Observer<T> {
-        var observed = 0
         override fun onChanged(t: T?) {
             observer.onChanged(t)
-            if(observed == 2 ){
+            if(t !is State.Loading){
                 removeObserver(this)
             }
         }
