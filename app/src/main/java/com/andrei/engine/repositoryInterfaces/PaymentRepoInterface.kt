@@ -1,5 +1,6 @@
 package com.andrei.engine.repositoryInterfaces
 
+import com.andrei.engine.DTOEntities.ApiResult
 import com.andrei.engine.DTOEntities.CheckoutRequest
 import com.andrei.engine.DTOEntities.TokenResponse
 import retrofit2.Call
@@ -12,5 +13,5 @@ interface PaymentRepoInterface {
   fun fetchClientToken(): Call<TokenResponse>
 
   @POST("/payment/checkout")
-  fun checkout(@Body checkoutRequest: CheckoutRequest):Call<TokenResponse>
+  fun checkout(@Body checkoutRequest: CheckoutRequest):Call<ApiResult<Any>>
 }

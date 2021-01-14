@@ -70,7 +70,9 @@ class HomeFragment : Fragment() {
         viewModelCar.searchSuggestions.reObserve(viewLifecycleOwner){
             when(it){
                 is State.Success -> {
-                      suggestionsAdapter.setData(it.data)
+                      if(it.data !=null){
+                          suggestionsAdapter.setData(it.data)
+                      }
                        binding.pbSearch.hide()
                 }
                 is State.Loading -> binding.pbSearch.show()

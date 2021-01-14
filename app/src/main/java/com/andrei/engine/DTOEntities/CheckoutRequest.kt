@@ -6,5 +6,7 @@ data class CheckoutRequest(
     @SerializedName("nonce")
     val nonce:String?,
     @SerializedName("deviceData")
-    val deviceData :String?
+    val deviceData :String?,
+    @SerializedName("amount")
+    val amount :Long,
 )

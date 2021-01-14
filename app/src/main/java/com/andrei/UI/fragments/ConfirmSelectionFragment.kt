@@ -1,6 +1,5 @@
 package com.andrei.UI.fragments
 
-import android.R.attr
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Intent
@@ -71,10 +70,12 @@ class ConfirmSelectionFragment : Fragment() {
             when{
                 it is State.Success ->{
                     try {
-                        val dropInRequest: DropInRequest = DropInRequest()
+                        if(it.data!=null){
+                            val dropInRequest: DropInRequest = DropInRequest()
                                 .collectDeviceData(true)
                                 .clientToken(it.data.token)
-                        startActivityForResult(dropInRequest.getIntent(requireContext()), 1)
+                            startActivityForResult(dropInRequest.getIntent(requireContext()), 1)
+                        }
                     } catch (e: InvalidArgumentException) {
                         // There was an issue with your authorization string.
                     }
@@ -92,14 +93,15 @@ class ConfirmSelectionFragment : Fragment() {
             if (resultCode == RESULT_OK) {
                 val result: DropInResult? = data?.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)
 
-                result?.let{
+                if(result!=null) {
 
-                    val checkoutRequest = CheckoutRequest(nonce = it.paymentMethodNonce?.nonce,
-                            deviceData = it.deviceData)
-                    viewModelPayment.makePayment(checkoutRequest).observeRequest(viewLifecycleOwner){
-                        Toast.makeText(requireContext(),"UUUUU",Toast.LENGTH_LONG).show()
-                    }
-
+                        val checkoutRequest = CheckoutRequest(nonce = result.paymentMethodNonce?.nonce,
+                                deviceData = result.deviceData, amount = 333)
+                        viewModelPayment.makePayment(checkoutRequest).observeRequest(viewLifecycleOwner) {
+                            if (it is State.Success) {
+                              Toast.makeText(requireContext(),"Successful payment",Toast.LENGTH_LONG).show()
+                            }
+                        }
                 }
                 // use the result to update your UI and send the payment method nonce to your server
             } else if (resultCode == RESULT_CANCELED) {

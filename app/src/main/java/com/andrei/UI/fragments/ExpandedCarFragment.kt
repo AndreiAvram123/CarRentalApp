@@ -47,7 +47,7 @@ class ExpandedCarFragment : Fragment() {
     private fun fetchCar() {
         viewModelCar.fetchCarById(navArgs.carID).reObserve(viewLifecycleOwner) {
             when (it) {
-                is State.Success -> updateUI(it.data)
+                is State.Success -> if(it.data != null) {updateUI(it.data)}
                 is State.Loading -> {
                 }
                 is State.Error -> {

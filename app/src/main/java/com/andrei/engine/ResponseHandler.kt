@@ -14,14 +14,14 @@ class ResponseHandler private constructor(){
 
     private val TAG = ResponseHandler::class.java.simpleName
 
-    fun <T : Any> handleSuccess(data: T): State<T> {
+    fun <T : Any> handleSuccess(data: T?): State<T> {
         return State.Success(data)
     }
 
-    fun <T > handleRequestException(e: Exception, string: String): State<T> {
+    fun <T > handleRequestException(exceptions: List<Exception>, string: String): State<T> {
         Log.e(TAG,"Error with request $string")
-        logException(e)
-        return State.Error(e)
+        exceptions.forEach { logException(it) }
+        return State.Error(exceptions.first())
     }
 
     private fun logException(e:Exception){
