@@ -35,7 +35,10 @@
         android:label="Example4Fragment" >
         <action
             android:id="@+id/action_chooseDatesFragment_to_confirmSelectionFragment"
-            app:destination="@id/confirmSelectionFragment" />
+            app:destination="@id/confirmSelectionFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            />
     </fragment>
     <fragment
         android:id="@+id/confirmSelectionFragment"

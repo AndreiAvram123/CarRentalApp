@@ -190,7 +190,7 @@ class ChooseDateFragment : Fragment (){
             }
         }
 
-        binding.exFourSaveButton.setOnClickListener click@{
+        binding.buttonSaveSelection.setOnClickListener click@{
             val startDate = startDate
 
             if(startDate != null){
@@ -241,7 +241,7 @@ class ChooseDateFragment : Fragment (){
             }
         }
 
-        binding.exFourSaveButton.isEnabled = startDate != null
+        binding.buttonSaveSelection.isEnabled = startDate != null
     }
 
 }
