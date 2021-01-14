@@ -5,7 +5,7 @@
     <data>
         <variable
             name="car"
-            type="com.andrei.carrental.entities.Car" />
+            type="com.andrei.carrental.entities.CarToRent" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -48,16 +48,16 @@
         tools:srcCompat="@drawable/app_poster" />
 
     <TextView
-        style="@style/important_text"
         android:id="@+id/textView"
+        style="@style/important_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/rented_by_text"
+        android:layout_marginTop="24dp"
 
+        android:text="@string/rented_by_text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/carousel_car_expanded" />
+        app:layout_constraintTop_toBottomOf="@+id/map_expanded_fragment" />
 
     <TextView
         android:id="@+id/tv_lender_name"
@@ -82,6 +82,15 @@
         app:layout_constraintStart_toEndOf="@+id/tv_lender_name"
         app:layout_constraintTop_toTopOf="@+id/tv_lender_name"
         tools:srcCompat="@tools:sample/avatars" />
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map_expanded_fragment"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="14dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/carousel_car_expanded" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

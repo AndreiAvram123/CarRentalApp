@@ -26,7 +26,7 @@ class PaymentRepositoryTest {
     @Test
     fun makePayment(){
         runBlocking {
-            callRunner.makeNewCall(repo.checkout(CheckoutRequest(amount = 1011,nonce = "fake-valid-nonce",deviceData = null))){
+            callRunner.makeApiCall(repo.checkout(CheckoutRequest(amount = 1011,nonce = "fake-valid-nonce",deviceData = null))){
                print(it)
             }
         }

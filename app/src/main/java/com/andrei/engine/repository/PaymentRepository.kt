@@ -20,13 +20,13 @@ class PaymentRepository {
     private val  repo = retrofit.create(PaymentRepoInterface::class.java)
 
    fun fetchClientToken() = flow {
-       callRunner.makeCall(repo.fetchClientToken()){
+       callRunner.makeApiCall(repo.fetchClientToken()){
            emit(it)
        }
    }.flowOn(GlobalScope.coroutineContext)
 
 fun makePayment(checkoutRequest: CheckoutRequest) = flow{
-    callRunner.makeCall(repo.checkout(checkoutRequest)){
+    callRunner.makeApiCall(repo.checkout(checkoutRequest)){
         emit(it)
     }
 }.flowOn(GlobalScope.coroutineContext)

@@ -32,7 +32,6 @@ import java.time.temporal.ChronoUnit
 class ConfirmSelectionFragment : Fragment() {
 
 
-    private lateinit var mBraintreeFragment: BraintreeFragment
     private lateinit var binding: FragmentConfirmSelectionBinding
     private val navArgs: ConfirmSelectionFragmentArgs by navArgs()
     private val  viewModelPayment:ViewModelPayment by viewModels()
@@ -67,8 +66,8 @@ class ConfirmSelectionFragment : Fragment() {
 
     private fun startPaymentFlow() {
         viewModelPayment.clientToken.reObserve(viewLifecycleOwner){
-            when{
-                it is State.Success ->{
+            when (it) {
+                is State.Success -> {
                     try {
                         if(it.data!=null){
                             val dropInRequest: DropInRequest = DropInRequest()
@@ -81,8 +80,8 @@ class ConfirmSelectionFragment : Fragment() {
                     }
 
                 }
-                it is State.Loading ->{}
-                it is State.Error -> {}
+                is State.Loading -> {}
+                is State.Error -> {}
             }
 
         }

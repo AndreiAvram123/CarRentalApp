@@ -128,7 +128,7 @@ class CurrentLocationFragment : Fragment() {
             map.clear()
             markersOnMap.clear()
             carsToRent?.forEach {
-                fetchBitmap(requireContext(), it.imagePath) { bitmap ->
+                fetchBitmap(requireContext(), it.images.first().imagePath) { bitmap ->
 
                   val marker=  map.addMarker(MarkerOptions().position(LatLng(
                             location.latitude,

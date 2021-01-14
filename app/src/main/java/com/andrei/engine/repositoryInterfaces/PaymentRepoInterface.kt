@@ -10,7 +10,7 @@ import retrofit2.http.POST
 
 interface PaymentRepoInterface {
   @GET("/payment/sandboxToken")
-  fun fetchClientToken(): Call<TokenResponse>
+  fun fetchClientToken(): Call<ApiResult<TokenResponse>>
 
   @POST("/payment/checkout")
   fun checkout(@Body checkoutRequest: CheckoutRequest):Call<ApiResult<Any>>
