@@ -67,8 +67,9 @@ class CarRepositoryImpl {
     }
 
    private  fun fetchUnavailableDates(carID:Long)  = flow{
-        callRunner.makeApiCall(repo.getUnavailableDates(carID)){
-            emit(it)
-        }
+       emit(State.Success(listOf(RentalDate(startDate = 1610708950,endDate = 1610908987))))
+//        callRunner.makeApiCall(repo.getUnavailableDates(carID)){
+//            emit(it)
+//        }
     }
 }

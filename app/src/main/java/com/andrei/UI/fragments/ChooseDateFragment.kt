@@ -18,6 +18,7 @@ import com.andrei.carrental.databinding.Example4CalendarDayBinding
 import com.andrei.carrental.databinding.Example4FragmentBinding
 import com.andrei.carrental.entities.RentalDate
 import com.andrei.carrental.viewmodels.ViewModelCar
+import com.andrei.engine.State
 import com.andrei.utils.*
 import com.andrei.utils.setTextColorRes
 import com.google.android.material.snackbar.Snackbar
@@ -44,7 +45,7 @@ class ChooseDateFragment : Fragment (){
 
     private val viewModelCar : ViewModelCar by activityViewModels()
 
-    private val unavailableDates :List<RentalDate>? = null
+    private var unavailableDates :List<RentalDate>? = null
 
     private val headerDateFormatter = DateTimeFormatter.ofPattern("EEE'\n'd MMM")
 
@@ -58,7 +59,30 @@ class ChooseDateFragment : Fragment (){
 
     private lateinit var binding: Example4FragmentBinding
 
+   inner class DayViewContainer(view: View) : ViewContainer(view) {
+        lateinit var day: CalendarDay // Will be set when this container is bound.
+        val binding = Example4CalendarDayBinding.bind(view)
 
+        init {
+            view.setOnClickListener {
+                if (day.owner == DayOwner.THIS_MONTH && (day.date == today || day.date.isAfter(today))) {
+                    val date = day.date
+                    if (startDate != null) {
+                        if (date < startDate || endDate != null) {
+                            startDate = date
+                            endDate = null
+                        } else if (date != startDate) {
+                            endDate = date
+                        }
+                    } else {
+                        startDate = date
+                    }
+                    this@ChooseDateFragment.binding.exFourCalendar.notifyCalendarChanged()
+                    bindSummaryViews()
+                }
+            }
+        }
+    }
 
 
     override fun onCreateView(
@@ -73,7 +97,9 @@ class ChooseDateFragment : Fragment (){
 
     private fun fetchUnavailableDates() {
         viewModelCar.unavailableCarDates.reObserve(viewLifecycleOwner){
-
+            if(it is State.Success) {
+               if(it.data !=null) initializeCalendarBinder(it.data)
+            }
         }
     }
 
@@ -102,96 +128,7 @@ class ChooseDateFragment : Fragment (){
         binding.exFourCalendar.setup(currentMonth, currentMonth.plusMonths(12), daysOfWeek.first())
         binding.exFourCalendar.scrollToMonth(currentMonth)
 
-        class DayViewContainer(view: View) : ViewContainer(view) {
-            lateinit var day: CalendarDay // Will be set when this container is bound.
-            val binding = Example4CalendarDayBinding.bind(view)
 
-            init {
-                view.setOnClickListener {
-                    if (day.owner == DayOwner.THIS_MONTH && (day.date == today || day.date.isAfter(today))) {
-                        val date = day.date
-                        if (startDate != null) {
-                            if (date < startDate || endDate != null) {
-                                startDate = date
-                                endDate = null
-                            } else if (date != startDate) {
-                                endDate = date
-                            }
-                        } else {
-                            startDate = date
-                        }
-                        this@ChooseDateFragment.binding.exFourCalendar.notifyCalendarChanged()
-                        bindSummaryViews()
-                    }
-                }
-            }
-        }
-
-        binding.exFourCalendar.dayBinder = object : DayBinder<DayViewContainer> {
-            override fun create(view: View) = DayViewContainer(view)
-            override fun bind(container: DayViewContainer, day: CalendarDay) {
-                container.day = day
-                val textView = container.binding.exFourDayText
-                val roundBgView = container.binding.exFourRoundBgView
-
-                textView.text = null
-                textView.background = null
-                roundBgView.hide()
-
-                val startDate = startDate
-                val endDate = endDate
-
-                when (day.owner) {
-                    DayOwner.THIS_MONTH -> {
-                        textView.text = day.day.toString()
-                        val dayUnix = day.date.toUnix()
-
-                        val unavailableDate = unavailableDates?.find {
-                            dayUnix >= it.startDate && dayUnix <= it.endDate
-                         }
-
-                        if (day.date.isBefore(today) || unavailableDate!= null) {
-                            textView.setTextColorRes(R.color.example_4_grey_past)
-                        } else {
-                            when {
-                                startDate == day.date && endDate == null -> {
-                                    textView.setTextColorRes(R.color.white)
-                                    roundBgView.show()
-                                    roundBgView.setBackgroundResource(R.drawable.example_4_single_selected_bg)
-                                }
-                                day.date == startDate -> {
-                                    textView.setTextColorRes(R.color.white)
-                                    textView.background = startBackground
-                                }
-                                startDate != null && endDate != null && (day.date > startDate && day.date < endDate) -> {
-                                    textView.setTextColorRes(R.color.white)
-                                    textView.setBackgroundResource(R.drawable.example_4_continuous_selected_bg_middle)
-                                }
-                                day.date == endDate -> {
-                                    textView.setTextColorRes(R.color.white)
-                                    textView.background = endBackground
-                                }
-                                day.date == today -> {
-                                    textView.setTextColorRes(R.color.example_4_grey)
-                                    roundBgView.show()
-                                    roundBgView.setBackgroundResource(R.drawable.example_4_today_bg)
-                                }
-                                else -> textView.setTextColorRes(R.color.example_4_grey)
-                            }
-                        }
-                    }
-                    // Make the coloured selection background continuous on the invisible in and out dates across various months.
-                    DayOwner.PREVIOUS_MONTH ->
-                        if (startDate != null && endDate != null && isInDateBetween(day.date, startDate, endDate)) {
-                            textView.setBackgroundResource(R.drawable.example_4_continuous_selected_bg_middle)
-                        }
-                    DayOwner.NEXT_MONTH ->
-                        if (startDate != null && endDate != null && isOutDateBetween(day.date, startDate, endDate)) {
-                            textView.setBackgroundResource(R.drawable.example_4_continuous_selected_bg_middle)
-                        }
-                }
-            }
-        }
 
         class MonthViewContainer(view: View) : ViewContainer(view) {
             val textView = view.findViewById<TextView>(R.id.exFourHeaderTextMonth)
@@ -257,5 +194,75 @@ class ChooseDateFragment : Fragment (){
 
         binding.buttonSaveSelection.isEnabled = startDate != null
     }
+
+    private fun initializeCalendarBinder(unavailableDates :List<RentalDate>){
+        binding.exFourCalendar.dayBinder = object : DayBinder<DayViewContainer> {
+            override fun create(view: View) = DayViewContainer(view)
+            override fun bind(container: DayViewContainer, day: CalendarDay) {
+                container.day = day
+                val textView = container.binding.exFourDayText
+                val roundBgView = container.binding.exFourRoundBgView
+
+                textView.text = null
+                textView.background = null
+                roundBgView.hide()
+
+                val startDate = startDate
+                val endDate = endDate
+
+                when (day.owner) {
+                    DayOwner.THIS_MONTH -> {
+                        textView.text = day.day.toString()
+                        val dayUnix = day.date.toUnix()
+
+                        val unavailableDate = unavailableDates?.find {
+                            dayUnix >= it.startDate && dayUnix <= it.endDate
+                        }
+
+                        if (day.date.isBefore(today) || unavailableDate!= null) {
+                            textView.setTextColorRes(R.color.example_4_grey_past)
+                        } else {
+                            when {
+                                startDate == day.date && endDate == null -> {
+                                    textView.setTextColorRes(R.color.white)
+                                    roundBgView.show()
+                                    roundBgView.setBackgroundResource(R.drawable.example_4_single_selected_bg)
+                                }
+                                day.date == startDate -> {
+                                    textView.setTextColorRes(R.color.white)
+                                    textView.background = startBackground
+                                }
+                                startDate != null && endDate != null && (day.date > startDate && day.date < endDate) -> {
+                                    textView.setTextColorRes(R.color.white)
+                                    textView.setBackgroundResource(R.drawable.example_4_continuous_selected_bg_middle)
+                                }
+                                day.date == endDate -> {
+                                    textView.setTextColorRes(R.color.white)
+                                    textView.background = endBackground
+                                }
+                                day.date == today -> {
+                                    textView.setTextColorRes(R.color.example_4_grey)
+                                    roundBgView.show()
+                                    roundBgView.setBackgroundResource(R.drawable.example_4_today_bg)
+                                }
+                                else -> textView.setTextColorRes(R.color.example_4_grey)
+                            }
+                        }
+                    }
+                    // Make the coloured selection background continuous on the invisible in and out dates across various months.
+                    DayOwner.PREVIOUS_MONTH ->
+                        if (startDate != null && endDate != null && isInDateBetween(day.date, startDate, endDate)) {
+                            textView.setBackgroundResource(R.drawable.example_4_continuous_selected_bg_middle)
+                        }
+                    DayOwner.NEXT_MONTH ->
+                        if (startDate != null && endDate != null && isOutDateBetween(day.date, startDate, endDate)) {
+                            textView.setBackgroundResource(R.drawable.example_4_continuous_selected_bg_middle)
+                        }
+                }
+            }
+        }
+    }
+
+
 
 }

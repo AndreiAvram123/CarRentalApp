@@ -81,6 +81,10 @@ class ExpandedCarFragment : Fragment() {
 
             }
         }
+        binding.selectDatesButton.setOnClickListener {
+         val action = ExpandedCarFragmentDirections.actionExpandedToChooseDatesFragment()
+            findNavController().navigate(action)
+        }
 
     }
 
