@@ -97,10 +97,11 @@
         android:id="@+id/map_expanded_fragment"
         android:layout_width="0dp"
         android:layout_height="200dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/carousel_car_expanded" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_hint_price" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/select_dates_button"
@@ -115,6 +116,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <TextView
+        style="@style/important_text"
+        android:id="@+id/tv_hint_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/fragment_expanded_car_price_per_day"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/carousel_car_expanded" />
+
+    <TextView
+        style="@style/important_text"
+        android:id="@+id/tv_price_per_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="@{`£` + car.pricePerDay}"
+        tools:text="£100"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_hint_price"
+        app:layout_constraintStart_toEndOf="@+id/tv_hint_price"
+        app:layout_constraintTop_toTopOf="@+id/tv_hint_price" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

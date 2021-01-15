@@ -6,11 +6,8 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 
- fun  Any.fetchBitmap(context: Context , url:String, completion:(bitmap:Bitmap) -> Unit ){
+fun fetchBitmap(context: Context, url: String, maxWidth: Int = 400, completion: (bitmap: Bitmap) -> Unit){
     Glide.with(context)
             .asBitmap()
             .load(url)
@@ -19,7 +16,10 @@ import com.google.android.gms.maps.model.MarkerOptions
                         resource: Bitmap,
                         transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
                 ) {
-                  completion(resource)
+                    val aspectRatio = getHeightWidthAspectRation(width = resource.width, height = resource.height)
+                    val newHeight  = (maxWidth * aspectRatio).toInt()
+
+                     completion(Bitmap.createScaledBitmap(resource,maxWidth,newHeight,true))
                 }
                 override fun onLoadCleared(placeholder: Drawable?) {
 
@@ -28,8 +28,9 @@ import com.google.android.gms.maps.model.MarkerOptions
             })
 
 }
-fun ImageView.loadFromURL(url:String){
-    Glide.with(this).load(url)
-        .centerInside()
-        .into(this)
+
+fun ImageView.loadFromURl(url:String){
+    Glide.with(this).load(url).into(this)
 }
+
+fun getHeightWidthAspectRation(width:Int,height:Int): Double = height/width.toDouble()

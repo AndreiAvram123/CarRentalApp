@@ -27,6 +27,16 @@
             android:orientation="vertical"
             tools:context=".Example4Fragment">
 
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/back_button_choose_date_frg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:layout_marginTop="18dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginBottom="18dp"
+                app:srcCompat="@drawable/ic_back_32" />
+
             <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/exFourAppBarLayout"
                 android:layout_width="match_parent"

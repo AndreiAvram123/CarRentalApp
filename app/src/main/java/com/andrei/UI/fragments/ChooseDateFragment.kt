@@ -92,7 +92,15 @@ class ChooseDateFragment : Fragment (){
     ): View {
         binding = Example4FragmentBinding.inflate(inflater,container, false)
         fetchUnavailableDates()
+        initializeUI()
         return binding.root
+    }
+
+    private fun initializeUI() {
+
+        binding.backButtonChooseDateFrg.setOnClickListener{
+            findNavController().popBackStack()
+        }
     }
 
     private fun fetchUnavailableDates() {

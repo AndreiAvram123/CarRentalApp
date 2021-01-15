@@ -8,5 +8,5 @@ data class CarSearchEntity(
         @SerializedName("name")
         val name:String,
         @SerializedName("imagePath")
-        val imagePath :String
+        val imagePath :String?
 )

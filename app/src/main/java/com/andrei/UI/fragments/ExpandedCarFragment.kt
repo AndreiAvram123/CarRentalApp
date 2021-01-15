@@ -14,8 +14,9 @@ import com.andrei.carrental.databinding.FragmentExpandedCarBinding
 import com.andrei.carrental.entities.CarToRent
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.engine.State
-import com.andrei.utils.loadFromURL
+import com.andrei.utils.loadFromURl
 import com.andrei.utils.reObserve
+import com.bumptech.glide.Glide
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
@@ -107,7 +108,7 @@ class ExpandedCarFragment : Fragment() {
             binding.carouselCarExpanded.apply {
                 size = it.images.size
                 setCarouselViewListener { view, position ->
-                    view.findViewById<ImageView>(R.id.image_item_carousel).loadFromURL(it.images[position].imagePath)
+                    view.findViewById<ImageView>(R.id.image_item_carousel).loadFromURl(it.images[position].imagePath)
                 }
                 show()
             }

@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName
 data class CarToRent(
         @SerializedName("id")
         val id:Long,
-       @SerializedName("images")
+        @SerializedName("images")
        val images:List<Image>,
+        @SerializedName("pricePerDay")
+        val pricePerDay:Int,
        @SerializedName("user")
        val user:User,
        @SerializedName("latitude")

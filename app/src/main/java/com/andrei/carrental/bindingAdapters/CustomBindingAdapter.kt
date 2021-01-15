@@ -6,7 +6,7 @@ import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.andrei.utils.loadFromURL
+import com.andrei.utils.loadFromURl
 
 import com.bumptech.glide.Glide
 
@@ -18,7 +18,7 @@ import java.util.*
 fun bindImageFromURL(imageView: ImageView,
                      imageURl: String?) {
     if (!imageURl.isNullOrEmpty()) {
-        imageView.loadFromURL(imageURl)
+       imageView.loadFromURl(imageURl)
     }
 }
 

@@ -16,6 +16,7 @@ import com.andrei.carrental.R
 
 import com.andrei.carrental.databinding.FragmentHomeBinding
 import com.andrei.carrental.viewmodels.ViewModelCar
+import com.andrei.carrental.viewmodels.ViewModelLocation
 import com.andrei.engine.State
 import com.andrei.utils.hide
 import com.andrei.utils.reObserve
@@ -26,7 +27,12 @@ class HomeFragment : Fragment() {
 
   private lateinit var binding:FragmentHomeBinding
 
+
+  private var currentLocation :LatLng? = null
+
   private val viewModelCar:ViewModelCar by activityViewModels()
+   private val viewModelLocation:ViewModelLocation by activityViewModels()
+
 
   private val suggestionsAdapter:SuggestionsAdapter by lazy {
       SuggestionsAdapter()
@@ -37,6 +43,11 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(layoutInflater,container,false)
         configureSearchView()
+        viewModelLocation.currentLocation.reObserve(viewLifecycleOwner){
+            if(it !=null){
+               currentLocation = it
+            }
+        }
         return binding.root
     }
 
@@ -51,7 +62,7 @@ class HomeFragment : Fragment() {
 
             override fun onQueryTextChange(query: String): Boolean {
                 if(query.isNotEmpty()){
-                    viewModelCar.fetchSuggestions(query, LatLng(53.4875,2.2901))
+                    currentLocation?.let{ viewModelCar.fetchSuggestions(query,it)}
                 }else{
                    suggestionsAdapter.clearData()
                 }

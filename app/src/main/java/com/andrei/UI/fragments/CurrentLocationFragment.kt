@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.viewmodels.ViewModelCar
+import com.andrei.carrental.viewmodels.ViewModelLocation
 import com.andrei.utils.PermissionHandlerFragment
 import com.andrei.utils.fetchBitmap
 import com.andrei.utils.reObserve
@@ -31,9 +32,9 @@ class CurrentLocationFragment : Fragment() {
     private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
 
     private val viewModelCar:ViewModelCar by activityViewModels()
-    private val defaultLocation = LatLng(-33.8523341, 151.2106085)
+    private val viewModelLocation : ViewModelLocation by activityViewModels()
+
     private lateinit var map :GoogleMap
-    private var lastKnownLocation: Location? = null
     private lateinit var  permissionHandlerFragment:PermissionHandlerFragment
     private val markersOnMap:MutableMap<Marker,Long> = mutableMapOf()
 
@@ -98,24 +99,20 @@ class CurrentLocationFragment : Fragment() {
             locationResult.addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
                     // Set the map's camera position to the current location of the device.
-                    lastKnownLocation = task.result
-                    lastKnownLocation?.let { location ->
-                        val latLng = LatLng(
+                    task.result?.let { location ->
+
+                        val currentLocation = LatLng(
                             location.latitude,
                             location.longitude
                         )
+                        viewModelLocation.currentLocation.postValue(currentLocation)
                         map.moveCamera(
                                 CameraUpdateFactory.newLatLngZoom(
-                                       latLng, 15.toFloat()
+                                       currentLocation, 15.toFloat()
                                 )
                         )
-                        fetchNearbyCars(location, latLng)
+                        fetchNearbyCars(location, currentLocation)
                     }
-                } else {
-                    map.moveCamera(
-                        CameraUpdateFactory
-                            .newLatLngZoom(defaultLocation, 15.toFloat())
-                    )
                 }
             }
         } catch (e: SecurityException) {
@@ -128,15 +125,17 @@ class CurrentLocationFragment : Fragment() {
             map.clear()
             markersOnMap.clear()
             carsToRent?.forEach {
-                fetchBitmap(requireContext(), it.images.first().imagePath) { bitmap ->
+                if(it.images.isNotEmpty()) {
+                    fetchBitmap(requireContext(), it.images.first().imagePath) { bitmap ->
 
-                  val marker=  map.addMarker(MarkerOptions().position(LatLng(
-                            location.latitude,
-                            location.longitude
-                    ))).apply {
-                      setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                   }
-                    markersOnMap[marker] = it.id
+                        val marker = map.addMarker(MarkerOptions().position(LatLng(
+                                location.latitude,
+                                location.longitude
+                        ))).apply {
+                            setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                        }
+                        markersOnMap[marker] = it.id
+                    }
                 }
             }
         }
