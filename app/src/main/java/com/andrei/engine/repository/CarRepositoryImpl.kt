@@ -12,7 +12,10 @@ import com.andrei.engine.State
 import com.andrei.engine.configuration.AuthInterceptor
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -60,16 +63,15 @@ class CarRepositoryImpl {
         }
     }
 
-    fun fetchCarById(id:Long) = flow {
+    private fun fetchCarById(id:Long) = flow {
         callRunner.makeApiCall(repo.getCarByID(id)){
             emit(it)
         }
     }
 
    private  fun fetchUnavailableDates(carID:Long)  = flow{
-       emit(State.Success(listOf(RentalDate(startDate = 1610708950,endDate = 1610908987))))
-//        callRunner.makeApiCall(repo.getUnavailableDates(carID)){
-//            emit(it)
-//        }
-    }
+        callRunner.makeApiCall(repo.getUnavailableDates(carID)){
+            emit(it)
+        }
+    }.flowOn(GlobalScope.coroutineContext)
 }

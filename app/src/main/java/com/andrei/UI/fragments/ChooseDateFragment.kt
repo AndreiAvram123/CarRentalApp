@@ -45,7 +45,7 @@ class ChooseDateFragment : Fragment (){
 
     private val viewModelCar : ViewModelCar by activityViewModels()
 
-    private var unavailableDates :List<RentalDate>? = null
+    private var unavailableDates:List<RentalDate>? = null
 
     private val headerDateFormatter = DateTimeFormatter.ofPattern("EEE'\n'd MMM")
 
@@ -97,9 +97,11 @@ class ChooseDateFragment : Fragment (){
 
     private fun fetchUnavailableDates() {
         viewModelCar.unavailableCarDates.reObserve(viewLifecycleOwner){
-            if(it is State.Success) {
-               if(it.data !=null) initializeCalendarBinder(it.data)
-            }
+                if(it is State.Success) {
+                    unavailableDates = it.data
+                    binding.progressBar.hide()
+                    binding.exFourCalendar.notifyCalendarChanged()
+                }
         }
     }
 
@@ -123,6 +125,8 @@ class ChooseDateFragment : Fragment (){
                 setTextColorRes(R.color.example_4_grey)
             }
         }
+
+        initializeCalendarBinder()
 
         val currentMonth = YearMonth.now()
         binding.exFourCalendar.setup(currentMonth, currentMonth.plusMonths(12), daysOfWeek.first())
@@ -195,7 +199,7 @@ class ChooseDateFragment : Fragment (){
         binding.buttonSaveSelection.isEnabled = startDate != null
     }
 
-    private fun initializeCalendarBinder(unavailableDates :List<RentalDate>){
+    private fun initializeCalendarBinder(){
         binding.exFourCalendar.dayBinder = object : DayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
             override fun bind(container: DayViewContainer, day: CalendarDay) {
@@ -219,7 +223,7 @@ class ChooseDateFragment : Fragment (){
                             dayUnix >= it.startDate && dayUnix <= it.endDate
                         }
 
-                        if (day.date.isBefore(today) || unavailableDate!= null) {
+                        if (day.date.isBefore(today) || unavailableDates == null || unavailableDate!= null ) {
                             textView.setTextColorRes(R.color.example_4_grey_past)
                         } else {
                             when {
