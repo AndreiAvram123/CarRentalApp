@@ -10,11 +10,14 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.Example4CalendarDayBinding
 import com.andrei.carrental.databinding.Example4FragmentBinding
 import com.andrei.carrental.entities.RentalDate
+import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.utils.*
 import com.andrei.utils.setTextColorRes
 import com.google.android.material.snackbar.Snackbar
@@ -39,8 +42,10 @@ class ChooseDateFragment : Fragment (){
     private var startDate: LocalDate? = null
     private var endDate: LocalDate? = null
 
+    private val viewModelCar : ViewModelCar by activityViewModels()
 
-    private val unavailableDates = listOf(RentalDate(startDate = 1610476874,endDate = 1610976874))
+    private val unavailableDates :List<RentalDate>? = null
+
     private val headerDateFormatter = DateTimeFormatter.ofPattern("EEE'\n'd MMM")
 
     private val startBackground: GradientDrawable by lazy {
@@ -54,13 +59,22 @@ class ChooseDateFragment : Fragment (){
     private lateinit var binding: Example4FragmentBinding
 
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = Example4FragmentBinding.inflate(inflater,container, false)
+        fetchUnavailableDates()
         return binding.root
+    }
+
+    private fun fetchUnavailableDates() {
+        viewModelCar.unavailableCarDates.reObserve(viewLifecycleOwner){
+
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -132,7 +146,7 @@ class ChooseDateFragment : Fragment (){
                         textView.text = day.day.toString()
                         val dayUnix = day.date.toUnix()
 
-                        val unavailableDate = unavailableDates.find {
+                        val unavailableDate = unavailableDates?.find {
                             dayUnix >= it.startDate && dayUnix <= it.endDate
                          }
 

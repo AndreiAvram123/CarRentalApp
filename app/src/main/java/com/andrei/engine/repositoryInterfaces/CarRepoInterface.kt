@@ -2,6 +2,7 @@ package com.andrei.engine.repositoryInterfaces
 
 import com.andrei.carrental.entities.CarSearchEntity
 import com.andrei.carrental.entities.CarToRent
+import com.andrei.carrental.entities.RentalDate
 import com.andrei.engine.DTOEntities.ApiResult
 import retrofit2.Call
 import retrofit2.http.*
@@ -17,6 +18,9 @@ interface CarRepoInterface {
                       @Query("query") query: String): Call<ApiResult<List<CarSearchEntity>>>
 
     @GET("/cars/{carID}")
-    fun fetchCarByID(@Path("carID") carID:Long):Call<ApiResult<CarToRent>>
+    fun getCarByID(@Path("carID") carID:Long):Call<ApiResult<CarToRent>>
+
+    @GET("/cars/{carID}/unavailableDates")
+    fun getUnavailableDates(@Path("carID") carID:Long):Call<ApiResult<List<RentalDate>>>
 
 }

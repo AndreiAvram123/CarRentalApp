@@ -48,7 +48,8 @@ class ExpandedCarFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
         binding = FragmentExpandedCarBinding.inflate(inflater, container, false)
 
-        fetchCar()
+        viewModelCar.currentCarID.postValue(navArgs.carID)
+
         initializeUI(savedInstanceState)
 
 
@@ -66,10 +67,7 @@ class ExpandedCarFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-    }
-
-    private fun fetchCar() {
-        viewModelCar.fetchCarById(navArgs.carID).reObserve(viewLifecycleOwner) {
+        viewModelCar.currentSelectedCar.reObserve(viewLifecycleOwner){
             when (it) {
                 is State.Success -> if (it.data != null) {
                     carToRent = it.data
@@ -83,7 +81,9 @@ class ExpandedCarFragment : Fragment() {
 
             }
         }
+
     }
+
 
     private fun initializeMap() {
         binding.mapExpandedFragment.getMapAsync(mapReadyCallback)
