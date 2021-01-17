@@ -65,5 +65,16 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_back_32" />
 
+        <TextView
+            android:id="@+id/tv_total_confirmation"
+            style="@style/important_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_end_date_confirmation"
+            tools:text="£100" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

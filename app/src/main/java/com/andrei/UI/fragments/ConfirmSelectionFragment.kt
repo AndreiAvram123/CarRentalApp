@@ -9,11 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentConfirmSelectionBinding
+import com.andrei.carrental.entities.RentalPeriod
+import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelPayment
 import com.andrei.engine.DTOEntities.CheckoutRequest
 import com.andrei.engine.State
@@ -33,8 +36,8 @@ class ConfirmSelectionFragment : Fragment() {
 
 
     private lateinit var binding: FragmentConfirmSelectionBinding
-    private val navArgs: ConfirmSelectionFragmentArgs by navArgs()
     private val  viewModelPayment:ViewModelPayment by viewModels()
+    private val  viewModelCar:ViewModelCar by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -46,14 +49,18 @@ class ConfirmSelectionFragment : Fragment() {
     }
 
     private fun updateUI() {
-        val startDate = navArgs.startDate.fromUnixToLocalDate()
-        val endDate = navArgs.endDate.fromUnixToLocalDate()
-        val days = ChronoUnit.DAYS.between(startDate, endDate) + 1
-        val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-        binding.apply {
-            tvNumberDays.text = getString(R.string.days, days.toString())
-            tvStartDateConfirmation.text = startDate.format(formatter)
-            tvEndDateConfirmation.text = endDate.format(formatter)
+        viewModelCar.currentSelectedDays.reObserve(viewLifecycleOwner) { rentalPeriod ->
+            if (rentalPeriod != null) {
+             updateUIWithRentalPeriod(rentalPeriod)
+            }
+
+        }
+
+
+        viewModelCar.totalAmountToPay.reObserve(viewLifecycleOwner){
+            if(it !=null){
+                binding.tvTotalConfirmation.text = "£$it"
+            }
         }
         binding.backButtonConfirmFragment.setOnClickListener {
             findNavController().popBackStack()
@@ -62,7 +69,20 @@ class ConfirmSelectionFragment : Fragment() {
         binding.buttonConfirm.setOnClickListener {
             startPaymentFlow()
         }
+
     }
+    private fun updateUIWithRentalPeriod(rentalPeriod: RentalPeriod){
+        val startDate = rentalPeriod.startDate
+        val endDate = rentalPeriod.endDate
+        val days = ChronoUnit.DAYS.between(startDate, endDate) + 1
+        val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+        binding.apply {
+            tvNumberDays.text = getString(R.string.days, days.toString())
+            tvStartDateConfirmation.text = startDate.format(formatter)
+            tvEndDateConfirmation.text = endDate.format(formatter)
+        }
+    }
+
 
     private fun startPaymentFlow() {
         viewModelPayment.clientToken.reObserve(viewLifecycleOwner){

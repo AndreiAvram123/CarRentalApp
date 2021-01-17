@@ -8,7 +8,7 @@ data class CarToRent(
         @SerializedName("images")
        val images:List<Image>,
         @SerializedName("pricePerDay")
-        val pricePerDay:Int,
+        val pricePerDay:Double,
        @SerializedName("user")
        val user:User,
        @SerializedName("latitude")

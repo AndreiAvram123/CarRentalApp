@@ -38,21 +38,11 @@
         android:label="Example4Fragment" >
         <action
             android:id="@+id/action_chooseDatesFragment_to_confirmSelectionFragment"
-            app:destination="@id/confirmSelectionFragment"
-            app:enterAnim="@anim/slide_in_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            />
+            app:destination="@id/confirmSelectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/confirmSelectionFragment"
         android:name="com.andrei.UI.fragments.ConfirmSelectionFragment"
         android:label="fragment_confirm_selection"
-        tools:layout="@layout/fragment_confirm_selection" >
-        <argument
-            android:name="startDate"
-            app:argType="long" />
-        <argument
-            android:name="endDate"
-            app:argType="long" />
-    </fragment>
+        tools:layout="@layout/fragment_confirm_selection" />
 </navigation>

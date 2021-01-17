@@ -6,22 +6,19 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.Example4CalendarDayBinding
 import com.andrei.carrental.databinding.Example4FragmentBinding
-import com.andrei.carrental.entities.RentalDate
+import com.andrei.carrental.entities.RentalPeriod
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.engine.State
 import com.andrei.utils.*
 import com.andrei.utils.setTextColorRes
-import com.google.android.material.snackbar.Snackbar
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.model.DayOwner
@@ -34,7 +31,7 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
-import java.time.temporal.ChronoUnit
+
 class ChooseDateFragment : Fragment (){
 
 
@@ -45,7 +42,7 @@ class ChooseDateFragment : Fragment (){
 
     private val viewModelCar : ViewModelCar by activityViewModels()
 
-    private var unavailableDates:List<RentalDate>? = null
+    private var unavailablePeriods:List<RentalPeriod>? = null
 
     private val headerDateFormatter = DateTimeFormatter.ofPattern("EEE'\n'd MMM")
 
@@ -106,7 +103,7 @@ class ChooseDateFragment : Fragment (){
     private fun fetchUnavailableDates() {
         viewModelCar.unavailableCarDates.reObserve(viewLifecycleOwner){
                 if(it is State.Success) {
-                    unavailableDates = it.data
+                    unavailablePeriods = it.data
                     binding.progressBar.hide()
                     binding.exFourCalendar.notifyCalendarChanged()
                 }
@@ -157,8 +154,9 @@ class ChooseDateFragment : Fragment (){
             val startDate = startDate
 
             if(startDate != null){
-               val action = ChooseDateFragmentDirections.actionChooseDatesFragmentToConfirmSelectionFragment(
-                       startDate.toUnix(),  (endDate ?: startDate).toUnix())
+                viewModelCar.currentSelectedDays.value = RentalPeriod(startDate = startDate,
+                        endDate = (endDate ?: startDate ))
+               val action = ChooseDateFragmentDirections.actionChooseDatesFragmentToConfirmSelectionFragment()
                 findNavController().navigate(action)
 
             }
@@ -227,11 +225,11 @@ class ChooseDateFragment : Fragment (){
                         textView.text = day.day.toString()
                         val dayUnix = day.date.toUnix()
 
-                        val unavailableDate = unavailableDates?.find {
-                            dayUnix >= it.startDate && dayUnix <= it.endDate
+                        val unavailableDate = unavailablePeriods?.find {
+                            dayUnix >= it.startDate.toUnix() && dayUnix <= it.endDate.toUnix()
                         }
 
-                        if (day.date.isBefore(today) || unavailableDates == null || unavailableDate!= null ) {
+                        if (day.date.isBefore(today) || unavailablePeriods == null || unavailableDate!= null ) {
                             textView.setTextColorRes(R.color.example_4_grey_past)
                         } else {
                             when {

@@ -5,9 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
 import com.andrei.carrental.entities.CarToRent
-import com.andrei.carrental.entities.RentalDate
+import com.andrei.carrental.entities.RentalPeriod
 import com.andrei.engine.CallRunner
 import com.andrei.carrental.entities.CarSearchEntity
+import com.andrei.engine.DTOEntities.toRentalPeriod
 import com.andrei.engine.State
 import com.andrei.engine.configuration.AuthInterceptor
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
@@ -43,7 +44,7 @@ class CarRepositoryImpl {
     }
 
 
-    val unavailableDates : LiveData<State<List<RentalDate>>>  = Transformations.switchMap(currentCarID) { carId ->
+    val unavailableDates : LiveData<State<List<RentalPeriod>>>  = Transformations.switchMap(currentCarID) { carId ->
         fetchUnavailableDates(carId).asLiveData()
     }
 
@@ -70,7 +71,11 @@ class CarRepositoryImpl {
 
    private  fun fetchUnavailableDates(carID:Long)  = flow{
         callRunner.makeApiCall(repo.getUnavailableDates(carID)){
-            emit(it)
+            when(it){
+                is State.Success-> emit(State.Success(it.data?.map { date -> date.toRentalPeriod() }))
+                is State.Loading -> emit(State.Loading)
+                is State.Error -> emit(State.Error(it.exception))
+            }
         }
     }.flowOn(GlobalScope.coroutineContext)
 }
