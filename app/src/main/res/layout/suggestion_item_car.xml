@@ -45,5 +45,27 @@
             app:layout_constraintStart_toEndOf="@+id/iv_car"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Skoda octavia" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_car_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_car_name"
+            app:srcCompat="@drawable/ic_location_32" />
+
+        <TextView
+            android:id="@+id/tv_car_distance"
+            style="@style/important_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@{car.distanceFromLocation + ` km`}"
+            app:layout_constraintEnd_toEndOf="@+id/imageView2"
+            app:layout_constraintStart_toStartOf="@+id/imageView2"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2"
+            tools:text="30km" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

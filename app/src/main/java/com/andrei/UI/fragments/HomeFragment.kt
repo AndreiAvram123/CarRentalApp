@@ -1,18 +1,14 @@
 package com.andrei.UI.fragments
 
-import android.database.MatrixCursor
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.andrei.UI.adapters.CustomCursorAdapter
 import com.andrei.UI.adapters.CustomDivider
 import com.andrei.UI.adapters.SuggestionsAdapter
-import com.andrei.carrental.R
 
 import com.andrei.carrental.databinding.FragmentHomeBinding
 import com.andrei.carrental.viewmodels.ViewModelCar

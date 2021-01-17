@@ -4,16 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
-import com.andrei.carrental.entities.CarSearchEntity
 import com.andrei.carrental.entities.CarToRent
 import com.andrei.carrental.entities.RentalDate
 import com.andrei.engine.CallRunner
+import com.andrei.carrental.entities.CarSearchEntity
 import com.andrei.engine.State
 import com.andrei.engine.configuration.AuthInterceptor
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okhttp3.OkHttpClient
