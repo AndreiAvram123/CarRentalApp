@@ -42,7 +42,7 @@ class ChooseDateFragment : Fragment (){
 
     private val viewModelCar : ViewModelCar by activityViewModels()
 
-    private var unavailablePeriods:List<RentalPeriod>? = null
+    private var unavailableDates:List<RentalPeriod>? = null
 
     private val headerDateFormatter = DateTimeFormatter.ofPattern("EEE'\n'd MMM")
 
@@ -103,7 +103,7 @@ class ChooseDateFragment : Fragment (){
     private fun fetchUnavailableDates() {
         viewModelCar.unavailableCarDates.reObserve(viewLifecycleOwner){
                 if(it is State.Success) {
-                    unavailablePeriods = it.data
+                    unavailableDates = it.data
                     binding.progressBar.hide()
                     binding.exFourCalendar.notifyCalendarChanged()
                 }
@@ -225,11 +225,11 @@ class ChooseDateFragment : Fragment (){
                         textView.text = day.day.toString()
                         val dayUnix = day.date.toUnix()
 
-                        val unavailableDate = unavailablePeriods?.find {
+                        val unavailableDate = unavailableDates?.find {
                             dayUnix >= it.startDate.toUnix() && dayUnix <= it.endDate.toUnix()
                         }
 
-                        if (day.date.isBefore(today) || unavailablePeriods == null || unavailableDate!= null ) {
+                        if (day.date.isBefore(today) || unavailableDates == null || unavailableDate!= null ) {
                             textView.setTextColorRes(R.color.example_4_grey_past)
                         } else {
                             when {

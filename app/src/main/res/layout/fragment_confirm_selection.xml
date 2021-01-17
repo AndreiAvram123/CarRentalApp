@@ -2,6 +2,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+        type="com.andrei.carrental.viewmodels.ViewModelCar"
+        name="viewModelCar" />
+    </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container_confirm_selection"
         android:layout_width="match_parent"
@@ -67,6 +72,7 @@
 
         <TextView
             android:id="@+id/tv_total_confirmation"
+
             style="@style/important_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

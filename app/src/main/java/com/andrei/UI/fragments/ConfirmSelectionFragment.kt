@@ -12,26 +12,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentConfirmSelectionBinding
 import com.andrei.carrental.entities.RentalPeriod
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelPayment
-import com.andrei.engine.DTOEntities.CheckoutRequest
+import com.andrei.engine.DTOEntities.*
 import com.andrei.engine.State
 import com.andrei.utils.formatWithPattern
-import com.andrei.utils.fromUnixToLocalDate
 import com.andrei.utils.observeRequest
 import com.andrei.utils.reObserve
-import com.braintreepayments.api.BraintreeFragment
 import com.braintreepayments.api.dropin.DropInActivity
 import com.braintreepayments.api.dropin.DropInRequest
 import com.braintreepayments.api.dropin.DropInResult
 import com.braintreepayments.api.exceptions.InvalidArgumentException
-import com.braintreepayments.api.models.GooglePaymentRequest
-import com.google.android.gms.wallet.WalletConstants
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 
@@ -46,20 +40,17 @@ class ConfirmSelectionFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         binding = FragmentConfirmSelectionBinding.inflate(inflater, container, false)
-        updateUI()
+        initializeUI()
 
         return binding.root
     }
 
-    private fun updateUI() {
+    private fun initializeUI() {
         viewModelCar.currentSelectedDays.reObserve(viewLifecycleOwner) { rentalPeriod ->
             if (rentalPeriod != null) {
              updateUIWithRentalPeriod(rentalPeriod)
             }
-
         }
-
-
         viewModelCar.totalAmountToPay.reObserve(viewLifecycleOwner){
             if(it !=null){
                 binding.tvTotalConfirmation.text = "£$it"
@@ -92,11 +83,7 @@ class ConfirmSelectionFragment : Fragment() {
                 is State.Success -> {
                     try {
                         if(it.data!=null){
-                            val dropInRequest: DropInRequest = DropInRequest()
-                                .collectDeviceData(true)
-                                .clientToken(it.data.token)
-                                .disablePayPal()
-                            startActivityForResult(dropInRequest.getIntent(requireContext()), 1)
+                            showDropInPaymentWindow(it.data)
                         }
                     } catch (e: InvalidArgumentException) {
                         // There was an issue with your authorization string.
@@ -110,19 +97,19 @@ class ConfirmSelectionFragment : Fragment() {
         }
     }
 
+    private fun showDropInPaymentWindow(data: TokenResponse) {
+        val dropInRequest: DropInRequest = DropInRequest()
+            .collectDeviceData(true)
+            .clientToken(data.token)
+        startActivityForResult(dropInRequest.getIntent(requireContext()), 1)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 val result: DropInResult? = data?.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)
-
                 if(result!=null) {
-                        val checkoutRequest = CheckoutRequest(nonce = result.paymentMethodNonce?.nonce,
-                            deviceData = result.deviceData, amount = 333)
-                        viewModelPayment.makePayment(checkoutRequest).observeRequest(viewLifecycleOwner) {
-                            if (it is State.Success) {
-                              Toast.makeText(requireContext(),"Successful payment",Toast.LENGTH_LONG).show()
-                            }
-                        }
+                    startCheckout(result)
                 }
                 // use the result to update your UI and send the payment method nonce to your server
             } else if (resultCode == RESULT_CANCELED) {
@@ -130,6 +117,42 @@ class ConfirmSelectionFragment : Fragment() {
             } else {
                 // handle errors here, an exception may be available in
                 val error = data?.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception
+            }
+        }
+    }
+
+    private fun startCheckout(result: DropInResult) {
+        val amountToPay = viewModelCar.totalAmountToPay.value
+        val currentCarID = viewModelCar.currentCarID.value
+        val selectedDates = viewModelCar.currentSelectedDays.value
+
+        if (amountToPay != null &&
+                currentCarID != null &&
+                selectedDates != null) {
+
+            val paymentRequest = PaymentRequest(nonce = result.paymentMethodNonce?.nonce,
+                    deviceData = result.deviceData, amount = amountToPay)
+            val rentInformation = RentInformation(
+                    rentalPeriodDTO = selectedDates.toRentalPeriodDTO(),
+                    currentCarID
+            )
+
+            val checkoutRequest = CheckoutRequest(paymentRequest = paymentRequest,
+                    rentInformation = rentInformation)
+
+            viewModelPayment.checkout(checkoutRequest).observeRequest(viewLifecycleOwner) {
+                when(it){
+                    is State.Success -> {
+                        val action = ConfirmSelectionFragmentDirections.actionConfirmSelectionFragmentToSuccessfulPaymentFragment()
+                        findNavController().navigate(action)
+                    }
+                    is State.Loading ->{
+                    
+                    }
+                    is State.Error ->{
+                        Toast.makeText(requireContext(), it.exception.message.toString(), Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         }
     }

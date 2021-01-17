@@ -36,13 +36,14 @@ class CarRepositoryImpl {
 
     val currentCarID : MutableLiveData<Long> = MutableLiveData()
 
-    val currentSelectedCar : LiveData<State<CarToRent>> = Transformations.switchMap(currentCarID){
-        carID -> fetchCarById(carID).asLiveData()
+    val currentSelectedCar : LiveData<State<CarToRent>> = Transformations.switchMap(currentCarID) { carID ->
+        return@switchMap fetchCarById(carID).asLiveData()
+
     }
 
 
     val unavailableDates : LiveData<State<List<RentalPeriod>>>  = Transformations.switchMap(currentCarID) { carId ->
-        fetchUnavailableDates(carId).asLiveData()
+        return@switchMap fetchUnavailableDates(carId).asLiveData()
     }
 
 
@@ -63,6 +64,7 @@ class CarRepositoryImpl {
             emit(it)
         }
     }
+
 
    private  fun fetchUnavailableDates(carID:Long)  = flow{
         callRunner.makeApiCall(repo.getUnavailableDates(carID)){

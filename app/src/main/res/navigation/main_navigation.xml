@@ -44,5 +44,14 @@
         android:id="@+id/confirmSelectionFragment"
         android:name="com.andrei.UI.fragments.ConfirmSelectionFragment"
         android:label="fragment_confirm_selection"
-        tools:layout="@layout/fragment_confirm_selection" />
+        tools:layout="@layout/fragment_confirm_selection" >
+        <action
+            android:id="@+id/action_confirmSelectionFragment_to_successfulPaymentFragment"
+            app:destination="@id/successfulPaymentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/successfulPaymentFragment"
+        android:name="com.andrei.UI.fragments.SuccessfulPaymentFragment"
+        android:label="fragment_successful_payment"
+        tools:layout="@layout/fragment_successful_payment" />
 </navigation>

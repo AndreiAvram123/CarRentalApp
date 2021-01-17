@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.andrei.carrental.entities.CarSearchEntity
 import com.andrei.carrental.entities.CarToRent
 import com.andrei.carrental.entities.RentalPeriod
+import com.andrei.engine.DTOEntities.RentInformation
 import com.andrei.engine.State
 import com.andrei.engine.repository.CarRepositoryImpl
 import com.google.android.gms.maps.model.LatLng
@@ -37,6 +38,7 @@ class ViewModelCar : ViewModel (){
    val totalAmountToPay:MediatorLiveData<Double> by lazy {
        MediatorLiveData<Double>().also {
            it.addSource(currentSelectedDays){rentalPeriod ->
+
                val carState = currentSelectedCar.value
                if(carState is State.Success
                        && carState.data != null
@@ -47,6 +49,7 @@ class ViewModelCar : ViewModel (){
            }
            it.addSource(currentSelectedCar){
                car ->
+
                    val currentSelectedDaysValue = currentSelectedDays.value
                    if (currentSelectedDaysValue!= null &&
                            car is State.Success
@@ -58,6 +61,7 @@ class ViewModelCar : ViewModel (){
    }
 
 
+
     private fun calculateTotalAmount(rentalPeriod: RentalPeriod, price :Double):Double{
        return  (ChronoUnit.DAYS.between(rentalPeriod.startDate,rentalPeriod.endDate) + 1) * price
     }
@@ -65,6 +69,5 @@ class ViewModelCar : ViewModel (){
     fun fetchSuggestions(query:String, location:LatLng) {
         viewModelScope.launch { carRepositoryImpl.fetchSuggestions(query,location) }
     }
-
 
 }

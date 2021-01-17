@@ -6,3 +6,5 @@ data class RentalPeriod(
         val startDate:LocalDate,
         val endDate:LocalDate
 )
+
+
