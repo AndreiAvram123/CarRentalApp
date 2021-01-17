@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelLocation
+import com.andrei.engine.State
 import com.andrei.utils.PermissionHandlerFragment
 import com.andrei.utils.fetchBitmap
 import com.andrei.utils.reObserve
@@ -34,7 +35,7 @@ class CurrentLocationFragment : Fragment() {
     private val viewModelCar:ViewModelCar by activityViewModels()
     private val viewModelLocation : ViewModelLocation by activityViewModels()
 
-    private lateinit var map :GoogleMap
+    private  var map :GoogleMap? = null
     private lateinit var  permissionHandlerFragment:PermissionHandlerFragment
     private val markersOnMap:MutableMap<Marker,Long> = mutableMapOf()
 
@@ -51,7 +52,7 @@ class CurrentLocationFragment : Fragment() {
                 }
             }
         }
-        map.setOnMarkerClickListener {
+        googleMap.setOnMarkerClickListener {
                  val id = markersOnMap[it]
                  if(id != null){
                   findNavController().navigate( CurrentLocationFragmentDirections.actionGlobalToExpandedCarFragment(id))
@@ -63,8 +64,8 @@ class CurrentLocationFragment : Fragment() {
 
     @SuppressLint("MissingPermission")
     private fun enableLocation (){
-        map.isMyLocationEnabled = true
-        map.uiSettings.isMyLocationButtonEnabled = false
+        map?.isMyLocationEnabled = true
+        map?.uiSettings?.isMyLocationButtonEnabled = false
         getDeviceLocation()
     }
 
@@ -74,7 +75,36 @@ class CurrentLocationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         permissionHandlerFragment = PermissionHandlerFragment(this)
+        initializeUI()
         return inflater.inflate(R.layout.fragment_current_location, container, false)
+    }
+
+    private fun initializeUI() {
+        viewModelLocation.nearbyCars.reObserve(viewLifecycleOwner) { stateCarsToRent ->
+            map?.clear()
+            markersOnMap.clear()
+            val tempMap = map
+                if(stateCarsToRent is State.Success && tempMap != null){
+                    stateCarsToRent.data?.forEach {
+                        if (it.images.isNotEmpty()) {
+                            fetchBitmap(requireContext(), it.images.first().imagePath) { bitmap ->
+
+                                val marker = tempMap.addMarker(
+                                    MarkerOptions().position(
+                                        LatLng(
+                                            it.latitude,
+                                            it.longitude
+                                        )
+                                    )
+                                ).apply {
+                                    setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                                }
+                                markersOnMap[marker] = it.id
+                            }
+                        }
+                    }
+                }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -106,12 +136,11 @@ class CurrentLocationFragment : Fragment() {
                             location.longitude
                         )
                         viewModelLocation.currentLocation.postValue(currentLocation)
-                        map.moveCamera(
+                        map?.moveCamera(
                                 CameraUpdateFactory.newLatLngZoom(
                                        currentLocation, 15.toFloat()
                                 )
                         )
-                        fetchNearbyCars(location, currentLocation)
                     }
                 }
             }
@@ -120,27 +149,6 @@ class CurrentLocationFragment : Fragment() {
         }
     }
 
-    private fun fetchNearbyCars(location: Location, latLng: LatLng) {
-        viewModelCar.nearbyCars.reObserve(viewLifecycleOwner) { carsToRent ->
-            map.clear()
-            markersOnMap.clear()
-            carsToRent?.forEach {
-                if(it.images.isNotEmpty()) {
-                    fetchBitmap(requireContext(), it.images.first().imagePath) { bitmap ->
-
-                        val marker = map.addMarker(MarkerOptions().position(LatLng(
-                                location.latitude,
-                                location.longitude
-                        ))).apply {
-                            setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                        }
-                        markersOnMap[marker] = it.id
-                    }
-                }
-            }
-        }
-        viewModelCar.fetchNearbyCars(latLng)
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

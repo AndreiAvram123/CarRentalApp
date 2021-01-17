@@ -17,9 +17,6 @@ class ViewModelCar : ViewModel (){
         carRepositoryImpl.searchSuggestions
     }
 
-    val nearbyCars : MutableLiveData<List<CarToRent>> by lazy {
-        carRepositoryImpl.nearbyCars
-    }
 
     val currentCarID:MutableLiveData<Long> by lazy {
       carRepositoryImpl.currentCarID
@@ -59,21 +56,11 @@ class ViewModelCar : ViewModel (){
                }
        }
    }
+
+
     private fun calculateTotalAmount(rentalPeriod: RentalPeriod, price :Double):Double{
        return  (ChronoUnit.DAYS.between(rentalPeriod.startDate,rentalPeriod.endDate) + 1) * price
     }
-
-
-
-
-
-
-
-
-    fun fetchNearbyCars(location :LatLng){
-        viewModelScope.launch { carRepositoryImpl.fetchNearbyCars(location) }
-    }
-
 
     fun fetchSuggestions(query:String, location:LatLng) {
         viewModelScope.launch { carRepositoryImpl.fetchSuggestions(query,location) }

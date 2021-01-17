@@ -30,9 +30,6 @@ class CarRepositoryImpl {
 
 
 
-    val nearbyCars :MutableLiveData<List<CarToRent>> by lazy {
-        MutableLiveData<List<CarToRent>>()
-    }
      val searchSuggestions by lazy {
          MutableLiveData<State<List<CarSearchEntity>>>()
      }
@@ -49,11 +46,9 @@ class CarRepositoryImpl {
     }
 
 
-    suspend fun fetchNearbyCars (position:LatLng){
+     fun fetchNearbyCars (position:LatLng) = flow{
          callRunner.makeApiCall(repo.getNearbyCars(latitude = position.latitude, longitude = position.longitude)){
-             if (it is State.Success){
-                 nearbyCars.postValue(it.data)
-             }
+                 emit(it)
          }
      }
 

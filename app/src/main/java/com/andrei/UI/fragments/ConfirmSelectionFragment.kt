@@ -20,6 +20,7 @@ import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelPayment
 import com.andrei.engine.DTOEntities.CheckoutRequest
 import com.andrei.engine.State
+import com.andrei.utils.formatWithPattern
 import com.andrei.utils.fromUnixToLocalDate
 import com.andrei.utils.observeRequest
 import com.andrei.utils.reObserve
@@ -28,6 +29,8 @@ import com.braintreepayments.api.dropin.DropInActivity
 import com.braintreepayments.api.dropin.DropInRequest
 import com.braintreepayments.api.dropin.DropInResult
 import com.braintreepayments.api.exceptions.InvalidArgumentException
+import com.braintreepayments.api.models.GooglePaymentRequest
+import com.google.android.gms.wallet.WalletConstants
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
@@ -74,12 +77,11 @@ class ConfirmSelectionFragment : Fragment() {
     private fun updateUIWithRentalPeriod(rentalPeriod: RentalPeriod){
         val startDate = rentalPeriod.startDate
         val endDate = rentalPeriod.endDate
-        val days = ChronoUnit.DAYS.between(startDate, endDate) + 1
-        val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+        val days = ChronoUnit.DAYS.between(startDate,endDate)
         binding.apply {
             tvNumberDays.text = getString(R.string.days, days.toString())
-            tvStartDateConfirmation.text = startDate.format(formatter)
-            tvEndDateConfirmation.text = endDate.format(formatter)
+            tvStartDateConfirmation.text = startDate.formatWithPattern("d MMMM yyyy")
+            tvEndDateConfirmation.text = endDate.formatWithPattern("d MMMM yyyy")
         }
     }
 
@@ -93,6 +95,7 @@ class ConfirmSelectionFragment : Fragment() {
                             val dropInRequest: DropInRequest = DropInRequest()
                                 .collectDeviceData(true)
                                 .clientToken(it.data.token)
+                                .disablePayPal()
                             startActivityForResult(dropInRequest.getIntent(requireContext()), 1)
                         }
                     } catch (e: InvalidArgumentException) {
@@ -113,9 +116,8 @@ class ConfirmSelectionFragment : Fragment() {
                 val result: DropInResult? = data?.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)
 
                 if(result!=null) {
-
                         val checkoutRequest = CheckoutRequest(nonce = result.paymentMethodNonce?.nonce,
-                                deviceData = result.deviceData, amount = 333)
+                            deviceData = result.deviceData, amount = 333)
                         viewModelPayment.makePayment(checkoutRequest).observeRequest(viewLifecycleOwner) {
                             if (it is State.Success) {
                               Toast.makeText(requireContext(),"Successful payment",Toast.LENGTH_LONG).show()
