@@ -36,6 +36,7 @@ class ExpandedCarFragment : Fragment() {
     private val MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey"
 
     private val mapReadyCallback = OnMapReadyCallback{ map ->
+        binding.isMapLoading = false
        carToRent?.let {
            val carLocation =LatLng(it.latitude, it.longitude)
            map.addMarker(MarkerOptions().position(carLocation))
@@ -63,7 +64,7 @@ class ExpandedCarFragment : Fragment() {
         if (bundle != null) {
             mapViewBundle = bundle.getBundle(MAP_VIEW_BUNDLE_KEY)
         }
-        binding.mapExpandedFragment.onCreate(mapViewBundle)
+        binding.mapCarLocation.onCreate(mapViewBundle)
 
         binding.backButtonExpanded.setOnClickListener {
             findNavController().popBackStack()
@@ -81,14 +82,15 @@ class ExpandedCarFragment : Fragment() {
 
 
     private fun initializeMap() {
-        binding.mapExpandedFragment.getMapAsync(mapReadyCallback)
+        binding.isMapLoading = true
+        binding.mapCarLocation.getMapAsync(mapReadyCallback)
     }
 
 
 
     override fun onStart() {
         super.onStart()
-        binding.mapExpandedFragment.onStart()
+        binding.mapCarLocation.onStart()
     }
 
     private fun updateUI(state : State<CarToRent>) {
