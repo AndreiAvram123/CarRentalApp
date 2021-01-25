@@ -6,7 +6,9 @@ import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.andrei.utils.hide
 import com.andrei.utils.loadFromURl
+import com.andrei.utils.show
 
 import com.bumptech.glide.Glide
 
@@ -22,6 +24,14 @@ fun bindImageFromURL(imageView: ImageView,
     }
 }
 
+@BindingAdapter("isVisible")
+fun changeVisibilityBasedOnBoolean(view :View, visible:Boolean){
+     if(visible){
+         view.show()
+     }else{
+         view.hide()
+     }
+}
 
 
 @BindingAdapter("dateFromUnix")

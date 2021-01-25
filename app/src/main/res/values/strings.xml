@@ -16,4 +16,5 @@
     <string name="days">%s days</string>
     <string name="confirm">Confirm</string>
     <string name="fragment_expanded_car_price_per_day">Price per day</string>
+    <string name="navigation_bookings">Bookings</string>
 </resources>

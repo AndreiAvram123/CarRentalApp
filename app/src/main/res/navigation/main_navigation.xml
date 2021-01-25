@@ -23,7 +23,11 @@
         android:name="com.andrei.UI.fragments.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home"
-        />
+        >
+        <action
+            android:id="@+id/action_home_to_bookingsFragment"
+            app:destination="@id/bookings_navigation_fragments" />
+    </fragment>
     <fragment
         android:id="@+id/currentLocationFragment"
         android:name="com.andrei.UI.fragments.CurrentLocationFragment"
@@ -54,4 +58,8 @@
         android:name="com.andrei.UI.fragments.SuccessfulPaymentFragment"
         android:label="fragment_successful_payment"
         tools:layout="@layout/fragment_successful_payment" />
+    <fragment
+        android:id="@+id/bookings_navigation_fragments"
+        android:name="com.andrei.UI.fragments.BookingsFragment"
+        android:label="BookingsFragment" />
 </navigation>

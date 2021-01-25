@@ -12,6 +12,7 @@ import androidx.navigation.fragment.navArgs
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentExpandedCarBinding
 import com.andrei.carrental.entities.CarToRent
+import com.andrei.carrental.entities.Image
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.engine.State
 import com.andrei.utils.loadFromURl
@@ -69,18 +70,7 @@ class ExpandedCarFragment : Fragment() {
         }
 
         viewModelCar.currentSelectedCar.reObserve(viewLifecycleOwner){
-            when (it) {
-                is State.Success -> if (it.data != null) {
-                    carToRent = it.data
-                    updateUI()
-                    initializeMap()
-                }
-                is State.Loading -> {
-                }
-                is State.Error -> {
-                }
-
-            }
+           updateUI(it)
         }
         binding.selectDatesButton.setOnClickListener {
          val action = ExpandedCarFragmentDirections.actionExpandedToChooseDatesFragment()
@@ -101,18 +91,33 @@ class ExpandedCarFragment : Fragment() {
         binding.mapExpandedFragment.onStart()
     }
 
-    private fun updateUI() {
-        carToRent?.let {
-            binding.car = it
-
-            binding.carouselCarExpanded.apply {
-                size = it.images.size
-                setCarouselViewListener { view, position ->
-                    view.findViewById<ImageView>(R.id.image_item_carousel).loadFromURl(it.images[position].imagePath)
+    private fun updateUI(state : State<CarToRent>) {
+        when (state) {
+            is State.Success -> {
+                state.data?.let {
+                    binding.car = it
+                    carToRent = it
+                    initializeMap()
+                    updateCarouselVies(it.images)
+                    binding.isLoading = false
                 }
-                show()
+            }
+            is State.Loading -> {
+                binding.isLoading = true
+            }
+            is State.Error -> {
+
             }
         }
     }
 
+   private  fun updateCarouselVies(images:List<Image>){
+        binding.carouselCarExpanded.apply {
+            size = images.size
+            setCarouselViewListener { view, position ->
+                view.findViewById<ImageView>(R.id.image_item_carousel).loadFromURl(images[position].imagePath)
+            }
+            show()
+        }
+    }
 }
