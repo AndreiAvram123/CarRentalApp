@@ -36,25 +36,26 @@ class ViewModelCar : ViewModel (){
    }
 
    val totalAmountToPay:MediatorLiveData<Double> by lazy {
-       MediatorLiveData<Double>().also {
-           it.addSource(currentSelectedDays){rentalPeriod ->
+       MediatorLiveData<Double>().apply {
+           addSource(currentSelectedDays){rentalPeriod ->
 
                val carState = currentSelectedCar.value
                if(carState is State.Success
                        && carState.data != null
                        && rentalPeriod != null
                ){
-                   totalAmountToPay.value = calculateTotalAmount(rentalPeriod,carState.data.pricePerDay)
+                  value = calculateTotalAmount(rentalPeriod,carState.data.pricePerDay)
+                   val list = mutableListOf<String>()
+                   list.isNullOrEmpty()
                }
            }
-           it.addSource(currentSelectedCar){
+           addSource(currentSelectedCar){
                car ->
-
                    val currentSelectedDaysValue = currentSelectedDays.value
                    if (currentSelectedDaysValue!= null &&
                            car is State.Success
                            && car.data != null) {
-                       totalAmountToPay.value = calculateTotalAmount(currentSelectedDaysValue, car.data.pricePerDay)
+                               value = calculateTotalAmount(currentSelectedDaysValue, car.data.pricePerDay)
                    }
                }
        }
