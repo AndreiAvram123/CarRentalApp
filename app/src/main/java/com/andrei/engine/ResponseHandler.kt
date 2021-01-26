@@ -2,9 +2,10 @@ package com.andrei.engine
 
 import android.util.Log
 import com.andrei.carrental.BuildConfig
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class ResponseHandler private constructor(){
-    //  private val firebaseCrashlytics: FirebaseCrashlytics = FirebaseCrashlytics.getInstance()
+     private val firebaseCrashlytics: FirebaseCrashlytics = FirebaseCrashlytics.getInstance()
 
       companion object {
          @JvmStatic
@@ -27,7 +28,7 @@ class ResponseHandler private constructor(){
     private fun logException(e:Exception){
         e.printStackTrace()
         if(!BuildConfig.DEBUG){
-        //   firebaseCrashlytics.recordException(e)
+          firebaseCrashlytics.recordException(e)
         }
     }
 }

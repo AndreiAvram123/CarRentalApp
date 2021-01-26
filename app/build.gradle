@@ -4,6 +4,16 @@ plugins {
 }
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs"
+
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.firebase.firebase-perf'
+
+apply plugin: 'dagger.hilt.android.plugin'
+
+
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
@@ -38,6 +48,24 @@ android {
 }
 
 dependencies {
+
+    //hilt
+    implementation "com.google.dagger:hilt-android:2.28-alpha"
+    kapt "com.google.dagger:hilt-android-compiler:2.28-alpha"
+
+
+    //firebase
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:26.3.0')
+
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-perf-ktx'
+
+
+
     implementation 'com.braintreepayments.api:drop-in:5.0.2'
     implementation 'com.braintreepayments.api:google-payment:3.3.1'
 
@@ -56,7 +84,6 @@ dependencies {
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.android.support:recyclerview-v7:28.0.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
     implementation 'com.google.android.libraries.places:places:2.4.0'
@@ -83,7 +110,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
 
 
 

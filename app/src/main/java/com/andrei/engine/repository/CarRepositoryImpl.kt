@@ -19,13 +19,15 @@ import kotlinx.coroutines.flow.flowOn
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.Duration
 
 class CarRepositoryImpl {
 
 
      private val callRunner = CallRunner()
-     private val retrofit = Retrofit.Builder().baseUrl("https://car-rental-api-kotlin.herokuapp.com").addConverterFactory(
-         GsonConverterFactory.create()).client(OkHttpClient.Builder().addInterceptor(AuthInterceptor("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0VXNlcm5hbWUiLCJleHAiOjE2MTMwNzkwMTksInVzZXJJRCI6NCwidXNlcm5hbWUiOiJ0ZXN0VXNlcm5hbWUifQ.aeHTZ4WAGjD1h-zCTXZFSM-aN6cD-81f0UWA05EQ8xvYnO7TgKu2jPvaM2jbhLswM2HexhgNxi3BV1yinWFZJQ")).build()).build()
+     private val retrofit = Retrofit.Builder().
+     baseUrl("https://car-rental-api-kotlin.herokuapp.com").addConverterFactory(
+         GsonConverterFactory.create()).client(OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(10)).addInterceptor(AuthInterceptor("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0VXNlcm5hbWUiLCJleHAiOjE2MTMwNzkwMTksInVzZXJJRCI6NCwidXNlcm5hbWUiOiJ0ZXN0VXNlcm5hbWUifQ.aeHTZ4WAGjD1h-zCTXZFSM-aN6cD-81f0UWA05EQ8xvYnO7TgKu2jPvaM2jbhLswM2HexhgNxi3BV1yinWFZJQ")).build()).build()
      private val  repo = retrofit.create(CarRepoInterface::class.java)
 
 

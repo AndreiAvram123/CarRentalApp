@@ -2,6 +2,7 @@ package com.andrei.UI.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -15,10 +16,12 @@ import com.andrei.carrental.R
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelLocation
 import com.andrei.engine.State
+import com.andrei.utils.LocationSettingsHandler
 import com.andrei.utils.PermissionHandlerFragment
 import com.andrei.utils.fetchBitmap
 import com.andrei.utils.reObserve
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -32,9 +35,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 class CurrentLocationFragment : Fragment() {
     private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
 
-    private val viewModelCar:ViewModelCar by activityViewModels()
     private val viewModelLocation : ViewModelLocation by activityViewModels()
-
+    private  lateinit var locationSettingsHandler: LocationSettingsHandler
     private  var map :GoogleMap? = null
     private lateinit var  permissionHandlerFragment:PermissionHandlerFragment
     private val markersOnMap:MutableMap<Marker,Long> = mutableMapOf()
@@ -88,18 +90,8 @@ class CurrentLocationFragment : Fragment() {
                     stateCarsToRent.data?.forEach {
                         if (it.images.isNotEmpty()) {
                             fetchBitmap(requireContext(), it.images.first().imagePath) { bitmap ->
+                                addMarkerToMap(it.latitude,it.longitude,bitmap,it.id)
 
-                                val marker = tempMap.addMarker(
-                                    MarkerOptions().position(
-                                        LatLng(
-                                            it.latitude,
-                                            it.longitude
-                                        )
-                                    )
-                                ).apply {
-                                    setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                                }
-                                markersOnMap[marker] = it.id
                             }
                         }
                     }
@@ -107,13 +99,33 @@ class CurrentLocationFragment : Fragment() {
         }
     }
 
+    private fun addMarkerToMap(latitude:Double,longitude:Double, bitmap:Bitmap,id:Long){
+       map?.addMarker(
+                MarkerOptions().position(
+                        LatLng(
+                                latitude,
+                                longitude
+                        )
+                ))?.apply {
+                  setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                }?.also {
+                    markersOnMap[it] = id
+       }
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
-
-        // Construct a PlaceDetectionClient.
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        locationSettingsHandler = LocationSettingsHandler()
+        locationSettingsHandler.buildLocationRequest(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        locationSettingsHandler.currentLocationNeedsSatisfied.reObserve(viewLifecycleOwner){
+            if(it){
+                mapFragment?.getMapAsync(callback)
+                // Construct a PlaceDetectionClient.
+                mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+            }
+        }
     }
     /**
      * Gets the current location of the device, and positions the map's camera.
