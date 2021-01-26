@@ -10,23 +10,25 @@ import com.andrei.carrental.databinding.ActivityMainBinding
 import com.andrei.utils.LocationSettingsHandler
 import com.andrei.utils.reObserve
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding:ActivityMainBinding
 
-    private lateinit var locationSettingsHandler: LocationSettingsHandler
+      @Inject
+      lateinit var locationSettingsHandler: LocationSettingsHandler
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
          binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        setUpNavigation()
         attachLocationObserver()
+        setUpNavigation()
     }
 
     private fun attachLocationObserver() {
         locationSettingsHandler.registerActivityForResult(this)
-
     }
 
     private fun setUpNavigation() {
@@ -37,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(LocationSettingsHandler.REQUEST_CHECK_SETTINGS == 2){
+        if(LocationSettingsHandler.REQUEST_CHECK_SETTINGS == requestCode){
             if(resultCode == RESULT_OK){
                locationSettingsHandler.currentLocationNeedsSatisfied.value = true
             }

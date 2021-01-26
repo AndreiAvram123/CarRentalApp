@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 class LocationSettingsHandler {
 
 
+
     companion object{
         const  val REQUEST_CHECK_SETTINGS: Int = 3
     }
@@ -24,7 +25,7 @@ class LocationSettingsHandler {
         MutableLiveData()
     }
 
-    private var locationRequest:LocationRequest? = null
+     var locationRequest:LocationRequest? = null
     private var registeredActivity:Activity ? = null
 
 
@@ -33,16 +34,6 @@ class LocationSettingsHandler {
     }
 
 
-    fun buildLocationRequest (accuracy :Int,intervalValue:Long = 10000,fastestIntervalValue :Long? =null  ){
-        this.locationRequest =  LocationRequest.create().apply {
-            interval = intervalValue
-            priority =  accuracy
-            if(fastestIntervalValue != null){
-                fastestInterval = fastestIntervalValue
-            }
-        }
-
-    }
 
       fun startLocationRequest() {
 

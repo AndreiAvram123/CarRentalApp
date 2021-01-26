@@ -5,25 +5,21 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.location.Location
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
-import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelLocation
 import com.andrei.engine.State
 import com.andrei.utils.LocationSettingsHandler
-import com.andrei.utils.PermissionHandlerFragment
 import com.andrei.utils.fetchBitmap
 import com.andrei.utils.reObserve
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -32,18 +28,31 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class CurrentLocationFragment : Fragment() {
+@SuppressLint("MissingPermission")
+@AndroidEntryPoint
+class CurrentLocationFragment : BaseFragment() {
+
+
+    @Inject
+    lateinit var locationSettingsHandler: LocationSettingsHandler
+
     private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
 
     private val viewModelLocation : ViewModelLocation by activityViewModels()
-    private  lateinit var locationSettingsHandler: LocationSettingsHandler
+
     private  var map :GoogleMap? = null
-    private lateinit var  permissionHandlerFragment:PermissionHandlerFragment
+
     private val markersOnMap:MutableMap<Marker,Long> = mutableMapOf()
-    private val locationAccuracy = LocationRequest.PRIORITY_HIGH_ACCURACY
+
     private lateinit var mapFragment : SupportMapFragment
 
+    private val locationRequest = LocationRequest.create().apply {
+        interval = 10000
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    }
 
     private val observerLocationSettings = Observer<Boolean>{
         if(it){
@@ -78,7 +87,6 @@ class CurrentLocationFragment : Fragment() {
         }
     }
 
-    @SuppressLint("MissingPermission")
     private fun enableLocation (){
         map?.isMyLocationEnabled = true
         map?.uiSettings?.isMyLocationButtonEnabled = false
@@ -90,8 +98,6 @@ class CurrentLocationFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        permissionHandlerFragment = PermissionHandlerFragment(this)
-        initializeUI()
         return inflater.inflate(R.layout.fragment_current_location, container, false)
     }
 
@@ -130,10 +136,10 @@ class CurrentLocationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initializeUI()
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 
-        locationSettingsHandler = LocationSettingsHandler()
-        locationSettingsHandler.buildLocationRequest(accuracy = locationAccuracy)
+        locationSettingsHandler.locationRequest = locationRequest
         locationSettingsHandler.startLocationRequest()
 
         locationSettingsHandler.currentLocationNeedsSatisfied.reObserve(viewLifecycleOwner,observerLocationSettings)
@@ -141,43 +147,53 @@ class CurrentLocationFragment : Fragment() {
     /**
      * Gets the current location of the device, and positions the map's camera.
      */
-    @SuppressLint("MissingPermission")
+
     private fun getDeviceLocation() {
         /*
          * Get the best and most recent location of the device, which may be null in rare
          * cases when a location is not available.
          */
         try {
-            val locationResult = mFusedLocationProviderClient.lastLocation
-            locationResult.addOnCompleteListener(requireActivity()) { task ->
-                if (task.isSuccessful) {
-                    // Set the map's camera position to the current location of the device.
-                    task.result?.let { location ->
-
-                        val currentLocation = LatLng(
-                            location.latitude,
-                            location.longitude
-                        )
-                        viewModelLocation.currentLocation.postValue(currentLocation)
-                        map?.moveCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                       currentLocation, 15.toFloat()
-                                )
-                        )
-                    }
-                }
-            }
+           mFusedLocationProviderClient.lastLocation.addOnSuccessListener {
+               if (it != null){
+               val currentLocation = LatLng(
+                       it.latitude,
+                       it.longitude
+               )
+               viewModelLocation.currentLocation.postValue(currentLocation)
+              moveCameraToLocation(currentLocation)
+           }else{
+               startLocationUpdates()
+           }
+           }
         } catch (e: SecurityException) {
             Log.e("Exception: %s", e.message, e)
         }
     }
 
+    private fun moveCameraToLocation(location :LatLng){
+        map?.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                        location, 15.toFloat()
+                )
+        )
+    }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) = permissionHandlerFragment.notifyChange(requestCode, grantResults)
+
+    private fun startLocationUpdates() {
+        val callback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                if(locationResult!=null){
+                    locationResult.locations.firstOrNull()?.let{
+                        moveCameraToLocation(LatLng(it.latitude,it.longitude))
+                        mFusedLocationProviderClient.removeLocationUpdates(this)
+                    }
+                }
+            }
+
+        }
+        mFusedLocationProviderClient.requestLocationUpdates(locationRequest,callback, Looper.getMainLooper())
+    }
 
 
 }
