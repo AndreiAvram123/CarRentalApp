@@ -40,7 +40,7 @@ class CurrentLocationFragment : Fragment() {
     private  var map :GoogleMap? = null
     private lateinit var  permissionHandlerFragment:PermissionHandlerFragment
     private val markersOnMap:MutableMap<Marker,Long> = mutableMapOf()
-
+    private val locationAccuracy = LocationRequest.PRIORITY_HIGH_ACCURACY
 
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
@@ -118,7 +118,9 @@ class CurrentLocationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         locationSettingsHandler = LocationSettingsHandler()
-        locationSettingsHandler.buildLocationRequest(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        locationSettingsHandler.buildLocationRequest(accuracy = locationAccuracy)
+        locationSettingsHandler.startLocationRequest()
+
         locationSettingsHandler.currentLocationNeedsSatisfied.reObserve(viewLifecycleOwner){
             if(it){
                 mapFragment?.getMapAsync(callback)
