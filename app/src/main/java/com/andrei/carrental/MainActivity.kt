@@ -26,9 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun attachLocationObserver() {
         locationSettingsHandler.registerActivityForResult(this)
-        locationSettingsHandler.currentLocationRequest.reObserve(this){
-           locationSettingsHandler.requestChangeLocationForCurrentRequest(this@MainActivity)
-        }
+
     }
 
     private fun setUpNavigation() {

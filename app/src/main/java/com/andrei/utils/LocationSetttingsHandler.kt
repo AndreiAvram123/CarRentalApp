@@ -34,7 +34,7 @@ class LocationSettingsHandler {
 
 
     fun buildLocationRequest (accuracy :Int,intervalValue:Long = 10000,fastestIntervalValue :Long? =null  ){
-        this.locationRequest =  LocationRequest.create()?.apply {
+        this.locationRequest =  LocationRequest.create().apply {
             interval = intervalValue
             priority =  accuracy
             if(fastestIntervalValue != null){
@@ -58,7 +58,6 @@ class LocationSettingsHandler {
             task.addOnSuccessListener {
                 currentLocationNeedsSatisfied.postValue(true)
             }
-
 
             task.addOnFailureListener {
                 if (it is ResolvableApiException) {

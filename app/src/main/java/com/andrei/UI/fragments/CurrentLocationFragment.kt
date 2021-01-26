@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.viewmodels.ViewModelCar
@@ -41,6 +42,19 @@ class CurrentLocationFragment : Fragment() {
     private lateinit var  permissionHandlerFragment:PermissionHandlerFragment
     private val markersOnMap:MutableMap<Marker,Long> = mutableMapOf()
     private val locationAccuracy = LocationRequest.PRIORITY_HIGH_ACCURACY
+    private lateinit var mapFragment : SupportMapFragment
+
+
+    private val observerLocationSettings = Observer<Boolean>{
+        if(it){
+            mapFragment.getMapAsync(callback)
+            // Construct a PlaceDetectionClient.
+            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        }
+
+    }
+
+
 
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
@@ -116,18 +130,13 @@ class CurrentLocationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+
         locationSettingsHandler = LocationSettingsHandler()
         locationSettingsHandler.buildLocationRequest(accuracy = locationAccuracy)
         locationSettingsHandler.startLocationRequest()
 
-        locationSettingsHandler.currentLocationNeedsSatisfied.reObserve(viewLifecycleOwner){
-            if(it){
-                mapFragment?.getMapAsync(callback)
-                // Construct a PlaceDetectionClient.
-                mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-            }
-        }
+        locationSettingsHandler.currentLocationNeedsSatisfied.reObserve(viewLifecycleOwner,observerLocationSettings)
     }
     /**
      * Gets the current location of the device, and positions the map's camera.
