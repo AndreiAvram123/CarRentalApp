@@ -1,13 +1,18 @@
 package com.andrei.DI
 
+import android.content.Context
+import android.content.SharedPreferences
 import com.andrei.DI.annotations.RetrofitInterceptorNoToken
 import com.andrei.DI.annotations.RetrofitInterceptorWithToken
+import com.andrei.carrental.R
 import com.andrei.engine.configuration.AuthInterceptorNoToken
 import com.andrei.engine.configuration.AuthInterceptorWithToken
+import com.andrei.utils.getStringOrNull
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -21,8 +26,10 @@ class RetrofitConfigurationModule {
     fun provideInterceptorWithNoToken(): AuthInterceptorNoToken = AuthInterceptorNoToken()
 
     @Provides
-    fun provideInterceptorWithToken(): AuthInterceptorWithToken = AuthInterceptorWithToken(token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0VXNlcm5hbWUiLCJleHAiOjE2MTMwNzkwMTksInVzZXJJRCI6NCwidXNlcm5hbWUiOiJ0ZXN0VXNlcm5hbWUifQ.aeHTZ4WAGjD1h-zCTXZFSM-aN6cD-81f0UWA05EQ8xvYnO7TgKu2jPvaM2jbhLswM2HexhgNxi3BV1yinWFZJQ")
-
+    fun provideInterceptorWithToken(@ApplicationContext context: Context, sharedPreferences: SharedPreferences): AuthInterceptorWithToken {
+        val token = sharedPreferences.getStringOrNull(context.getString(R.string.key_token))
+         return AuthInterceptorWithToken(token)
+    }
 
     @RetrofitInterceptorNoToken
     @Provides

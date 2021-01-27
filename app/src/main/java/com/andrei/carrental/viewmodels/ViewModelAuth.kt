@@ -10,9 +10,7 @@ class ViewModelAuth  constructor(
         private val authRepository: AuthRepository
 ):   ViewModel() {
 
-    val isUserLoggedIn :LiveData<Boolean> = Transformations.map(authRepository.userAccountDetails) {
-         it !=null
-    }
+    val isUserLoggedIn :LiveData<Boolean>  = authRepository.isUserLoggedIn
 
     val loginFlowState: LiveData<LoginFlowState> by lazy {
         authRepository.loginState

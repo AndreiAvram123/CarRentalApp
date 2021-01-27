@@ -8,6 +8,10 @@ import android.content.SharedPreferences
     editor.apply()
 }
 
+fun SharedPreferences.getStringOrNull(key:String):String?{
+   return this.getString(key,null)
+}
+
 fun SharedPreferences.removeValue(key:String){
     edit {
         remove(key)

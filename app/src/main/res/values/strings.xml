@@ -18,4 +18,5 @@
     <string name="fragment_expanded_car_price_per_day">Price per day</string>
     <string name="navigation_bookings">Bookings</string>
     <string name="key_preferences">key_preferences</string>
+    <string name="key_token">key_token</string>
 </resources>
