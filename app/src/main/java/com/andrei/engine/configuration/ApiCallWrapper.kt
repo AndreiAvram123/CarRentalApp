@@ -1,4 +1,6 @@
 package com.andrei.engine.configuration
 
-class ApiCallWrapper {
-}
+import com.andrei.engine.DTOEntities.ApiResult
+import retrofit2.Call
+
+typealias CallWrapper<T> =Call<ApiResult<T>>
