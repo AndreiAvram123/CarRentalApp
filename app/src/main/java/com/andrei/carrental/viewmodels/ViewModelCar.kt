@@ -1,18 +1,19 @@
 package com.andrei.carrental.viewmodels
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.andrei.carrental.entities.CarSearchEntity
 import com.andrei.carrental.entities.CarToRent
 import com.andrei.carrental.entities.RentalPeriod
-import com.andrei.engine.DTOEntities.RentInformation
 import com.andrei.engine.State
-import com.andrei.engine.repository.CarRepositoryImpl
+import com.andrei.engine.repository.implementation.CarRepositoryImpl
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import java.time.temporal.ChronoUnit
 
-class ViewModelCar : ViewModel (){
-    private  val  carRepositoryImpl: CarRepositoryImpl = CarRepositoryImpl()
+class ViewModelCar @ViewModelInject constructor(
+        private val carRepositoryImpl: CarRepositoryImpl
+) : ViewModel (){
 
     val searchSuggestions :MutableLiveData<State<List<CarSearchEntity>>> by lazy {
         carRepositoryImpl.searchSuggestions

@@ -18,6 +18,4 @@ class HelpersModule {
     @ActivityScoped
     fun provideLocationsSettingsHandler()  = LocationSettingsHandler()
 
-
-
 }

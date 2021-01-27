@@ -3,8 +3,9 @@ package com.andrei.engine
 import com.andrei.engine.DTOEntities.ApiResult
 import retrofit2.Call
 import retrofit2.awaitResponse
+import javax.inject.Inject
 
-class CallRunner {
+class CallRunner @Inject constructor(){
 
     private val responseHandler = ResponseHandler.getInstance()
 
@@ -27,9 +28,6 @@ class CallRunner {
             update(responseHandler.handleRequestException(listOf(e),url))
         }
     }
-
-
-
 
 
 
