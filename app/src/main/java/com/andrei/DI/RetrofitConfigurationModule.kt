@@ -7,6 +7,7 @@ import com.andrei.DI.annotations.RetrofitInterceptorWithToken
 import com.andrei.carrental.R
 import com.andrei.engine.configuration.AuthInterceptorNoToken
 import com.andrei.engine.configuration.AuthInterceptorWithToken
+import com.andrei.engine.helpers.TokenManager
 import com.andrei.utils.getStringOrNull
 import dagger.Module
 import dagger.Provides
@@ -26,9 +27,9 @@ class RetrofitConfigurationModule {
     fun provideInterceptorWithNoToken(): AuthInterceptorNoToken = AuthInterceptorNoToken()
 
     @Provides
-    fun provideInterceptorWithToken(@ApplicationContext context: Context, sharedPreferences: SharedPreferences): AuthInterceptorWithToken {
+    fun provideInterceptorWithToken(@ApplicationContext context: Context, sharedPreferences: SharedPreferences, tokenManager: TokenManager): AuthInterceptorWithToken {
         val token = sharedPreferences.getStringOrNull(context.getString(R.string.key_token))
-         return AuthInterceptorWithToken(token)
+         return AuthInterceptorWithToken(token,tokenManager::recheckToken)
     }
 
     @RetrofitInterceptorNoToken

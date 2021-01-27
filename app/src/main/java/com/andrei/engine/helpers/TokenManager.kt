@@ -7,9 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.andrei.carrental.R
 import com.andrei.utils.getStringOrNull
+import com.auth0.android.jwt.JWT
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ActivityScoped
+import java.util.*
 import javax.inject.Inject
 
+@ActivityScoped
 class TokenManager @Inject constructor(
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val  context: Context) {
@@ -17,7 +21,7 @@ class TokenManager @Inject constructor(
 
     private val mUserToken:MutableLiveData<TokenState> by lazy {
         MutableLiveData<TokenState>().also {
-            getTokenForUser()
+            checkTokenForUser()
         }
     }
 
@@ -25,7 +29,7 @@ class TokenManager @Inject constructor(
         it
     }
 
-    private fun getTokenForUser(){
+    private fun checkTokenForUser(){
        val token =  sharedPreferences.getStringOrNull(context.getString(R.string.key_token))
 
         when{
@@ -35,9 +39,17 @@ class TokenManager @Inject constructor(
         }
     }
 
+    fun recheckToken(){
+       checkTokenForUser()
+    }
 
-   private fun isTokenValid(token:String):Boolean{
-        return true
+
+   private fun isTokenValid(token :String):Boolean{
+       val parsed = JWT(token)
+        parsed.expiresAt?.let{
+            return it.before(Date())
+        }
+        return false
 
     }
 }

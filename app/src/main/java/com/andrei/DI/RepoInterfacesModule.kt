@@ -6,6 +6,8 @@ import com.andrei.engine.configuration.AuthInterceptorWithToken
 import com.andrei.engine.configuration.AuthInterceptorNoToken
 import com.andrei.engine.repositoryInterfaces.AuthRepoInterface
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
+import com.andrei.engine.repositoryInterfaces.PaymentRepoInterface
+import com.cardinalcommerce.cardinalmobilesdk.models.Payment
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,5 +32,11 @@ class RepoInterfacesModule {
     fun provideCarRarRepoInterface(
             @RetrofitInterceptorWithToken retrofit: Retrofit
     ):CarRepoInterface = retrofit.create(CarRepoInterface::class.java)
+
+
+    @Provides
+    fun providePaymentRepoInterface(
+        @RetrofitInterceptorWithToken retrofit: Retrofit
+    ): PaymentRepoInterface = retrofit.create(PaymentRepoInterface::class.java)
 
 }
