@@ -1,4 +1,4 @@
-package com.andrei.carrental
+package com.andrei.UI.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,9 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
 import com.andrei.utils.LocationSettingsHandler
-import com.andrei.utils.reObserve
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

@@ -19,4 +19,6 @@
     <string name="navigation_bookings">Bookings</string>
     <string name="key_preferences">key_preferences</string>
     <string name="key_token">key_token</string>
+    <string name="screens_login_hint_username">Username</string>
+    <string name="screens_login_hint_password">Password</string>
 </resources>

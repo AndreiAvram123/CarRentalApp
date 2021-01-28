@@ -31,4 +31,13 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 
+    <style name="inputFieldLabelAppearance">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="inputFieldErrorAppearance">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#ff0000</item>
+    </style>
+
 </resources>
