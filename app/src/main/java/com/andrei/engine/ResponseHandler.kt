@@ -19,10 +19,14 @@ class ResponseHandler private constructor(){
         return State.Success(data)
     }
 
-    fun <T > handleRequestException(exceptions: List<Exception>, string: String): State<T> {
-        Log.e(TAG,"Error with request $string")
-        exceptions.forEach { logException(it) }
-        return State.Error(exceptions.first())
+    fun <T> handleResponseError(error:String):State<T>{
+        return State.Error(error)
+    }
+
+    fun <T > handleResponseException(exception:Exception, url: String) :State<T>{
+        Log.e(TAG,"Error with request $url")
+        logException(exception)
+        return State.Error("Unknown Error")
     }
 
     private fun logException(e:Exception){

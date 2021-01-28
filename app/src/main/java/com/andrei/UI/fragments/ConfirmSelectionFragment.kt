@@ -150,7 +150,7 @@ class ConfirmSelectionFragment : Fragment() {
                     
                     }
                     is State.Error ->{
-                        Toast.makeText(requireContext(), it.exception.message.toString(), Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), it.error, Toast.LENGTH_LONG).show()
                     }
                 }
             }

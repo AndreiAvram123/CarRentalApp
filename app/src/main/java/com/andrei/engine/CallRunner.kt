@@ -21,11 +21,12 @@ class CallRunner @Inject constructor(){
                 if(response.isSuccessful){
                     update(responseHandler.handleSuccess(body.data))
                 }else{
-                   body.errors?.let { update( responseHandler.handleRequestException(it.map { stringException ->  Exception(stringException) },url))}
+
+                   body.error?.let { update(responseHandler.handleResponseError(it)) }
                 }
             }
         } catch (e: Exception) {
-            update(responseHandler.handleRequestException(listOf(e),url))
+            update(responseHandler.handleResponseException(e,url))
         }
     }
 

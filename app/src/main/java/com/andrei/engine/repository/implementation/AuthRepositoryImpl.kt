@@ -9,6 +9,7 @@ import com.andrei.engine.helpers.TokenState
 import com.andrei.engine.helpers.UserManager
 import com.andrei.engine.repository.interfaces.AuthRepository
 import com.andrei.engine.repositoryInterfaces.AuthRepoInterface
+import com.andrei.engine.states.LoginError
 import com.andrei.engine.states.LoginFlowState
 import javax.inject.Inject
 
@@ -59,11 +60,13 @@ class AuthRepositoryImpl @Inject constructor(
                    loginFlowState.postValue(LoginFlowState.Loading)
                }
                is State.Error->{
-
+                   when(it.error){
+                        LoginError.errorInvalidEmail -> loginFlowState.postValue(LoginError.IncorrectEmail)
+                        LoginError.errorInvalidPassword -> loginFlowState.postValue(LoginError.IncorrectPassword)
+                   }
                }
            }
        }
-
 
     }
 

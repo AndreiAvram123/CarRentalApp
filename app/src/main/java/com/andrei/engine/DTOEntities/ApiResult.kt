@@ -7,7 +7,7 @@ data class ApiResult<out T>(
         val isSuccessful : Boolean,
         @SerializedName("data")
         val data : T? ,
-        @SerializedName("errors")
-         val errors : List<String>?
+        @SerializedName("error")
+         val error :String?
          )
 

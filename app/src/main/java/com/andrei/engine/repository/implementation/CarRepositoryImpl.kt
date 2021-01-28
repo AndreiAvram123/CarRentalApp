@@ -70,7 +70,7 @@ class CarRepositoryImpl @Inject constructor(
             when(it){
                 is State.Success-> emit(State.Success(it.data?.map { date -> date.toRentalPeriod() }))
                 is State.Loading -> emit(State.Loading)
-                is State.Error -> emit(State.Error(it.exception))
+                is State.Error -> emit(State.Error(it.error))
             }
         }
     }.flowOn(GlobalScope.coroutineContext)
