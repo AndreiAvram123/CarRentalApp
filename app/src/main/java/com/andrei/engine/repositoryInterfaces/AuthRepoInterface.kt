@@ -1,10 +1,11 @@
 package com.andrei.engine.repositoryInterfaces
 
+import com.andrei.engine.DTOEntities.LoginResponse
 import com.andrei.engine.configuration.CallWrapper
-import retrofit2.http.GET
+import retrofit2.http.POST
 
 
 interface AuthRepoInterface {
-   @GET("/token")
-   fun getToken(): CallWrapper<TokenResponse>
+    @POST
+    fun attemptLogin(): CallWrapper<LoginResponse>
 }

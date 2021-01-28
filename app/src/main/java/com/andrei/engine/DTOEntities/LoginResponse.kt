@@ -1,7 +1,9 @@
 package com.andrei.engine.DTOEntities
 
+import com.andrei.carrental.entities.User
+
 
 data class LoginResponse(
-        val username:String,
-        val email:String,
+        val user:User,
+        val token :String
 )

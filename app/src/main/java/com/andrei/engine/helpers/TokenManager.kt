@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.andrei.carrental.R
+import com.andrei.utils.edit
 import com.andrei.utils.getStringOrNull
 import com.andrei.utils.removeValue
 import com.auth0.android.jwt.JWT
@@ -34,6 +35,7 @@ class TokenManager @Inject constructor(
     val userToken:LiveData<TokenState> = Transformations.map(mUserToken) {
         it
     }
+
 
     private fun checkTokenForUser(){
         //make sure to use post value on a background thread
@@ -62,6 +64,8 @@ class TokenManager @Inject constructor(
         }
     }
 
+
+
     private fun invalidateToken() {
         mUserToken.postValue(TokenState.Invalid)
     }
@@ -73,6 +77,18 @@ class TokenManager @Inject constructor(
     private fun isTokenValid(token :String):Boolean{
        val parsed = JWT(token)
         return parsed.isExpired(5)
+    }
+
+
+    fun setNewToken(token:String){
+        saveToken(token)
+        mUserToken.postValue(TokenState.Valid)
+    }
+
+    private fun saveToken(token: String) {
+        sharedPreferences.edit{
+            putString(context.getString(R.string.key_token),token)
+        }
     }
 }
 

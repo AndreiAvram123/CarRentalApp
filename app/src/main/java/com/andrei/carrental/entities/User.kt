@@ -3,8 +3,7 @@ package com.andrei.carrental.entities
 import com.google.gson.annotations.SerializedName
 
 data class User(
-        @SerializedName("username")
+        val id :Long,
         val username:String,
-        @SerializedName("profilePicture")
         val profilePicturePath:String
 )
