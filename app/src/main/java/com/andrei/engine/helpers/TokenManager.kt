@@ -14,6 +14,9 @@ import com.andrei.utils.removeValue
 import com.auth0.android.jwt.JWT
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -34,15 +37,17 @@ class TokenManager @Inject constructor(
     }
 
     private fun checkTokenForUser(){
-       val token =  sharedPreferences.getStringOrNull(context.getString(R.string.key_token))
-
-        when{
-            token == null -> mUserToken.postValue(TokenState.Invalid)
-            isTokenValid(token) -> {
-                mUserToken.postValue(TokenState.Valid)
-                logUserOutWhenTokenExpires(token)
+        //make sure to use post value on a background thread
+        GlobalScope.launch(Dispatchers.IO) {
+            val token =  sharedPreferences.getStringOrNull(context.getString(R.string.key_token))
+            when{
+                token == null -> mUserToken.postValue(TokenState.Invalid)
+                isTokenValid(token) -> {
+                    mUserToken.postValue(TokenState.Valid)
+                    logUserOutWhenTokenExpires(token)
+                }
+                else -> mUserToken.postValue(TokenState.Invalid)
             }
-            else -> mUserToken.postValue(TokenState.Invalid)
         }
     }
 
