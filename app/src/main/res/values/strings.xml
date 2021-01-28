@@ -21,4 +21,5 @@
     <string name="key_token">key_token</string>
     <string name="screens_login_hint_username">Username</string>
     <string name="screens_login_hint_password">Password</string>
+    <string name="screens_login_hint_email">Email</string>
 </resources>

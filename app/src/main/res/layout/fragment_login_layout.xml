@@ -23,13 +23,13 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tf_username"
+            android:id="@+id/tf_email"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/screens_login_hint_username"
+            android:hint="@string/screens_login_hint_email"
 
-            app:errorText="@{viewModelAuth.errorUsername}"
+            app:errorText="@{viewModelAuth.errorEmail}"
             app:errorTextAppearance="@style/inputFieldErrorAppearance"
             app:hintTextAppearance="@style/inputFieldLabelAppearance"
             app:layout_constraintEnd_toEndOf="parent"

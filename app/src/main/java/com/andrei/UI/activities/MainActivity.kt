@@ -2,13 +2,19 @@ package com.andrei.UI.activities
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
+import com.andrei.carrental.viewmodels.ViewModelAuth
 import com.andrei.utils.LocationSettingsHandler
+import com.andrei.utils.isResultOk
+import com.andrei.utils.reObserve
+import com.andrei.utils.startNewActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -16,14 +22,24 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding:ActivityMainBinding
+    private val  viewModelAuth:ViewModelAuth by viewModels()
 
-      @Inject
+    private val observerUserLoggedIn = Observer<Boolean>{
+     startMainActivity()
+    }
+
+    private fun startMainActivity() {
+      startNewActivity<MainActivity>()
+    }
+
+    @Inject
       lateinit var locationSettingsHandler: LocationSettingsHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
          binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         attachLocationObserver()
+       viewModelAuth.isUserLoggedIn.reObserve(this,observerUserLoggedIn)
         setUpNavigation()
     }
 
@@ -40,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(LocationSettingsHandler.REQUEST_CHECK_SETTINGS == requestCode){
-            if(resultCode == RESULT_OK){
+            if(resultCode.isResultOk()){
                locationSettingsHandler.currentLocationNeedsSatisfied.value = true
             }
         }

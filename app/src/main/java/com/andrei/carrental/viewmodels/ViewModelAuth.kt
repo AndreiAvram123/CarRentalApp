@@ -4,8 +4,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.andrei.engine.repository.interfaces.AuthRepository
 import com.andrei.engine.states.LoginFlowState
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
+import kotlinx.coroutines.launch
 
 class ViewModelAuth  @ViewModelInject constructor(
         private val authRepository: AuthRepository
@@ -16,7 +15,7 @@ class ViewModelAuth  @ViewModelInject constructor(
     val isUserLoggedIn :LiveData<Boolean>  = authRepository.isUserLoggedIn
 
 
-    val usernameEntered : MutableLiveData<String> by lazy {
+    val emailEntered : MutableLiveData<String> by lazy {
         MutableLiveData()
     }
     val passwordEntered : MutableLiveData<String> by lazy {
@@ -24,31 +23,39 @@ class ViewModelAuth  @ViewModelInject constructor(
     }
 
 
-    val errorUsername : LiveData<String?> = Transformations.map(usernameEntered){
+    val errorEmail : LiveData<String?> = Transformations.map(emailEntered){
         if(it.isUsernameValid()){
             null
         }else{
-            "pupu"
+            errorInvalidUsernameFormat
         }
     }
     val errorPassword :LiveData<String?> = Transformations.map(passwordEntered){
         if(it.isPasswordValid()){
             null
         }else{
-            "ow no"
+            errorInvalidPasswordFormat
         }
     }
 
 
-
-
     val loginFlowState: LiveData<LoginFlowState> by lazy {
-        authRepository.loginState
+        authRepository.loginFlowState
     }
 
-    fun startLoginFlow(){
-        if(errorPassword.value == null && errorUsername.value == null){
 
+
+    fun startLoginFlow(){
+        val email=  emailEntered.value
+        val password = passwordEntered.value
+
+        if(errorPassword.value != null && errorEmail.value != null){
+            check(email !=null){}
+            check(password !=null){}
+
+           viewModelScope.launch {
+               authRepository.startLoginFlow(email,password)
+           }
         }
     }
 
@@ -60,7 +67,10 @@ class ViewModelAuth  @ViewModelInject constructor(
     }
 
 
-
+  companion object{
+      const val errorInvalidUsernameFormat = "Invalid username format "
+      const val errorInvalidPasswordFormat = "Invalid password format "
+  }
 
 
 }

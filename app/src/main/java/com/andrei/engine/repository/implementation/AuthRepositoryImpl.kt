@@ -1,10 +1,8 @@
 package com.andrei.engine.repository.implementation
 
-import android.content.SharedPreferences
 import androidx.lifecycle.*
+import com.andrei.carrental.entities.UserAccount
 import com.andrei.engine.CallRunner
-import com.andrei.engine.DTOEntities.UserAccount
-import com.andrei.engine.State
 import com.andrei.engine.helpers.TokenManager
 import com.andrei.engine.helpers.TokenState
 import com.andrei.engine.helpers.UserAccountManager
@@ -22,29 +20,33 @@ class AuthRepositoryImpl @Inject constructor(
 
     override val isUserLoggedIn: MediatorLiveData<Boolean>  by lazy {
         MediatorLiveData<Boolean>().apply {
-            addSource(userAccountDetails){
+            addSource(userAccount){
                 if(it!=null && tokenManager.userToken.value is TokenState.Valid ){
                     value = true
                 }
             }
             addSource(tokenManager.userToken){
-                if(it is TokenState.Valid && userAccountDetails.value != null){
+                if(it is TokenState.Valid && userAccount.value != null){
                     value = true
                 }
             }
         }
     }
 
-    override val userAccountDetails: MutableLiveData<UserAccount> by lazy {
-        userAccountManager.userAccountDetails
+    override val userAccount: LiveData<UserAccount> by lazy {
+        userAccountManager.userAccount
     }
 
-    override val loginState: MutableLiveData<LoginFlowState> by lazy {
+    override val loginFlowState: MutableLiveData<LoginFlowState> by lazy {
         MutableLiveData()
     }
 
     override suspend fun startLoginFlow(email: String, password: String) {
          //fetch user
+
+        //fetch token
+        
+
 
     }
 

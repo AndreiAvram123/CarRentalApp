@@ -1,7 +1,7 @@
 package com.andrei.engine.DTOEntities
 
 
-data class UserAccount(
+data class LoginResponse(
         val username:String,
         val email:String,
 )

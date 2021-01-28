@@ -2,7 +2,6 @@ package com.andrei.engine.helpers
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.media.session.MediaSession
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
@@ -55,11 +54,11 @@ class TokenManager @Inject constructor(
         val parsedJWT = JWT(token)
         val expireDate = parsedJWT.expiresAt
         expireDate?.let {
-            val logUserAfterSeconds = (it.time - Date().time) / 1000
+            val invalidateTokenAfterSeconds = (it.time - Date().time) / 1000
             Handler(Looper.getMainLooper()).postDelayed({
                 invalidateToken()
                 removeToken()
-            }, logUserAfterSeconds)
+            }, invalidateTokenAfterSeconds)
         }
     }
 
