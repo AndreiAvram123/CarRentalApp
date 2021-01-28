@@ -27,9 +27,10 @@ class RetrofitConfigurationModule {
     fun provideInterceptorWithNoToken(): AuthInterceptorNoToken = AuthInterceptorNoToken()
 
     @Provides
-    fun provideInterceptorWithToken(@ApplicationContext context: Context, sharedPreferences: SharedPreferences, tokenManager: TokenManager): AuthInterceptorWithToken {
+    fun provideInterceptorWithToken(@ApplicationContext context: Context, sharedPreferences: SharedPreferences): AuthInterceptorWithToken {
         val token = sharedPreferences.getStringOrNull(context.getString(R.string.key_token))
-         return AuthInterceptorWithToken(token,tokenManager::recheckToken)
+        check(token !=null){"Token should not be null"}
+         return AuthInterceptorWithToken(token)
     }
 
     @RetrofitInterceptorNoToken

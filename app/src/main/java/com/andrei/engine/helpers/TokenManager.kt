@@ -2,6 +2,9 @@ package com.andrei.engine.helpers
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.media.session.MediaSession
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -34,23 +37,29 @@ class TokenManager @Inject constructor(
 
         when{
             token == null -> mUserToken.postValue(TokenState.Invalid)
-            isTokenValid(token) -> mUserToken.postValue(TokenState.Valid)
+            isTokenValid(token) -> {
+                mUserToken.postValue(TokenState.Valid)
+                logUserOutWhenTokenExpires(token)
+            }
             else -> mUserToken.postValue(TokenState.Invalid)
         }
     }
 
-    fun recheckToken(){
-       checkTokenForUser()
+    private fun logUserOutWhenTokenExpires(token: String) {
+        val parsedJWT = JWT(token)
+        val expireDate = parsedJWT.expiresAt
+        expireDate?.let {
+            val logUserAfterSeconds = (it.time - Date().time) / 1000
+            Handler(Looper.getMainLooper()).postDelayed({
+                mUserToken.postValue(TokenState.Invalid)
+            }, logUserAfterSeconds)
+        }
     }
 
 
-   private fun isTokenValid(token :String):Boolean{
+    private fun isTokenValid(token :String):Boolean{
        val parsed = JWT(token)
-        parsed.expiresAt?.let{
-            return it.before(Date())
-        }
-        return false
-
+        return parsed.isExpired(5)
     }
 }
 

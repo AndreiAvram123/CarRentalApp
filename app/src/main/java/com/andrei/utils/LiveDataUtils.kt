@@ -23,12 +23,6 @@ fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observ
     })
 }
 
-
-fun <T> MutableLiveData<T>.postAndReset(value: T, resetTo: T? = null) {
-    postValue(value)
-    Handler().post { postValue(resetTo) }
-}
-
 fun <T> LiveData<T>.observeRequest(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
     observe(lifecycleOwner, object : Observer<T> {
         override fun onChanged(t: T?) {
