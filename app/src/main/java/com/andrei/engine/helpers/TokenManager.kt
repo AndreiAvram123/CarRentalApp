@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.andrei.carrental.R
 import com.andrei.utils.getStringOrNull
+import com.andrei.utils.removeValue
 import com.auth0.android.jwt.JWT
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
@@ -51,9 +52,17 @@ class TokenManager @Inject constructor(
         expireDate?.let {
             val logUserAfterSeconds = (it.time - Date().time) / 1000
             Handler(Looper.getMainLooper()).postDelayed({
-                mUserToken.postValue(TokenState.Invalid)
+                invalidateToken()
+                removeToken()
             }, logUserAfterSeconds)
         }
+    }
+
+    private fun invalidateToken() {
+        mUserToken.postValue(TokenState.Invalid)
+    }
+    private fun removeToken(){
+        sharedPreferences.removeValue(context.getString(R.string.key_token))
     }
 
 
