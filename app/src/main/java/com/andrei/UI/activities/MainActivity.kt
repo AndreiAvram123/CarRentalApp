@@ -25,7 +25,9 @@ class MainActivity : AppCompatActivity() {
     private val  viewModelAuth:ViewModelAuth by viewModels()
 
     private val observerUserLoggedIn = Observer<Boolean>{
-     startMainActivity()
+        if(it == false){
+            startNewActivity<LandingActivity>()
+        }
     }
 
     private fun startMainActivity() {
@@ -39,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
          binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         attachLocationObserver()
-       viewModelAuth.isUserLoggedIn.reObserve(this,observerUserLoggedIn)
+        viewModelAuth.isUserLoggedIn.reObserve(this,observerUserLoggedIn)
         setUpNavigation()
     }
 

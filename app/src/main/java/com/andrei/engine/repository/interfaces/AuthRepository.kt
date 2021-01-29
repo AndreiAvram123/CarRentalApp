@@ -4,12 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.andrei.carrental.entities.User
+import com.andrei.engine.DTOEntities.BasicUser
 import com.andrei.engine.states.LoginFlowState
 
 interface AuthRepository {
 
     val isUserLoggedIn:MediatorLiveData<Boolean>
-    val user : LiveData<User>
+    val user : LiveData<BasicUser>
     val loginFlowState : MutableLiveData<LoginFlowState>
 
     suspend fun startLoginFlow(email:String,password:String)

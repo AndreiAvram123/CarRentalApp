@@ -43,13 +43,15 @@ class TokenManager @Inject constructor(
             val token =  sharedPreferences.getStringOrNull(context.getString(R.string.key_token))
             when{
                 token == null -> mUserToken.postValue(TokenState.Invalid)
-                isTokenValid(token) -> {
-                    mUserToken.postValue(TokenState.Valid)
-                    logUserOutWhenTokenExpires(token)
-                }
+                isTokenValid(token) -> useToken(token)
                 else -> mUserToken.postValue(TokenState.Invalid)
             }
         }
+    }
+
+    private fun useToken(token:String){
+        mUserToken.postValue(TokenState.Valid)
+        logUserOutWhenTokenExpires(token)
     }
 
     private fun logUserOutWhenTokenExpires(token: String) {
@@ -73,13 +75,6 @@ class TokenManager @Inject constructor(
         sharedPreferences.removeValue(context.getString(R.string.key_token))
     }
 
-
-    private fun isTokenValid(token :String):Boolean{
-       val parsed = JWT(token)
-        return parsed.isExpired(5)
-    }
-
-
     fun setNewToken(token:String){
         saveToken(token)
         mUserToken.postValue(TokenState.Valid)
@@ -90,6 +85,12 @@ class TokenManager @Inject constructor(
             putString(context.getString(R.string.key_token),token)
         }
     }
+
+    private fun isTokenValid(token :String):Boolean{
+        val parsed = JWT(token)
+        return !parsed.isExpired(5)
+    }
+
 }
 
 sealed class TokenState{

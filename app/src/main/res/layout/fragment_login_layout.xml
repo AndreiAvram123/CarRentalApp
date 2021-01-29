@@ -4,8 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
-            name="viewModelAuth"
-            type="com.andrei.carrental.viewmodels.ViewModelAuth" />
+            name="errorEmail"
+            type="String" />
+
+        <variable
+            name="errorPassword"
+            type="String" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -28,8 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/screens_login_hint_email"
-
-            app:errorText="@{viewModelAuth.errorEmail}"
+            app:errorText="@{errorEmail}"
             app:errorTextAppearance="@style/inputFieldErrorAppearance"
             app:hintTextAppearance="@style/inputFieldLabelAppearance"
             app:layout_constraintEnd_toEndOf="parent"
@@ -56,7 +59,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/username_tf"
-            app:errorText="@{viewModelAuth.errorPassword}"
+            app:errorText="@{errorPassword}"
             app:startIconDrawable="@drawable/ic_password_24"
             app:errorTextAppearance="@style/inputFieldErrorAppearance"
             app:hintTextAppearance="@style/inputFieldLabelAppearance"

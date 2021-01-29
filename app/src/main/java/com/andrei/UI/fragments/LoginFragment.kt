@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.andrei.carrental.databinding.FragmentLoginLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelAuth
+import com.andrei.utils.reObserve
 
 class LoginFragment :Fragment() {
 
@@ -20,17 +21,32 @@ class LoginFragment :Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentLoginLayoutBinding.inflate(inflater,container,false)
-        binding.lifecycleOwner = this
-        binding.viewModelAuth = viewModelAuth
-        attachListeners()
+        initializeUI()
+        attachObservers()
+
+
        return binding.root
     }
 
-    private fun attachListeners() {
+    private fun attachObservers() {
+        viewModelAuth.errorEmail.reObserve(viewLifecycleOwner){
+         binding.errorEmail = it
+        }
+        viewModelAuth.errorPassword.reObserve(viewLifecycleOwner){
+            binding.errorPassword = it
+        }
+
+    }
+
+    private fun initializeUI() {
+        attachViewListeners()
+    }
+
+    private fun attachViewListeners() {
         binding.btLogin.setOnClickListener {
-            viewModelAuth.emailEntered.value = binding.tfEmail.editText.toString()
-            viewModelAuth.passwordEntered.value = binding.tfPassword.editText.toString()
-             viewModelAuth.startLoginFlow()
+            viewModelAuth.emailEntered.value = binding.tfEmail.editText?.text.toString()
+            viewModelAuth.passwordEntered.value = binding.tfPassword.editText?.text.toString()
+            viewModelAuth.startLoginFlow()
         }
     }
 

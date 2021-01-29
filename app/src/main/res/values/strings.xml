@@ -22,4 +22,6 @@
     <string name="screens_login_hint_username">Username</string>
     <string name="screens_login_hint_password">Password</string>
     <string name="screens_login_hint_email">Email</string>
+    <string name="key_user_id">key_user_id</string>
+    <string name="key_user_email">key_user_email</string>
 </resources>

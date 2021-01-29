@@ -32,7 +32,7 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 
     <style name="inputFieldLabelAppearance">
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="inputFieldErrorAppearance">

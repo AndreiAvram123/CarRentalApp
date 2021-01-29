@@ -1,6 +1,7 @@
 package com.andrei.engine
 
 import com.andrei.engine.DTOEntities.ApiResult
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.awaitResponse
 import javax.inject.Inject
@@ -16,18 +17,25 @@ class CallRunner @Inject constructor(){
         val url = call.request().url.toString()
         try {
             val response = call.awaitResponse()
-            val body = response.body()
-            if(body != null){
                 if(response.isSuccessful){
-                    update(responseHandler.handleSuccess(body.data))
-                }else{
+                    response.body()?.let{update(responseHandler.handleSuccess(it.data))}
 
-                   body.error?.let { update(responseHandler.handleResponseError(it)) }
+                }else{
+                    response.errorBody()?.let {
+                        val convertedErrorResponse = convertJsonErrorBodyToApiResult(it.string())
+                        if(convertedErrorResponse.error != null){
+                            update(responseHandler.handleResponseError(convertedErrorResponse.error))
+                        }
+                    }
                 }
-            }
         } catch (e: Exception) {
             update(responseHandler.handleResponseException(e,url))
         }
+    }
+
+    private fun  convertJsonErrorBodyToApiResult(body:String):ApiResult<*>{
+        val gson = Gson()
+        return gson.fromJson(body,ApiResult::class.java)
     }
 
 
