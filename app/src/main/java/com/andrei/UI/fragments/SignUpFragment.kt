@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.andrei.carrental.databinding.FragmentSignUpLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelSignUp
@@ -25,7 +24,8 @@ class SignUpFragment : Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val tempBinding = FragmentSignUpLayoutBinding.inflate(inflater,container,false)
         binding = tempBinding
-        viewModelSignUp.validationErrorUsername.reObserve(viewLifecycleOwner){
+        viewModelSignUp.validationErrorUsername.reObserve(viewLifecycleOwner) {
+
             binding?.errorUsername = it
         }
         attachFieldListeners()
@@ -47,6 +47,7 @@ class SignUpFragment : Fragment(){
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

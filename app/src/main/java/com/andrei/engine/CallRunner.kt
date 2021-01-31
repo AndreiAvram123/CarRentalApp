@@ -2,6 +2,7 @@ package com.andrei.engine
 
 import android.net.ConnectivityManager
 import com.andrei.engine.DTOEntities.ApiResult
+import com.andrei.engine.configuration.CallWrapper
 import com.andrei.utils.isNotConnected
 import com.google.gson.Gson
 import retrofit2.Call
@@ -16,7 +17,7 @@ class CallRunner @Inject constructor(
 
 
 
-    suspend fun <T> makeApiCall(call: Call<ApiResult<T>>, update:suspend (state: State<T>)->Unit){
+    suspend fun <T> makeApiCall(call: CallWrapper<T>, update:suspend (state: State<T>)->Unit){
 
         if(connectivityManager.isNotConnected()){
             update(responseHandler.handleNoInternetError())

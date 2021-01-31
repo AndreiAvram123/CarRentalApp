@@ -17,7 +17,7 @@ class ViewModelSignUp @ViewModelInject constructor(
 
 
      val validationErrorUsername :LiveData<String?> = Transformations.switchMap(enteredUsername){
-         signUpRepo.validateUsername(it).asLiveData()
+       signUpRepo.getValidationErrorForUsername(it).asLiveData()
     }
 
 }

@@ -2,6 +2,8 @@ package com.andrei.utils
 
 import android.net.ConnectivityManager
 import android.os.Handler
+import android.os.Looper
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,35 +29,9 @@ fun <T> LiveData<T>.observeRequest(lifecycleOwner: LifecycleOwner, observer: Obs
     observe(lifecycleOwner, object : Observer<T> {
         override fun onChanged(t: T?) {
             observer.onChanged(t)
-            if(t !is State.Loading){
+            if (t !is State.Loading) {
                 removeObserver(this)
             }
         }
     })
-}
-fun <T> MutableLiveData< MutableList<T>>.addAndNotify(newData : List<T>){
-    val newValue = ArrayList<T>()
-    value?.let{
-        newValue.addAll(it)
-    }
-    newValue.addAll(newData)
-    postValue(newValue)
-}
-
-fun <T> MutableLiveData< MutableList<T>>.addAndNotify(item : T){
-    val newValue = ArrayList<T>()
-    value?.let{
-        newValue.addAll(it)
-    }
-    newValue.add(item)
-    postValue(newValue)
-}
-
-fun <T> MutableLiveData< MutableList<T>>.removeAndNotify(itemToRemove :T){
-    val newValue = ArrayList<T>()
-    value?.let{
-        newValue.addAll(it)
-    }
-    newValue.remove(itemToRemove)
-    postValue(newValue)
 }

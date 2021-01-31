@@ -2,23 +2,15 @@ package com.andrei.DI
 
 import com.andrei.DI.annotations.RetrofitInterceptorNoToken
 import com.andrei.DI.annotations.RetrofitInterceptorWithToken
-import com.andrei.engine.configuration.AuthInterceptorWithToken
-import com.andrei.engine.configuration.AuthInterceptorNoToken
-import com.andrei.engine.repository.interfaces.SignUpRepository
-import com.andrei.engine.repository.interfaces.SignUpRepositoryInterface
+import com.andrei.engine.repositoryInterfaces.SignUpRepositoryInterface
 import com.andrei.engine.repositoryInterfaces.AuthRepoInterface
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
 import com.andrei.engine.repositoryInterfaces.PaymentRepoInterface
-import com.cardinalcommerce.cardinalmobilesdk.models.Payment
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
-import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
-import java.time.Duration
 
 @Module
 @InstallIn(ActivityComponent::class)

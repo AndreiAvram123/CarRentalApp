@@ -30,6 +30,7 @@ class ResponseHandler private constructor(){
     }
 
     fun <T> handleNoInternetError():State<T>{
+        logException(Exception("No internet "))
         return State.Error("No internet")
     }
 
