@@ -7,7 +7,7 @@ import com.andrei.carrental.entities.User
 import com.andrei.engine.DTOEntities.BasicUser
 import com.andrei.engine.states.LoginFlowState
 
-interface AuthRepository {
+interface LoginRepository {
 
     val isUserLoggedIn:MediatorLiveData<Boolean>
     val user : LiveData<BasicUser>

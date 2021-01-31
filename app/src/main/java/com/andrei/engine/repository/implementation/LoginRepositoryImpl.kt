@@ -1,25 +1,24 @@
 package com.andrei.engine.repository.implementation
 
 import androidx.lifecycle.*
-import com.andrei.carrental.entities.User
 import com.andrei.engine.CallRunner
 import com.andrei.engine.DTOEntities.BasicUser
 import com.andrei.engine.State
 import com.andrei.engine.helpers.TokenManager
 import com.andrei.engine.helpers.TokenState
 import com.andrei.engine.helpers.UserManager
-import com.andrei.engine.repository.interfaces.AuthRepository
+import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.repositoryInterfaces.AuthRepoInterface
 import com.andrei.engine.requestModels.LoginRequest
 import com.andrei.engine.states.LoginFlowState
 import javax.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor(
+class LoginRepositoryImpl @Inject constructor(
     private val userManager: UserManager,
     private val tokenManager: TokenManager,
     private val authRepo: AuthRepoInterface,
     private val callRunner: CallRunner
-): AuthRepository{
+): LoginRepository{
 
     override val isUserLoggedIn: MediatorLiveData<Boolean>  by lazy {
         MediatorLiveData<Boolean>().apply {

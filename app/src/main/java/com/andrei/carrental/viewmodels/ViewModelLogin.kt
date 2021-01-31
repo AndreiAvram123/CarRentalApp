@@ -2,17 +2,17 @@ package com.andrei.carrental.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.andrei.engine.repository.interfaces.AuthRepository
+import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.states.LoginFlowState
 import kotlinx.coroutines.launch
 
-class ViewModelAuth  @ViewModelInject constructor(
-        private val authRepository: AuthRepository
+class ViewModelLogin  @ViewModelInject constructor(
+        private val loginRepository: LoginRepository
 ):   ViewModel() {
 
 
 
-    val isUserLoggedIn :LiveData<Boolean>  = authRepository.isUserLoggedIn
+    val isUserLoggedIn :LiveData<Boolean>  = loginRepository.isUserLoggedIn
 
 
     val emailEntered : MutableLiveData<String> by lazy {
@@ -22,7 +22,7 @@ class ViewModelAuth  @ViewModelInject constructor(
         MutableLiveData()
     }
 
-    val isAuthenticationInProgress : LiveData<Boolean> = Transformations.map(authRepository.loginFlowState){
+    val isAuthenticationInProgress : LiveData<Boolean> = Transformations.map(loginRepository.loginFlowState){
         it is LoginFlowState.Loading
     }
 
@@ -34,7 +34,7 @@ class ViewModelAuth  @ViewModelInject constructor(
                     errorInvalidEmailFormat
                 }
             }
-         addSource(authRepository.loginFlowState){
+         addSource(loginRepository.loginFlowState){
              value = if(it is LoginFlowState.LoginError && it is LoginFlowState.LoginError.IncorrectEmail){
                  it.error
              }else{
@@ -51,7 +51,7 @@ class ViewModelAuth  @ViewModelInject constructor(
                     errorInvalidPasswordFormat
                 }
             }
-            addSource(authRepository.loginFlowState){
+            addSource(loginRepository.loginFlowState){
                 value = if(it is LoginFlowState.LoginError && it is LoginFlowState.LoginError.IncorrectPassword ){
                         it.error
                 }else{
@@ -71,7 +71,7 @@ class ViewModelAuth  @ViewModelInject constructor(
             check(password !=null){}
 
            viewModelScope.launch {
-               authRepository.startLoginFlow(email = email,password = password)
+               loginRepository.startLoginFlow(email = email,password = password)
            }
         }
     }
