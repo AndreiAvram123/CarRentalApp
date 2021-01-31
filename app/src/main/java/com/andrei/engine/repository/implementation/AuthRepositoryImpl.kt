@@ -45,9 +45,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun startLoginFlow(email: String, password: String) {
-         //fetch user
 
-        //fetch token
         val loginRequest = LoginRequest(
                 email = email,
                 password = password
@@ -55,7 +53,6 @@ class AuthRepositoryImpl @Inject constructor(
        callRunner.makeApiCall(authRepo.attemptLogin(loginRequest)){
            when(it){
                is State.Success -> {
-                   loginFlowState.postValue(LoginFlowState.LoggedIn)
                    if (it.data != null) {
                        userManager.setNewUser(it.data.user)
                        tokenManager.setNewToken(it.data.token)
@@ -65,10 +62,10 @@ class AuthRepositoryImpl @Inject constructor(
                    loginFlowState.postValue(LoginFlowState.Loading)
                }
                is State.Error->{
-
                    when(it.error){
                         LoginFlowState.LoginError.errorInvalidEmail -> loginFlowState.postValue(LoginFlowState.LoginError.IncorrectEmail)
                         LoginFlowState.LoginError.errorInvalidPassword -> loginFlowState.postValue(LoginFlowState.LoginError.IncorrectPassword)
+                        else -> loginFlowState.postValue(LoginFlowState.LoginError.ConnectionError)
                    }
                }
            }

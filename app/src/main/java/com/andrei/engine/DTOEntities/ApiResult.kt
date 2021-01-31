@@ -8,6 +8,5 @@ data class ApiResult<out T>(
         @SerializedName("data")
         val data : T? ,
         @SerializedName("error")
-         val error :String?
-         )
+         val error :String?)
 

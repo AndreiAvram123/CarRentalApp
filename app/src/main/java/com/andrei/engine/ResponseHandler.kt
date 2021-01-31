@@ -29,6 +29,10 @@ class ResponseHandler private constructor(){
         return State.Error("Unknown Error")
     }
 
+    fun <T> handleNoInternetError():State<T>{
+        return State.Error("No internet")
+    }
+
     private fun logException(e:Exception){
         e.printStackTrace()
         if(!BuildConfig.DEBUG){

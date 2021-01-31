@@ -1,18 +1,27 @@
 package com.andrei.engine
 
+import android.net.ConnectivityManager
 import com.andrei.engine.DTOEntities.ApiResult
+import com.andrei.utils.isNotConnected
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.awaitResponse
 import javax.inject.Inject
 
-class CallRunner @Inject constructor(){
+class CallRunner @Inject constructor(
+        private val connectivityManager: ConnectivityManager
+){
 
     private val responseHandler = ResponseHandler.getInstance()
 
 
 
     suspend fun <T> makeApiCall(call: Call<ApiResult<T>>, update:suspend (state: State<T>)->Unit){
+
+        if(connectivityManager.isNotConnected()){
+            update(responseHandler.handleNoInternetError())
+            return
+        }
         update(State.Loading)
         val url = call.request().url.toString()
         try {

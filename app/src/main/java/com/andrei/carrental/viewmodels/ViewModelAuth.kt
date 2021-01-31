@@ -81,7 +81,7 @@ class ViewModelAuth  @ViewModelInject constructor(
 
     }
     private fun String.isPasswordValid():Boolean{
-        return this.length > 10
+        return this.length > 6
     }
 
 

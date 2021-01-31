@@ -62,4 +62,8 @@
         android:id="@+id/bookings_navigation_fragments"
         android:name="com.andrei.UI.fragments.BookingsFragment"
         android:label="BookingsFragment" />
+    <fragment
+        android:id="@+id/noInternetFragment"
+        android:name="com.andrei.UI.fragments.NoInternetFragment"
+        android:label="NoInternetFragment" /><action android:id="@+id/action_global_noInternetFragment" app:destination="@id/noInternetFragment"/>
 </navigation>

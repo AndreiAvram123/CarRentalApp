@@ -33,18 +33,22 @@ class RetrofitConfigurationModule {
          return AuthInterceptorWithToken(token)
     }
 
+    @Provides
+    fun provideRetrofitBuilderDefaultConfig():Retrofit.Builder{
+        return Retrofit.Builder().baseUrl("https://car-rental-api-kotlin.herokuapp.com").addConverterFactory(
+                GsonConverterFactory.create())
+    }
+
     @RetrofitInterceptorNoToken
     @Provides
-    fun provideRetrofitWithNoTokenInterceptor(authInterceptor: AuthInterceptorNoToken): Retrofit {
-        return Retrofit.Builder().baseUrl("https://car-rental-api-kotlin.herokuapp.com").addConverterFactory(
-                GsonConverterFactory.create()).client(OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(10)).addInterceptor(authInterceptor).build()).build()
+    fun provideRetrofitWithNoTokenInterceptor(authInterceptor: AuthInterceptorNoToken, builder:Retrofit.Builder): Retrofit {
+        return builder.client(OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(10)).addInterceptor(authInterceptor).build()).build()
 
     }
 
     @RetrofitInterceptorWithToken
     @Provides
-    fun provideRetrofitWithTokenInterceptor(authInterceptorWithToken: AuthInterceptorWithToken): Retrofit {
-        return Retrofit.Builder().baseUrl("https://car-rental-api-kotlin.herokuapp.com").addConverterFactory(
-                GsonConverterFactory.create()).client(OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(10)).addInterceptor(authInterceptorWithToken).build()).build()
+    fun provideRetrofitWithTokenInterceptor(authInterceptorWithToken: AuthInterceptorWithToken, builder: Retrofit.Builder): Retrofit {
+        return builder.client(OkHttpClient.Builder().connectTimeout(Duration.ofSeconds(10)).addInterceptor(authInterceptorWithToken).build()).build()
     }
 }
