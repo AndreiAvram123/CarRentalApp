@@ -35,6 +35,9 @@ class LoginFragment :Fragment() {
         viewModelAuth.errorPassword.reObserve(viewLifecycleOwner){
             binding.errorPassword = it
         }
+        viewModelAuth.isAuthenticationInProgress.reObserve(viewLifecycleOwner){
+           binding.isAuthenticationInProgress = it
+        }
 
     }
 

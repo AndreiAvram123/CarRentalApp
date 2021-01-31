@@ -10,6 +10,10 @@
         <variable
             name="errorPassword"
             type="String" />
+
+        <variable
+            name="isAuthenticationInProgress"
+            type="Boolean" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -81,11 +85,23 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="32dp"
         android:text="@string/confirm"
+        app:isVisible="@{!isAuthenticationInProgress}"
         app:backgroundTint="@color/example_4_green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         />
+
+    <ProgressBar
+        android:id="@+id/pb_auth_in_progress"
+        style="?android:attr/progressBarStyle"
+        app:isVisible="@{isAuthenticationInProgress}"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/bt_login"
+        app:layout_constraintEnd_toEndOf="@+id/bt_login"
+        app:layout_constraintStart_toStartOf="@+id/bt_login"
+        app:layout_constraintTop_toTopOf="@+id/bt_login" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -22,6 +22,9 @@ class ViewModelAuth  @ViewModelInject constructor(
         MutableLiveData()
     }
 
+    val isAuthenticationInProgress : LiveData<Boolean> = Transformations.map(authRepository.loginFlowState){
+        it is LoginFlowState.Loading
+    }
 
     val errorEmail : MediatorLiveData<String?> = MediatorLiveData<String?>().apply {
             addSource(emailEntered){
