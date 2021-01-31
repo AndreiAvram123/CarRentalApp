@@ -25,4 +25,6 @@
     <string name="key_user_id">key_user_id</string>
     <string name="key_user_email">key_user_email</string>
     <string name="screens_sign_up_username_hint">Username</string>
+    <string name="username_taken">Username already taken</string>
+    <string name="username_error_format">Format error</string>
 </resources>

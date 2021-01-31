@@ -3,6 +3,7 @@ package com.andrei.carrental.viewmodels
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.andrei.engine.repository.implementation.SignUpRepositoryImpl
+import com.andrei.engine.repository.interfaces.UsernameState
 
 class ViewModelSignUp @ViewModelInject constructor(
   private val signUpRepo: SignUpRepositoryImpl
@@ -16,7 +17,7 @@ class ViewModelSignUp @ViewModelInject constructor(
     }
 
 
-     val validationErrorUsername :LiveData<String?> = Transformations.switchMap(enteredUsername){
+     val validationErrorUsername :LiveData<UsernameState> = Transformations.switchMap(enteredUsername){
        signUpRepo.getValidationErrorForUsername(it).asLiveData()
     }
 
