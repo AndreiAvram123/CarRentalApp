@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.andrei.carrental.databinding.FragmentLoginLayoutBinding
-import com.andrei.carrental.viewmodels.ViewModelAuth
+import com.andrei.carrental.viewmodels.ViewModelLogin
 import com.andrei.utils.reObserve
 
 class LoginFragment :Fragment() {
 
     private lateinit var binding:FragmentLoginLayoutBinding
-    private val viewModelAuth : ViewModelAuth by activityViewModels ()
+    private val viewModelLogin : ViewModelLogin by activityViewModels ()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,13 +29,13 @@ class LoginFragment :Fragment() {
     }
 
     private fun attachObservers() {
-        viewModelAuth.errorEmail.reObserve(viewLifecycleOwner){
+        viewModelLogin.errorEmail.reObserve(viewLifecycleOwner){
          binding.errorEmail = it
         }
-        viewModelAuth.errorPassword.reObserve(viewLifecycleOwner){
+        viewModelLogin.errorPassword.reObserve(viewLifecycleOwner){
             binding.errorPassword = it
         }
-        viewModelAuth.isAuthenticationInProgress.reObserve(viewLifecycleOwner){
+        viewModelLogin.isAuthenticationInProgress.reObserve(viewLifecycleOwner){
            binding.isAuthenticationInProgress = it
         }
 
@@ -47,9 +47,9 @@ class LoginFragment :Fragment() {
 
     private fun attachViewListeners() {
         binding.btLogin.setOnClickListener {
-            viewModelAuth.emailEntered.value = binding.tfEmail.editText?.text.toString()
-            viewModelAuth.passwordEntered.value = binding.tfPassword.editText?.text.toString()
-            viewModelAuth.startLoginFlow()
+            viewModelLogin.emailEntered.value = binding.tfEmail.editText?.text.toString()
+            viewModelLogin.passwordEntered.value = binding.tfPassword.editText?.text.toString()
+            viewModelLogin.startLoginFlow()
         }
     }
 

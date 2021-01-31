@@ -4,6 +4,8 @@ import com.andrei.DI.annotations.RetrofitInterceptorNoToken
 import com.andrei.DI.annotations.RetrofitInterceptorWithToken
 import com.andrei.engine.configuration.AuthInterceptorWithToken
 import com.andrei.engine.configuration.AuthInterceptorNoToken
+import com.andrei.engine.repository.interfaces.SignUpRepository
+import com.andrei.engine.repository.interfaces.SignUpRepositoryInterface
 import com.andrei.engine.repositoryInterfaces.AuthRepoInterface
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
 import com.andrei.engine.repositoryInterfaces.PaymentRepoInterface
@@ -26,6 +28,10 @@ class RepoInterfacesModule {
     fun provideAuthRepoInterface(
             @RetrofitInterceptorNoToken
             retrofit: Retrofit): AuthRepoInterface = retrofit.create(AuthRepoInterface::class.java)
+    @Provides
+    fun provideSignUphRepoInterface(
+            @RetrofitInterceptorNoToken
+            retrofit: Retrofit): SignUpRepositoryInterface = retrofit.create(SignUpRepositoryInterface::class.java)
 
 
     @Provides

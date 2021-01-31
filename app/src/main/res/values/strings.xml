@@ -24,4 +24,5 @@
     <string name="screens_login_hint_email">Email</string>
     <string name="key_user_id">key_user_id</string>
     <string name="key_user_email">key_user_email</string>
+    <string name="screens_sign_up_username_hint">Username</string>
 </resources>
