@@ -35,6 +35,7 @@ allprojects {
                 password '220cc9476025679c4e5c843666c27d97cfb0f951'
             }
         }
+        maven { url = 'https://dl.bintray.com/kirich1409/maven' }
     }
 }
 

@@ -2,10 +2,7 @@ package com.andrei.DI
 
 import com.andrei.DI.annotations.RetrofitInterceptorNoToken
 import com.andrei.DI.annotations.RetrofitInterceptorWithToken
-import com.andrei.engine.repositoryInterfaces.SignUpRepositoryInterface
-import com.andrei.engine.repositoryInterfaces.AuthRepoInterface
-import com.andrei.engine.repositoryInterfaces.CarRepoInterface
-import com.andrei.engine.repositoryInterfaces.PaymentRepoInterface
+import com.andrei.engine.repositoryInterfaces.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,5 +33,10 @@ class RepoInterfacesModule {
     fun providePaymentRepoInterface(
         @RetrofitInterceptorWithToken retrofit: Retrofit
     ): PaymentRepoInterface = retrofit.create(PaymentRepoInterface::class.java)
+
+    @Provides
+    fun provideUserRepoInterface(
+            @RetrofitInterceptorWithToken retrofit: Retrofit
+    ):UserRepoInterface = retrofit.create(UserRepoInterface::class.java)
 
 }

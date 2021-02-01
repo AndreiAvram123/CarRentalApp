@@ -10,6 +10,8 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import by.kirich1409.viewbindingdelegate.CreateMethod
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentSignUpLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelSignUp
@@ -20,20 +22,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SignUpFragment : Fragment(){
+class SignUpFragment : Fragment(R.layout.fragment_sign_up_layout){
 
 
     private val viewModelSignUp:ViewModelSignUp by viewModels ()
 
-    private var binding:FragmentSignUpLayoutBinding? = null
+    private val  binding:FragmentSignUpLayoutBinding by viewBinding(createMethod  = CreateMethod.INFLATE)
 
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val newBinding =  FragmentSignUpLayoutBinding.inflate(inflater,container,false)
-        binding = newBinding
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initializeUI()
-        return newBinding.root
     }
 
     private fun initializeUI() {
@@ -44,15 +41,15 @@ class SignUpFragment : Fragment(){
     private fun attachObservers() {
             viewModelSignUp.validationErrorUsername.reObserve(viewLifecycleOwner) {
                 when(it){
-                    is UsernameState.Valid -> binding?.errorUsername = null
-                    is UsernameState.AlreadyTaken -> binding?.errorUsername = requireContext().getString(R.string.username_taken)
-                    is UsernameState.ErrorFormat -> binding?.errorUsername = requireContext().getString(R.string.username_error_format)
+                    is UsernameState.Valid -> binding.errorUsername = null
+                    is UsernameState.AlreadyTaken -> binding.errorUsername = requireContext().getString(R.string.username_taken)
+                    is UsernameState.ErrorFormat -> binding.errorUsername = requireContext().getString(R.string.username_error_format)
                 }
         }
     }
 
     private fun attachListenerForUsername() {
-        binding?.apply {
+        binding.apply {
             val handler = Handler(Looper.getMainLooper())
             val callback  =  Runnable{
                 //update the value as fast as possible
@@ -69,8 +66,4 @@ class SignUpFragment : Fragment(){
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
-    }
 }

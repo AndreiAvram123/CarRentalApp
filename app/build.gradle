@@ -49,6 +49,9 @@ android {
 
 dependencies {
 
+    implementation 'com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:1.4.1'
+
+
     implementation 'com.auth0.android:jwtdecode:2.0.0'
 
 

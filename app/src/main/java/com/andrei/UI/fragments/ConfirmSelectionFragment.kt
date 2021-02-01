@@ -14,7 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentConfirmSelectionBinding
-import com.andrei.carrental.entities.RentalPeriod
+import com.andrei.carrental.entities.Booking
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelPayment
 import com.andrei.engine.DTOEntities.*
@@ -65,9 +65,9 @@ class ConfirmSelectionFragment : Fragment() {
         }
 
     }
-    private fun updateUIWithRentalPeriod(rentalPeriod: RentalPeriod){
-        val startDate = rentalPeriod.startDate
-        val endDate = rentalPeriod.endDate
+    private fun updateUIWithRentalPeriod(booking: Booking){
+        val startDate = booking.startDate
+        val endDate = booking.endDate
         val days = ChronoUnit.DAYS.between(startDate,endDate)
         binding.apply {
             tvNumberDays.text = getString(R.string.days, days.toString())
@@ -133,7 +133,7 @@ class ConfirmSelectionFragment : Fragment() {
             val paymentRequest = PaymentRequest(nonce = result.paymentMethodNonce?.nonce,
                     deviceData = result.deviceData, amount = amountToPay)
             val rentInformation = RentInformation(
-                    rentalPeriodDTO = selectedDates.toRentalPeriodDTO(),
+                    bookingDTO = selectedDates.toBooking(),
                     currentCarID
             )
 

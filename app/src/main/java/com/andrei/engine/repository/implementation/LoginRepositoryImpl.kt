@@ -2,7 +2,7 @@ package com.andrei.engine.repository.implementation
 
 import androidx.lifecycle.*
 import com.andrei.engine.CallRunner
-import com.andrei.engine.DTOEntities.BasicUser
+import com.andrei.engine.DTOEntities.BasicUserLoginData
 import com.andrei.engine.State
 import com.andrei.engine.helpers.TokenManager
 import com.andrei.engine.helpers.TokenState
@@ -22,21 +22,21 @@ class LoginRepositoryImpl @Inject constructor(
 
     override val isUserLoggedIn: MediatorLiveData<Boolean>  by lazy {
         MediatorLiveData<Boolean>().apply {
-            addSource(user){
+            addSource(userLoginData){
                 if(it!=null && tokenManager.userToken.value is TokenState.Valid ){
                     value = true
                 }
             }
             addSource(tokenManager.userToken){
-                if(it is TokenState.Valid && user.value != null){
+                if(it is TokenState.Valid && userLoginData.value != null){
                     value = true
                 }
             }
         }
     }
 
-    override val user: LiveData<BasicUser> by lazy {
-        userManager.user
+    override val userLoginData: LiveData<BasicUserLoginData> by lazy {
+        userManager.userLoginData
     }
 
     override val loginFlowState: MutableLiveData<LoginFlowState> by lazy {
@@ -53,7 +53,7 @@ class LoginRepositoryImpl @Inject constructor(
            when(it){
                is State.Success -> {
                    if (it.data != null) {
-                       userManager.setNewUser(it.data.user)
+                       userManager.setNewUser(it.data.basicUserLoginData)
                        tokenManager.setNewToken(it.data.token)
                    }
                }

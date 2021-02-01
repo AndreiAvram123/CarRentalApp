@@ -2,7 +2,7 @@ package com.andrei.engine.DTOEntities
 
 import com.google.gson.annotations.SerializedName
 
-data class BasicUser(
+data class BasicUserLoginData(
         @SerializedName("email")
         val email:String,
         @SerializedName("id")

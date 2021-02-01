@@ -5,8 +5,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.andrei.carrental.R
-import com.andrei.carrental.entities.User
-import com.andrei.engine.DTOEntities.BasicUser
+import com.andrei.engine.DTOEntities.BasicUserLoginData
 import com.andrei.utils.edit
 import com.andrei.utils.getIntOrNull
 import com.andrei.utils.getStringOrNull
@@ -21,26 +20,26 @@ class UserManager @Inject constructor(
         @ApplicationContext private val  context:Context
 ) {
 
-    private val mUser : MutableLiveData<BasicUser> by lazy {
-        MutableLiveData<BasicUser>().also {
+    private val mUserLoginData : MutableLiveData<BasicUserLoginData> by lazy {
+        MutableLiveData<BasicUserLoginData>().also {
             getUserDetailsFromStorage()
         }
     }
 
-    val user:LiveData<BasicUser>
-    get() = mUser
+    val userLoginData:LiveData<BasicUserLoginData>
+    get() = mUserLoginData
 
 
 
-   fun setNewUser(basicUser: BasicUser){
-       saveUserInSharedPrefs(basicUser)
-       mUser.postValue(basicUser)
+   fun setNewUser(basicUserLoginData: BasicUserLoginData){
+       saveUserInSharedPrefs(basicUserLoginData)
+       mUserLoginData.postValue(basicUserLoginData)
    }
 
-    private fun saveUserInSharedPrefs(user:BasicUser){
+    private fun saveUserInSharedPrefs(userLoginData:BasicUserLoginData){
         sharedPreferences.edit {
-            putInt(context.getString(R.string.key_user_id),user.id)
-            putString(context.getString(R.string.key_user_email),user.email)
+            putInt(context.getString(R.string.key_user_id),userLoginData.id)
+            putString(context.getString(R.string.key_user_email),userLoginData.email)
         }
     }
 
@@ -50,7 +49,7 @@ class UserManager @Inject constructor(
             val email = sharedPreferences.getStringOrNull(context.getString(R.string.key_user_email))
             val id = sharedPreferences.getIntOrNull(context.getString(R.string.key_user_id))
             if (email != null && id != null) {
-                mUser.postValue(BasicUser(
+                mUserLoginData.postValue(BasicUserLoginData(
                         email = email,
                         id = id
                 ))

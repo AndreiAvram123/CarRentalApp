@@ -5,26 +5,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
 import com.andrei.carrental.entities.CarToRent
-import com.andrei.carrental.entities.RentalPeriod
+import com.andrei.carrental.entities.Booking
 import com.andrei.engine.CallRunner
 import com.andrei.carrental.entities.CarSearchEntity
-import com.andrei.engine.DTOEntities.toRentalPeriod
+import com.andrei.engine.DTOEntities.toBooking
 import com.andrei.engine.State
-import com.andrei.engine.configuration.AuthInterceptorWithToken
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.time.Duration
 import javax.inject.Inject
 
 class CarRepositoryImpl @Inject constructor(
         private val callRunner:CallRunner,
-        private val carRepo:CarRepoInterface
+        private val carRepo:CarRepoInterface,
 ){
 
 
@@ -37,11 +32,10 @@ class CarRepositoryImpl @Inject constructor(
 
     val currentSelectedCar : LiveData<State<CarToRent>> = Transformations.switchMap(currentCarID) { carID ->
         return@switchMap fetchCarById(carID).asLiveData()
-
     }
 
 
-    val unavailableDates : LiveData<State<List<RentalPeriod>>>  = Transformations.switchMap(currentCarID) { carId ->
+    val unavailableDates : LiveData<State<List<Booking>>>  = Transformations.switchMap(currentCarID) { carId ->
         return@switchMap fetchUnavailableDates(carId).asLiveData()
     }
 
@@ -68,7 +62,7 @@ class CarRepositoryImpl @Inject constructor(
    private  fun fetchUnavailableDates(carID:Long)  = flow{
         callRunner.makeApiCall(carRepo.getUnavailableDates(carID)){
             when(it){
-                is State.Success-> emit(State.Success(it.data?.map { date -> date.toRentalPeriod() }))
+                is State.Success-> emit(State.Success(it.data?.map { date -> date.toBooking() }))
                 is State.Loading -> emit(State.Loading)
                 is State.Error -> emit(State.Error(it.error))
             }

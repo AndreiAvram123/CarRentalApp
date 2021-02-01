@@ -14,7 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.Example4CalendarDayBinding
 import com.andrei.carrental.databinding.Example4FragmentBinding
-import com.andrei.carrental.entities.RentalPeriod
+import com.andrei.carrental.entities.Booking
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.engine.State
 import com.andrei.utils.*
@@ -42,7 +42,7 @@ class ChooseDateFragment : Fragment (){
 
     private val viewModelCar : ViewModelCar by activityViewModels()
 
-    private var unavailableDates:List<RentalPeriod>? = null
+    private var unavailableDates:List<Booking>? = null
 
     private val headerDateFormatter = DateTimeFormatter.ofPattern("EEE'\n'd MMM")
 
@@ -154,7 +154,7 @@ class ChooseDateFragment : Fragment (){
             val startDate = startDate
 
             if(startDate != null){
-                viewModelCar.currentSelectedDays.value = RentalPeriod(startDate = startDate,
+                viewModelCar.currentSelectedDays.value = Booking(startDate = startDate,
                         endDate = (endDate ?: startDate ))
                val action = ChooseDateFragmentDirections.actionChooseDatesFragmentToConfirmSelectionFragment()
                 findNavController().navigate(action)

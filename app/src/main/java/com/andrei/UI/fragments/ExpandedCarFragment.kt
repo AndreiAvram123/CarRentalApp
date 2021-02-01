@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import by.kirich1409.viewbindingdelegate.CreateMethod
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentExpandedCarBinding
 import com.andrei.carrental.entities.CarToRent
@@ -24,20 +26,20 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 
-class ExpandedCarFragment : Fragment() {
+class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
 
 
-    private lateinit var binding:FragmentExpandedCarBinding
+    private  val  binding:FragmentExpandedCarBinding by viewBinding()
 
     private val viewModelCar:ViewModelCar by activityViewModels()
 
     private val navArgs:ExpandedCarFragmentArgs by navArgs()
-    private var carToRent:CarToRent? = null
+
     private val MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey"
 
     private val mapReadyCallback = OnMapReadyCallback{ map ->
         binding.isMapLoading = false
-       carToRent?.let {
+         binding.car?.let {
            val carLocation =LatLng(it.latitude, it.longitude)
            map.addMarker(MarkerOptions().position(carLocation))
            map.moveCamera(
@@ -47,17 +49,15 @@ class ExpandedCarFragment : Fragment() {
        }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        binding = FragmentExpandedCarBinding.inflate(inflater, container, false)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModelCar.currentCarID.postValue(navArgs.carID)
 
         initializeUI(savedInstanceState)
 
 
-        return binding.root
     }
+
 
     private fun initializeUI(bundle:Bundle?) {
         var mapViewBundle: Bundle? = null
@@ -98,7 +98,6 @@ class ExpandedCarFragment : Fragment() {
             is State.Success -> {
                 state.data?.let {
                     binding.car = it
-                    carToRent = it
                     initializeMap()
                     updateCarouselVies(it.images)
                     binding.isLoading = false

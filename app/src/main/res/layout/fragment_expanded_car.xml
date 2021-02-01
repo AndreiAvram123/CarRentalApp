@@ -124,7 +124,7 @@
                 android:layout_height="60dp"
                 android:layout_marginStart="16dp"
                 android:background="@drawable/round_image"
-                app:imageFromURL="@{car.user.profilePicturePath}"
+                app:imageFromURL="@{car.basicUser.profileImage.imagePath}"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_lender_name"
                 app:layout_constraintLeft_toRightOf="@id/tv_lender_name"
                 app:layout_constraintTop_toTopOf="@id/tv_lender_name"
@@ -148,7 +148,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@{car.user.username}"
+                android:text="@{car.basicUser.username}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_hint_lend_by"
                 tools:text="Andrei" />

@@ -9,12 +9,12 @@ data class CarToRent(
        val images:List<Image>,
         @SerializedName("pricePerDay")
         val pricePerDay:Double,
-       @SerializedName("user")
-       val user:User,
-       @SerializedName("latitude")
+        @SerializedName("basicUser")
+        val basicUser: BasicUser,
+        @SerializedName("latitude")
        val latitude:Double,
-       @SerializedName("longitude")
+        @SerializedName("longitude")
        val longitude:Double,
-       @SerializedName("car")
-       val carModel :CarModel
+        @SerializedName("car")
+       val carModel : CarModel
 )
