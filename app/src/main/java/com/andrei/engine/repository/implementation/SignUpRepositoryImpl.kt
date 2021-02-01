@@ -16,6 +16,10 @@ class SignUpRepositoryImpl @Inject constructor(
 
 
     override fun getValidationErrorForUsername(username: String): Flow<UsernameState> = flow {
+        if(username.isUsernameInvalid()){
+            emit(UsernameState.ErrorFormat)
+            return@flow
+        }
         callRunner.makeApiCall(signUpRepo.checkIfUsernameIsAvailable(username)) {
             if (it is State.Success) {
                 if (it.data != null) {
@@ -29,6 +33,13 @@ class SignUpRepositoryImpl @Inject constructor(
             }
         }
     }
+
+
+    private fun String.isUsernameInvalid():Boolean{
+        return (this.isBlank() || this.length < 5)
+    }
+
+
 
 
     companion object ErrorMessages{

@@ -3,9 +3,12 @@ package com.andrei.UI.fragments
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -27,7 +30,7 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up_layout){
 
     private val viewModelSignUp:ViewModelSignUp by viewModels ()
 
-    private val  binding:FragmentSignUpLayoutBinding by viewBinding(createMethod  = CreateMethod.INFLATE)
+    private val  binding:FragmentSignUpLayoutBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initializeUI()
@@ -41,9 +44,16 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up_layout){
     private fun attachObservers() {
             viewModelSignUp.validationErrorUsername.reObserve(viewLifecycleOwner) {
                 when(it){
-                    is UsernameState.Valid -> binding.errorUsername = null
-                    is UsernameState.AlreadyTaken -> binding.errorUsername = requireContext().getString(R.string.username_taken)
-                    is UsernameState.ErrorFormat -> binding.errorUsername = requireContext().getString(R.string.username_error_format)
+                    is UsernameState.Valid -> {
+                        binding.errorUsername = null
+                        binding.tfUsername.endIconDrawable = ContextCompat.getDrawable(requireContext(),R.drawable.ic_check_24)
+                    }
+                    is UsernameState.AlreadyTaken -> {
+                        binding.errorUsername = requireContext().getString(R.string.username_taken)
+                    }
+                    is UsernameState.ErrorFormat -> {
+                        binding.errorUsername = requireContext().getString(R.string.username_error_format)
+                    }
                 }
         }
     }
@@ -52,18 +62,18 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up_layout){
         binding.apply {
             val handler = Handler(Looper.getMainLooper())
             val callback  =  Runnable{
-                //update the value as fast as possible
-                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main){
-                    viewModelSignUp.enteredUsername.value = tfUsername.editText?.text.toString()
+                val text  = tfUsername.editText?.text.toString()
+                    viewModelSignUp.enteredUsername.postValue(text)
                 }
-            }
             tfUsername.editText?.addTextChangedListener{
-                handler.removeCallbacks(callback)
-                handler.postDelayed(callback,1000)
+                handler.executeDelayed(callback)
             }
-
-
         }
+    }
+
+    private fun Handler.executeDelayed(callback:Runnable, time : Long = 500){
+       removeCallbacks(callback)
+       postDelayed(callback,1000)
     }
 
 }

@@ -11,6 +11,10 @@ fun bindErrorTextToField(textInputLayout: TextInputLayout, text: String?){
            isErrorEnabled = true
        }
    }else{
-        textInputLayout.isErrorEnabled = false
+        textInputLayout.apply {
+            error = null
+            isErrorEnabled = false
+
+        }
    }
 }
