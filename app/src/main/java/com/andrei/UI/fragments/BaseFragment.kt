@@ -8,6 +8,8 @@ import com.andrei.carrental.databinding.FragmentNoInternetLayoutBinding
 import com.andrei.utils.PermissionHandlerFragment
 
 abstract class BaseFragment (layoutID:Int) : Fragment(layoutID) {
+    abstract val binding: Any
+
     protected lateinit var permissionHandlerFragment :PermissionHandlerFragment
 
     @CallSuper
