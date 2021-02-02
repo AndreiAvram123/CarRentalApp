@@ -1,4 +1,8 @@
 package com.andrei.carrental.viewmodels
 
-class ViewModelBooking {
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.ViewModel
+
+class ViewModelBooking @ViewModelInject constructor() : ViewModel() {
+
 }
