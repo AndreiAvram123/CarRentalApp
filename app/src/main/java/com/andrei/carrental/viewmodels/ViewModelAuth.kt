@@ -6,7 +6,7 @@ import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.states.LoginFlowState
 import kotlinx.coroutines.launch
 
-class ViewModelLogin  @ViewModelInject constructor(
+class ViewModelAuth  @ViewModelInject constructor(
         private val loginRepository: LoginRepository
 ):   ViewModel() {
 

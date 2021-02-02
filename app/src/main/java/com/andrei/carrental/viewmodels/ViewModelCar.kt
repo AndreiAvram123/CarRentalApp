@@ -4,7 +4,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.andrei.carrental.entities.CarSearchEntity
 import com.andrei.carrental.entities.CarToRent
-import com.andrei.carrental.entities.Booking
+import com.andrei.carrental.entities.BookingDate
 import com.andrei.engine.State
 import com.andrei.engine.repository.implementation.CarRepositoryImpl
 import com.google.android.gms.maps.model.LatLng
@@ -28,11 +28,11 @@ class ViewModelCar @ViewModelInject constructor(
         carRepositoryImpl.currentSelectedCar
     }
 
-    val unavailableCarDates :LiveData<State<List<Booking>>> by lazy {
+    val unavailableCarDates :LiveData<State<List<BookingDate>>> by lazy {
         carRepositoryImpl.unavailableDates
     }
 
-   val currentSelectedDays:MutableLiveData<Booking> by lazy {
+   val currentSelectedDays:MutableLiveData<BookingDate> by lazy {
        MutableLiveData()
    }
 
@@ -64,8 +64,8 @@ class ViewModelCar @ViewModelInject constructor(
 
 
 
-    private fun calculateTotalAmount(booking: Booking, price :Double):Double{
-       return  (ChronoUnit.DAYS.between(booking.startDate,booking.endDate) + 1) * price
+    private fun calculateTotalAmount(bookingDate: BookingDate, price :Double):Double{
+       return  (ChronoUnit.DAYS.between(bookingDate.startDate,bookingDate.endDate) + 1) * price
     }
 
     fun fetchSuggestions(query:String, location:LatLng) {

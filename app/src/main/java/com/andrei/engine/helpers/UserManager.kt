@@ -14,7 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UserManager @Inject constructor(
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val  context:Context
@@ -53,6 +55,8 @@ class UserManager @Inject constructor(
                         email = email,
                         id = id
                 ))
+            }else{
+                mUserLoginData.postValue(null)
             }
         }
     }

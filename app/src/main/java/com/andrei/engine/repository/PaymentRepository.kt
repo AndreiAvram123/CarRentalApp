@@ -1,15 +1,11 @@
 package com.andrei.engine.repository
 
 import com.andrei.engine.CallRunner
-import com.andrei.engine.DTOEntities.CheckoutRequest
-import com.andrei.engine.configuration.AuthInterceptorWithToken
 import com.andrei.engine.repositoryInterfaces.PaymentRepoInterface
+import com.andrei.engine.requestModels.NewBookingRequestModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
 class PaymentRepository @Inject constructor(
@@ -23,7 +19,7 @@ class PaymentRepository @Inject constructor(
        }
    }.flowOn(GlobalScope.coroutineContext)
 
-fun checkout(checkoutRequest: CheckoutRequest) = flow{
+fun checkout(checkoutRequest: NewBookingRequestModel) = flow{
     callRunner.makeApiCall(this@PaymentRepository.paymentRepoInterface.checkout(checkoutRequest)){
         emit(it)
     }

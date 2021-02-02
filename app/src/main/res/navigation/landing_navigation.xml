@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/landing_navigation"
-    app:startDestination="@id/signUpFragment">
+    app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.andrei.UI.fragments.LoginFragment"
-        android:label="LoginFragment" />
+        android:label="LoginFragment">
+        <action
+            android:id="@+id/action_loginFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment"
+            app:enterAnim="@anim/slide_in_to_left"
+            app:popEnterAnim="@anim/slide_in_to_right"
+            />
+    </fragment>
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.andrei.UI.fragments.SignUpFragment"
-        android:label="SignUpFragment" />
+        android:label="SignUpFragment"
+        />
 </navigation>

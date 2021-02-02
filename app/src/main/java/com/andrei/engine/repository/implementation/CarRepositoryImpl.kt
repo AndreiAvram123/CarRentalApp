@@ -5,10 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
 import com.andrei.carrental.entities.CarToRent
-import com.andrei.carrental.entities.Booking
+import com.andrei.carrental.entities.BookingDate
 import com.andrei.engine.CallRunner
 import com.andrei.carrental.entities.CarSearchEntity
 import com.andrei.engine.DTOEntities.toBooking
+import com.andrei.engine.DTOEntities.toBookingDTO
 import com.andrei.engine.State
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
 import com.google.android.gms.maps.model.LatLng
@@ -35,7 +36,7 @@ class CarRepositoryImpl @Inject constructor(
     }
 
 
-    val unavailableDates : LiveData<State<List<Booking>>>  = Transformations.switchMap(currentCarID) { carId ->
+    val unavailableDates : LiveData<State<List<BookingDate>>>  = Transformations.switchMap(currentCarID) { carId ->
         return@switchMap fetchUnavailableDates(carId).asLiveData()
     }
 

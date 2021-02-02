@@ -12,7 +12,7 @@ import androidx.navigation.ui.NavigationUI
 import com.andrei.UI.helpers.InternetConnectionHandler
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
-import com.andrei.carrental.viewmodels.ViewModelLogin
+import com.andrei.carrental.viewmodels.ViewModelAuth
 import com.andrei.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding:ActivityMainBinding
     private lateinit var navController:NavController
-    private val  viewModelLogin:ViewModelLogin by viewModels()
+    private val  viewModelAuth:ViewModelAuth by viewModels()
     private var internetConnectionHandler:InternetConnectionHandler? = null
 
 
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
          binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setUpNavigation()
         attachLocationObserver()
-        viewModelLogin.isUserLoggedIn.reObserve(this,observerUserLoggedIn)
+        viewModelAuth.isUserLoggedIn.reObserve(this,observerUserLoggedIn)
 
     }
 

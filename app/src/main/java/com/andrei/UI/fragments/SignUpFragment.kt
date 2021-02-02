@@ -13,6 +13,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
@@ -38,6 +39,11 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up_layout){
 
     private fun initializeUI() {
         attachObservers()
+        attachListeners()
+    }
+
+    private fun attachListeners() {
+        binding.btBack.setOnClickListener { findNavController().popBackStack() }
         attachListenerForUsername()
     }
 

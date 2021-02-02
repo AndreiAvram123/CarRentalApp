@@ -6,51 +6,55 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentLoginLayoutBinding
-import com.andrei.carrental.viewmodels.ViewModelLogin
+import com.andrei.carrental.viewmodels.ViewModelAuth
 import com.andrei.utils.reObserve
 
-class LoginFragment :Fragment() {
+class LoginFragment :Fragment(R.layout.fragment_login_layout) {
 
-    private lateinit var binding:FragmentLoginLayoutBinding
-    private val viewModelLogin : ViewModelLogin by activityViewModels ()
+    private  val  binding:FragmentLoginLayoutBinding by viewBinding()
+    private val viewModelAuth : ViewModelAuth by activityViewModels ()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentLoginLayoutBinding.inflate(inflater,container,false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initializeUI()
-        attachObservers()
-
-
-       return binding.root
     }
 
     private fun attachObservers() {
-        viewModelLogin.errorEmail.reObserve(viewLifecycleOwner){
+        viewModelAuth.errorEmail.reObserve(viewLifecycleOwner){
          binding.errorEmail = it
         }
-        viewModelLogin.errorPassword.reObserve(viewLifecycleOwner){
+        viewModelAuth.errorPassword.reObserve(viewLifecycleOwner){
             binding.errorPassword = it
         }
-        viewModelLogin.isAuthenticationInProgress.reObserve(viewLifecycleOwner){
+        viewModelAuth.isAuthenticationInProgress.reObserve(viewLifecycleOwner){
            binding.isAuthenticationInProgress = it
         }
 
     }
 
     private fun initializeUI() {
+        attachObservers()
         attachViewListeners()
     }
 
     private fun attachViewListeners() {
-        binding.btLogin.setOnClickListener {
-            viewModelLogin.emailEntered.value = binding.tfEmail.editText?.text.toString()
-            viewModelLogin.passwordEntered.value = binding.tfPassword.editText?.text.toString()
-            viewModelLogin.startLoginFlow()
+        binding.apply {
+            btLogin.setOnClickListener {
+            viewModelAuth.emailEntered.value = binding.tfEmail.editText?.text.toString()
+            viewModelAuth.passwordEntered.value = binding.tfPassword.editText?.text.toString()
+            viewModelAuth.startLoginFlow()
         }
+            tfRegister.setOnClickListener {
+                val action = LoginFragmentDirections.actionLoginFragmentToSignUpFragment()
+                findNavController().navigate(action)
+            }
+
+        }
+
+
     }
 
 }

@@ -6,7 +6,7 @@
    <data>
        <variable
            name="viewModelAuth"
-           type="com.andrei.carrental.viewmodels.ViewModelLogin" />
+           type="com.andrei.carrental.viewmodels.ViewModelAuth" />
    </data>
     <RelativeLayout
         android:layout_width="match_parent"

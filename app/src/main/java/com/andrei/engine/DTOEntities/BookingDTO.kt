@@ -1,6 +1,6 @@
 package com.andrei.engine.DTOEntities
 
-import com.andrei.carrental.entities.Booking
+import com.andrei.carrental.entities.BookingDate
 import com.andrei.utils.fromUnixToLocalDate
 import com.andrei.utils.toUnix
 import com.google.gson.annotations.SerializedName
@@ -13,9 +13,9 @@ data class BookingDTO(
 )
 
 
-fun BookingDTO.toBooking():Booking{
-    return Booking(startDate = this.startDate.fromUnixToLocalDate(),endDate = this.endDate.fromUnixToLocalDate())
+fun BookingDTO.toBooking():BookingDate{
+    return BookingDate(startDate = this.startDate.fromUnixToLocalDate(),endDate = this.endDate.fromUnixToLocalDate())
 }
-fun Booking.toBooking():BookingDTO{
+fun BookingDate.toBookingDTO():BookingDTO{
     return BookingDTO(startDate = this.startDate.toUnix(),endDate = this.endDate.toUnix())
 }

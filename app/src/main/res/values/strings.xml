@@ -27,4 +27,6 @@
     <string name="screens_sign_up_username_hint">Username</string>
     <string name="username_taken">Username already taken</string>
     <string name="username_error_format">Format error</string>
+    <string name="screens_login_login_bt_text">Login</string>
+    <string name="screens_login_register_text">Register</string>
 </resources>
