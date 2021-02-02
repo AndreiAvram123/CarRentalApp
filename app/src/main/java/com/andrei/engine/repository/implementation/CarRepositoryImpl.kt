@@ -8,8 +8,7 @@ import com.andrei.carrental.entities.CarToRent
 import com.andrei.carrental.entities.BookingDate
 import com.andrei.engine.CallRunner
 import com.andrei.carrental.entities.CarSearchEntity
-import com.andrei.engine.DTOEntities.toBooking
-import com.andrei.engine.DTOEntities.toBookingDTO
+import com.andrei.engine.DTOEntities.toBookingDate
 import com.andrei.engine.State
 import com.andrei.engine.repositoryInterfaces.CarRepoInterface
 import com.google.android.gms.maps.model.LatLng
@@ -63,7 +62,7 @@ class CarRepositoryImpl @Inject constructor(
    private  fun fetchUnavailableDates(carID:Long)  = flow{
         callRunner.makeApiCall(carRepo.getUnavailableDates(carID)){
             when(it){
-                is State.Success-> emit(State.Success(it.data?.map { date -> date.toBooking() }))
+                is State.Success-> emit(State.Success(it.data?.map { date -> date.toBookingDate() }))
                 is State.Loading -> emit(State.Loading)
                 is State.Error -> emit(State.Error(it.error))
             }

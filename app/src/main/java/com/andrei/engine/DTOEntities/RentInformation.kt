@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class RentInformation(
         @SerializedName("bool")
-        val bookingDTO: BookingDTO,
+        val bookingDateDTO: BookingDateDTO,
         @SerializedName("carToRentID")
         val carToRentID:Long
 

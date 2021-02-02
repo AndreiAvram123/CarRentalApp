@@ -1,21 +1,13 @@
 package com.andrei.engine.DTOEntities
 
-import com.andrei.carrental.entities.BookingDate
-import com.andrei.utils.fromUnixToLocalDate
-import com.andrei.utils.toUnix
+import com.andrei.carrental.entities.Booking
+import com.andrei.carrental.entities.CarToRent
 import com.google.gson.annotations.SerializedName
 
 data class BookingDTO(
-        @SerializedName("startDate")
-        val startDate:Long,
-        @SerializedName("endDate")
-        val endDate:Long
+        @SerializedName("date")
+        val bookingDate: BookingDateDTO,
+        @SerializedName("rentedCar")
+        val car: CarToRent
 )
-
-
-fun BookingDTO.toBooking():BookingDate{
-    return BookingDate(startDate = this.startDate.fromUnixToLocalDate(),endDate = this.endDate.fromUnixToLocalDate())
-}
-fun BookingDate.toBookingDTO():BookingDTO{
-    return BookingDTO(startDate = this.startDate.toUnix(),endDate = this.endDate.toUnix())
-}
+fun BookingDTO.toBooking(): Booking = Booking(bookingDate = this.bookingDate.toBookingDate(),car = this.car )
