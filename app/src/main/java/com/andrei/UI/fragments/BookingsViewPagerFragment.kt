@@ -8,11 +8,11 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class BookingsViewPagerFragment : BaseFragment(R.layout.fragment_bookings_view_pager_layout) {
 
-    override val binding: FragmentBookingsViewPagerLayoutBinding by viewBinding()
+     val binding: FragmentBookingsViewPagerLayoutBinding by viewBinding()
 
     override fun initializeUI() {
         binding.vp.apply {
-            adapter = BookingsViewPagerAdapter(requireActivity())
+            adapter = BookingsViewPagerAdapter(this@BookingsViewPagerFragment)
         }
         TabLayoutMediator(binding.tabLayout,binding.vp){ tab,position ->
             tab.text = when(position){

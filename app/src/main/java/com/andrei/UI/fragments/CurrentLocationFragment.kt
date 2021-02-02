@@ -126,6 +126,7 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
 
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeUI()

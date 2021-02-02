@@ -5,16 +5,15 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.andrei.UI.fragments.BookingsFragment
 
-class BookingsViewPagerAdapter(fa:FragmentActivity) : FragmentStateAdapter(fa){
+class BookingsViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment){
 
-    val fragments:List<Fragment> = listOf(BookingsFragment(),BookingsFragment())
 
     override fun getItemCount(): Int {
-        return fragments.size
+        return 2
     }
 
     override fun createFragment(position: Int): Fragment {
-       return  fragments[position]
+       return  BookingsFragment()
     }
 
 }

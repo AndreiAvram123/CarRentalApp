@@ -11,7 +11,7 @@ import com.andrei.carrental.databinding.FragmentNoInternetLayoutBinding
 
 class NoInternetFragment : BaseFragment(R.layout.fragment_no_internet_layout) {
 
-      private val binding: FragmentNoInternetLayoutBinding by viewBinding()
+    val binding: FragmentNoInternetLayoutBinding by viewBinding()
 
     override fun initializeUI() {
         binding.apply{

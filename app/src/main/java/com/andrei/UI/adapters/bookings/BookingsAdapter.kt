@@ -6,8 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.andrei.carrental.databinding.PreviousBookingLayoutBinding
 import com.andrei.carrental.entities.Booking
 
-class BookingsAdapter(private val bookings:MutableList<Booking>,
-                      private val bookingType:BookingType ): RecyclerView.Adapter<BaseViewHolderBooking>() {
+class BookingsAdapter(private val bookingType:BookingType ): RecyclerView.Adapter<BaseViewHolderBooking>() {
+
+    private val bookings:MutableList<Booking> = mutableListOf()
 
     enum class BookingType{
         PREVIOUS,

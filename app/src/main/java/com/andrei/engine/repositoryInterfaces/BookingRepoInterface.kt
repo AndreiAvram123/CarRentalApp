@@ -4,8 +4,9 @@ import com.andrei.engine.DTOEntities.BookingDTO
 import com.andrei.engine.DTOEntities.BookingDateDTO
 import com.andrei.engine.configuration.CallWrapper
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 interface BookingRepoInterface {
-@GET("")
-fun getBookings(userID:Int): CallWrapper<List<BookingDTO>>
+@GET("/users/{userID}/bookings")
+fun getBookings(@Path("userID") userID:Int): CallWrapper<List<BookingDTO>>
 }

@@ -39,4 +39,9 @@ class RepoInterfacesModule {
             @RetrofitInterceptorWithToken retrofit: Retrofit
     ):UserRepoInterface = retrofit.create(UserRepoInterface::class.java)
 
+    @Provides
+    fun provideBookingsRepoInterface(
+            @RetrofitInterceptorWithToken retrofit: Retrofit
+    ):BookingRepoInterface = retrofit.create(BookingRepoInterface::class.java)
+
 }

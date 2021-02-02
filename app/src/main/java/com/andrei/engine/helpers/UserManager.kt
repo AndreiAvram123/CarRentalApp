@@ -10,13 +10,14 @@ import com.andrei.utils.edit
 import com.andrei.utils.getIntOrNull
 import com.andrei.utils.getStringOrNull
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
+@ActivityScoped
 class UserManager @Inject constructor(
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val  context:Context
