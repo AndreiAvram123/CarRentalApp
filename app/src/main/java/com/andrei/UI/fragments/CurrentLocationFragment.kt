@@ -33,7 +33,7 @@ import javax.inject.Inject
 
 @SuppressLint("MissingPermission")
 @AndroidEntryPoint
-class CurrentLocationFragment : BaseFragment() {
+class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location) {
 
 
     @Inject
@@ -93,15 +93,7 @@ class CurrentLocationFragment : BaseFragment() {
         getDeviceLocation()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_current_location, container, false)
-    }
-
-    private fun initializeUI() {
+     override fun initializeUI() {
         viewModelLocation.nearbyCars.reObserve(viewLifecycleOwner) { stateCarsToRent ->
             map?.clear()
             markersOnMap.clear()

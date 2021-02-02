@@ -60,7 +60,7 @@
         tools:layout="@layout/fragment_successful_payment" />
     <fragment
         android:id="@+id/bookings_navigation_fragments"
-        android:name="com.andrei.UI.fragments.BookingsFragment"
+        android:name="com.andrei.UI.fragments.BookingsViewPagerFragment"
         android:label="BookingsFragment" />
     <fragment
         android:id="@+id/noInternetFragment"

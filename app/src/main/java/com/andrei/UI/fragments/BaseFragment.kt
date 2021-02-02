@@ -2,16 +2,19 @@ package com.andrei.UI.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import com.andrei.carrental.databinding.FragmentNoInternetLayoutBinding
 import com.andrei.utils.PermissionHandlerFragment
 
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment (layoutID:Int) : Fragment(layoutID) {
     protected lateinit var permissionHandlerFragment :PermissionHandlerFragment
 
+    @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         this.permissionHandlerFragment = PermissionHandlerFragment(this)
+        initializeUI()
     }
 
     override fun onRequestPermissionsResult(
@@ -20,5 +23,6 @@ abstract class BaseFragment : Fragment() {
             grantResults: IntArray
     ) = permissionHandlerFragment.notifyChange(requestCode, grantResults)
 
+    abstract fun initializeUI()
 
 }

@@ -5,25 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentNoInternetLayoutBinding
 
-class NoInternetFragment : BaseFragment() {
-    private  var binding: FragmentNoInternetLayoutBinding? = null
+class NoInternetFragment : BaseFragment(R.layout.fragment_no_internet_layout) {
 
+      private val binding: FragmentNoInternetLayoutBinding by viewBinding()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = FragmentNoInternetLayoutBinding.inflate(inflater,container,false)
-        binding?.apply{
+    override fun initializeUI() {
+        binding.apply{
             btRetry.setOnClickListener {
                 findNavController().popBackStack()
             }
         }
-        return binding?.root
+
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
-    }
+
+
 }
