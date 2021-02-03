@@ -6,8 +6,8 @@ import com.google.gson.annotations.SerializedName
 
 data class BookingDTO(
         @SerializedName("date")
-        val bookingDate: BookingDateDTO,
-        @SerializedName("rentedCar")
-        val car: CarToRent
+        val date: BookingDateDTO,
+        @SerializedName("carRented")
+        val carRented: CarToRent
 )
-fun BookingDTO.toBooking(): Booking = Booking(bookingDate = this.bookingDate.toBookingDate(),car = this.car )
+fun BookingDTO.toBooking(): Booking = Booking(bookingDate = this.date.toBookingDate(),car = this.carRented )

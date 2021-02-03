@@ -16,6 +16,7 @@ import com.andrei.carrental.databinding.FragmentExpandedCarBinding
 import com.andrei.carrental.entities.CarToRent
 import com.andrei.carrental.entities.Image
 import com.andrei.carrental.viewmodels.ViewModelCar
+import com.andrei.engine.DTOEntities.toLatLng
 import com.andrei.engine.State
 import com.andrei.utils.loadFromURl
 import com.andrei.utils.reObserve
@@ -40,7 +41,7 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
     private val mapReadyCallback = OnMapReadyCallback{ map ->
         binding.isMapLoading = false
          binding.car?.let {
-           val carLocation =LatLng(it.latitude, it.longitude)
+           val carLocation = it.location.toLatLng()
            map.addMarker(MarkerOptions().position(carLocation))
            map.moveCamera(
                    CameraUpdateFactory

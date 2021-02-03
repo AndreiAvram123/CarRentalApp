@@ -10,6 +10,7 @@ import com.andrei.carrental.databinding.FragmentBookingsLayoutBinding
 import com.andrei.carrental.entities.Booking
 import com.andrei.carrental.viewmodels.ViewModelBookings
 import com.andrei.engine.State
+import com.andrei.utils.hide
 import com.andrei.utils.reObserve
 import com.andrei.utils.show
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,9 +32,10 @@ class BookingsFragment :BaseFragment(R.layout.fragment_bookings_layout){
             when(it){
                 is State.Success -> {
                     updateRecyclerView(it.data)
+                    binding.pbBookings.hide()
                 }
                 is State.Loading -> {
-
+                    binding.pbBookings.show()
                 }
                 is State.Error ->{
 

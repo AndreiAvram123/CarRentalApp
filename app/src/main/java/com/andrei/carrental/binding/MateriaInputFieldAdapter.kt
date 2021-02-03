@@ -1,4 +1,4 @@
-package com.andrei.carrental.bindingAdapters
+package com.andrei.carrental.binding
 
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout

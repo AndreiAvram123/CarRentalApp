@@ -4,7 +4,6 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.andrei.UI.fragments.BaseFragment
 import com.andrei.carrental.entities.Booking
 import com.andrei.engine.DTOEntities.toBooking
 import com.andrei.engine.State
@@ -19,7 +18,7 @@ class ViewModelBookings @ViewModelInject constructor(
         when(state){
             is State.Error -> state
             is State.Success -> {
-               val newData = state.data?.filter { it.bookingDate.endDate < System.currentTimeMillis() }?.map { it.toBooking() }
+               val newData = state.data?.filter { it.date.endDate < System.currentTimeMillis() }?.map { it.toBooking() }
                 return@map  State.Success(newData)
             }
             is State.Loading -> state

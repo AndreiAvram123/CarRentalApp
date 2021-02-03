@@ -26,7 +26,7 @@
             android:layout_marginBottom="8dp"
             android:adjustViewBounds="true"
             android:contentDescription=""
-            app:imageFromURL="@{car.imagePath}"
+            app:imageFromURL="@{car.image}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

@@ -3,18 +3,16 @@ package com.andrei.UI.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.viewmodels.ViewModelLocation
+import com.andrei.engine.DTOEntities.GeoPoint
 import com.andrei.engine.State
 import com.andrei.utils.LocationSettingsHandler
 import com.andrei.utils.fetchBitmap
@@ -102,7 +100,7 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
                     stateCarsToRent.data?.forEach {
                         if (it.images.isNotEmpty()) {
                             fetchBitmap(requireContext(), it.images.first().imagePath) { bitmap ->
-                                addMarkerToMap(it.latitude,it.longitude,bitmap,it.id)
+                                addMarkerToMap(it.location,bitmap,it.id)
 
                             }
                         }
@@ -111,12 +109,12 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
         }
     }
 
-    private fun addMarkerToMap(latitude:Double,longitude:Double, bitmap:Bitmap,id:Long){
+    private fun addMarkerToMap(location:GeoPoint, bitmap:Bitmap, id:Long){
        map?.addMarker(
                 MarkerOptions().position(
                         LatLng(
-                                latitude,
-                                longitude
+                                location.latitude,
+                                location.longitude
                         )
                 ))?.apply {
                   setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))

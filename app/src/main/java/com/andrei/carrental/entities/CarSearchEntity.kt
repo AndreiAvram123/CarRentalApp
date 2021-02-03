@@ -7,8 +7,8 @@ data class CarSearchEntity(
         val id :Long,
         @SerializedName("name")
         val name:String,
-        @SerializedName("imagePath")
-        val imagePath :String?,
+        @SerializedName("image")
+        val image :Image,
         @SerializedName("distanceFromLocation")
         val distanceFromLocation:Double
 )

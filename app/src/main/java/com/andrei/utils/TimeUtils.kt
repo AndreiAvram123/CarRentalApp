@@ -18,6 +18,6 @@ fun Long.fromUnixToLocalDate():LocalDate =
     Instant.ofEpochMilli(this * 1000).atZone(ZoneId.systemDefault()).toLocalDate()
 
 
-fun LocalDate.formatWithPattern(pattern: String):String{
+fun LocalDate.formatWithPattern(pattern: String = "dd LLLL yyyy"):String{
     return this.format(DateTimeFormatter.ofPattern(pattern))
 }
