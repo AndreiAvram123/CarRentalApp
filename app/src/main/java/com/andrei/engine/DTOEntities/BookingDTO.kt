@@ -10,4 +10,4 @@ data class BookingDTO(
         @SerializedName("carRented")
         val carRented: CarToRent
 )
-fun BookingDTO.toBooking(): Booking = Booking(bookingDate = this.date.toBookingDate(),car = this.carRented )
+fun BookingDTO.toBooking(): Booking = Booking(date = this.date.toBookingDate(),car = this.carRented )

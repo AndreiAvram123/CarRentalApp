@@ -26,7 +26,7 @@ class LocationSettingsHandler {
     }
 
      var locationRequest:LocationRequest? = null
-    private var registeredActivity:Activity ? = null
+       private var registeredActivity:Activity ? = null
 
 
     fun registerActivityForResult(activity: Activity){
@@ -45,7 +45,8 @@ class LocationSettingsHandler {
 
             val client = LocationServices.getSettingsClient(tempRegisteredActivity)
             val task = client.checkLocationSettings(builder.build())
-
+//todo
+            //use await
             task.addOnSuccessListener {
                 currentLocationNeedsSatisfied.postValue(true)
             }

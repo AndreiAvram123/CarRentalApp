@@ -16,8 +16,8 @@ class BookingsViewPagerFragment : BaseFragment(R.layout.fragment_bookings_view_p
         }
         TabLayoutMediator(binding.tabLayout,binding.vp){ tab,position ->
             tab.text = when(position){
-             1-> "Upcoming"
-             2-> "Current"
+             0-> "Upcoming"
+             1-> "Current"
              else ->"Previous"
             }
         }.attach()

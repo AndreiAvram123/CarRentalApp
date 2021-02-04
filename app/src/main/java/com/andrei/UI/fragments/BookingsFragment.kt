@@ -1,6 +1,7 @@
 package com.andrei.UI.fragments
 
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.adapters.CustomDivider
@@ -16,37 +17,55 @@ import com.andrei.utils.show
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BookingsFragment :BaseFragment(R.layout.fragment_bookings_layout){
+class BookingsFragment(
+        private val bookingType:BookingType) :BaseFragment(R.layout.fragment_bookings_layout){
+
+    enum class BookingType{
+        PREVIOUS,
+        CURRENT,
+        UPCOMING
+    }
 
      val binding: FragmentBookingsLayoutBinding by viewBinding()
 
+    private val observerBookings = Observer<State<List<Booking>>>{
+        when(it){
+            is State.Success -> {
+                updateRecyclerView(it.data)
+                binding.pbBookings.hide()
+            }
+            is State.Loading -> {
+                binding.pbBookings.show()
+            }
+            is State.Error ->{
+
+            }
+        }
+    }
+
+
+
     private val viewModelBookings:ViewModelBookings by viewModels()
+
+
      private val bookingsAdapter:BookingsAdapter by lazy {
-         BookingsAdapter(BookingsAdapter.BookingType.PREVIOUS)
+         BookingsAdapter(bookingType)
      }
 
 
     override fun initializeUI() {
        initializeRecyclerView()
-        viewModelBookings.previousBookings.reObserve(viewLifecycleOwner){
-            when(it){
-                is State.Success -> {
-                    updateRecyclerView(it.data)
-                    binding.pbBookings.hide()
-                }
-                is State.Loading -> {
-                    binding.pbBookings.show()
-                }
-                is State.Error ->{
-
-                }
-            }
+        when(bookingType){
+            BookingType.PREVIOUS->viewModelBookings.previousBookings.reObserve(viewLifecycleOwner,observerBookings)
+            BookingType.CURRENT->viewModelBookings.currentBookings.reObserve(viewLifecycleOwner,observerBookings)
+            BookingType.UPCOMING->viewModelBookings.upcomingBookings.reObserve(viewLifecycleOwner,observerBookings)
         }
+
     }
 
     private fun updateRecyclerView(bookings:List<Booking>?){
         if(bookings.isNullOrEmpty()){
-          TODO("show no data message")
+
         }else{
             bookingsAdapter.setNewBookings(bookings)
         }

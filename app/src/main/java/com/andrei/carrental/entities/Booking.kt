@@ -1,6 +1,6 @@
 package com.andrei.carrental.entities
 
 data class Booking(
-        val bookingDate: BookingDate,
+        val date: BookingDate,
         val car: CarToRent
 )
