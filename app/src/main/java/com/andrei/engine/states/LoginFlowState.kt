@@ -2,7 +2,9 @@ package com.andrei.engine.states
 
 
 sealed class LoginFlowState{
+    object LoggedIn : LoginFlowState()
     object Loading: LoginFlowState()
+    object NotLoggedIn:LoginFlowState()
 
     open class LoginError(val error:String)  : LoginFlowState() {
         object IncorrectPassword :LoginError(errorInvalidPassword)

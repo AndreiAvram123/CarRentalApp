@@ -9,4 +9,8 @@
       android:title="@string/navigation_bookings"
       android:icon="@drawable/ic_calendar"
       />
+  <item android:id="@+id/settingsFragment"
+      android:title="@string/navigation_settings"
+      android:icon="@drawable/ic_settings"
+      />
 </menu>

@@ -6,7 +6,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.andrei.carrental.R
 import com.andrei.utils.edit
 import com.andrei.utils.getStringOrNull
@@ -26,58 +25,66 @@ class TokenManager @Inject constructor(
         @ApplicationContext private val  context: Context) {
 
 
-    private val mUserToken:MutableLiveData<TokenState> by lazy {
+    private val handler:Handler by lazy{
+        Handler(Looper.getMainLooper())
+    }
+    private val invalidationRunnable = Runnable {
+        clearToken()
+    }
+
+    private val _userToken:MutableLiveData<TokenState> by lazy {
         MutableLiveData<TokenState>().also {
             checkTokenForUser()
         }
     }
 
-    val userToken:LiveData<TokenState> = Transformations.map(mUserToken) {
-        it
-    }
-
+    val userToken:LiveData<TokenState>
+    get() = _userToken
 
     private fun checkTokenForUser(){
         //make sure to use post value on a background thread
         GlobalScope.launch(Dispatchers.IO) {
             val token =  sharedPreferences.getStringOrNull(context.getString(R.string.key_token))
             when{
-                token == null -> mUserToken.postValue(TokenState.Invalid)
+                token == null -> _userToken.postValue(TokenState.Invalid)
                 isTokenValid(token) -> useToken(token)
-                else -> mUserToken.postValue(TokenState.Invalid)
+                else -> _userToken.postValue(TokenState.Invalid)
             }
         }
     }
 
     private fun useToken(token:String){
-        mUserToken.postValue(TokenState.Valid)
+        _userToken.postValue(TokenState.Valid)
         logUserOutWhenTokenExpires(token)
+    }
+
+    fun clearToken(){
+        removeTokenFromPersistence()
+        _userToken.postValue(TokenState.Invalid)
+        stopInvalidationTimer()
     }
 
     private fun logUserOutWhenTokenExpires(token: String) {
         val parsedJWT = JWT(token)
         val expireDate = parsedJWT.expiresAt
         expireDate?.let {
-            val invalidateTokenAfterSeconds = (it.time - Date().time) / 1000
-            Handler(Looper.getMainLooper()).postDelayed({
-                invalidateToken()
-                removeToken()
-            }, invalidateTokenAfterSeconds)
+            val invalidationTime = (it.time - Date().time) / 1000
+            handler.postDelayed(invalidationRunnable,invalidationTime)
         }
     }
 
-
-
-    private fun invalidateToken() {
-        mUserToken.postValue(TokenState.Invalid)
+    private fun stopInvalidationTimer(){
+        handler.removeCallbacks(invalidationRunnable)
     }
-    private fun removeToken(){
+
+
+    private fun removeTokenFromPersistence(){
         sharedPreferences.removeValue(context.getString(R.string.key_token))
     }
 
     fun setNewToken(token:String){
         saveToken(token)
-        mUserToken.postValue(TokenState.Valid)
+        _userToken.postValue(TokenState.Valid)
     }
 
     private fun saveToken(token: String) {

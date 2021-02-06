@@ -5,9 +5,11 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import com.andrei.carrental.R
 import com.andrei.carrental.viewmodels.ViewModelAuth
+import com.andrei.engine.helpers.UserManager
 import com.andrei.utils.reObserve
 import com.andrei.utils.startNewActivity
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LandingActivity : AppCompatActivity() {
@@ -17,9 +19,11 @@ class LandingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing)
-        viewModelAuth.isUserLoggedIn.reObserve(this){
-           startNewActivity<MainActivity>()
-       }
+        viewModelAuth.authenticationState.reObserve(this){
+            if(it == ViewModelAuth.AuthenticationState.AUTHENTICATED){
+                startNewActivity<MainActivity>()
+            }
+        }
 
     }
 }

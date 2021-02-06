@@ -13,6 +13,8 @@ import com.andrei.UI.helpers.InternetConnectionHandler
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
 import com.andrei.carrental.viewmodels.ViewModelAuth
+import com.andrei.engine.helpers.UserManager
+import com.andrei.engine.states.LoginFlowState
 import com.andrei.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -27,8 +29,8 @@ class MainActivity : AppCompatActivity() {
     private var internetConnectionHandler:InternetConnectionHandler? = null
 
 
-    private val observerUserLoggedIn = Observer<Boolean>{
-        if(it == false){
+    private val observerUserLoggedIn = Observer<ViewModelAuth.AuthenticationState>{
+        if(it ==  ViewModelAuth.AuthenticationState.NOT_AUTHENTICATED){
             startNewActivity<LandingActivity>()
         }
     }
@@ -42,7 +44,7 @@ class MainActivity : AppCompatActivity() {
          binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setUpNavigation()
         attachLocationObserver()
-        viewModelAuth.isUserLoggedIn.reObserve(this,observerUserLoggedIn)
+        viewModelAuth.authenticationState.reObserve(this,observerUserLoggedIn)
 
     }
 

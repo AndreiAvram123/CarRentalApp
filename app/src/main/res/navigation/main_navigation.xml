@@ -61,9 +61,17 @@
     <fragment
         android:id="@+id/bookings_navigation_fragments"
         android:name="com.andrei.UI.fragments.BookingsViewPagerFragment"
-        android:label="BookingsFragment" />
+        android:label="BookingsFragment" >
+        <action
+            android:id="@+id/action_bookings_navigation_fragments_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/noInternetFragment"
         android:name="com.andrei.UI.fragments.NoInternetFragment"
         android:label="NoInternetFragment" /><action android:id="@+id/action_global_noInternetFragment" app:destination="@id/noInternetFragment"/>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.andrei.UI.fragments.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>

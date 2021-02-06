@@ -11,10 +11,6 @@ class ViewModelAuth  @ViewModelInject constructor(
 ):   ViewModel() {
 
 
-
-    val isUserLoggedIn :LiveData<Boolean>  = loginRepository.isUserLoggedIn
-
-
     val emailEntered : MutableLiveData<String> by lazy {
         MutableLiveData()
     }
@@ -22,43 +18,54 @@ class ViewModelAuth  @ViewModelInject constructor(
         MutableLiveData()
     }
 
-    val isAuthenticationInProgress : LiveData<Boolean> = Transformations.map(loginRepository.loginFlowState){
-        it is LoginFlowState.Loading
+
+
+
+    val authenticationState:LiveData<AuthenticationState> = Transformations.map(loginRepository.loginFlowState){
+        when(it){
+              is  LoginFlowState.Loading -> AuthenticationState.AUTHENTICATING
+              is  LoginFlowState.LoginError -> AuthenticationState.NOT_AUTHENTICATED
+               is LoginFlowState.LoggedIn -> AuthenticationState.AUTHENTICATED
+               is LoginFlowState.NotLoggedIn -> AuthenticationState.NOT_AUTHENTICATED
+
+        }
     }
 
-    val errorEmail : MediatorLiveData<String?> = MediatorLiveData<String?>().apply {
+
+
+    val errorEmail : MediatorLiveData<String?> by lazy {
+        MediatorLiveData<String?>().apply {
             addSource(emailEntered){
-                value = if(it.isEmailValid()){
-                    null
-                }else{
-                    errorInvalidEmailFormat
-                }
-            }
-         addSource(loginRepository.loginFlowState){
-             value = if(it is LoginFlowState.LoginError && it is LoginFlowState.LoginError.IncorrectEmail){
-                 it.error
-             }else{
-                 null
-             }
-         }
-
-    }
-    val errorPassword :MediatorLiveData<String?> = MediatorLiveData<String?>().apply {
-            addSource(passwordEntered){
-                value = if(it.isPasswordValid()){
-                    null
-                }else{
-                    errorInvalidPasswordFormat
+                value = null
+                if(it.isEmailInvalid()){
+                  value =   errorInvalidEmailFormat
                 }
             }
             addSource(loginRepository.loginFlowState){
-                value = if(it is LoginFlowState.LoginError && it is LoginFlowState.LoginError.IncorrectPassword ){
-                        it.error
-                }else{
-                    null
+                value = null
+                if(it is LoginFlowState.LoginError.IncorrectEmail){
+                    value = it.error
                 }
             }
         }
+    }
+
+    val errorPassword :MediatorLiveData<String?> by lazy {
+        MediatorLiveData<String?>().apply {
+            addSource(passwordEntered){
+                value = null
+                if(it.isPasswordInvalid()){
+                    value = errorInvalidPasswordFormat
+                }
+            }
+            addSource(loginRepository.loginFlowState){
+                value = null
+                if(it is LoginFlowState.LoginError.IncorrectPassword){
+                    value = it.error
+                }
+            }
+        }
+    }
 
 
 
@@ -76,12 +83,17 @@ class ViewModelAuth  @ViewModelInject constructor(
         }
     }
 
-    private fun String.isEmailValid():Boolean{
-        return this.length > 10
+    fun signOut(){
+        loginRepository.signOut()
+    }
+
+
+    private fun String.isEmailInvalid():Boolean{
+        return this.length < 10
 
     }
-    private fun String.isPasswordValid():Boolean{
-        return this.length > 6
+    private fun String.isPasswordInvalid():Boolean{
+        return this.length < 6
     }
 
 
@@ -89,7 +101,11 @@ class ViewModelAuth  @ViewModelInject constructor(
       const val errorInvalidEmailFormat = "Invalid email format "
       const val errorInvalidPasswordFormat = "Invalid password format "
 
+
   }
+      enum class AuthenticationState{
+     AUTHENTICATED,AUTHENTICATING,NOT_AUTHENTICATED
+    }
 
 
 }

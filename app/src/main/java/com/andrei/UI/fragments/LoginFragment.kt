@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
@@ -29,10 +30,9 @@ class LoginFragment :Fragment(R.layout.fragment_login_layout) {
         viewModelAuth.errorPassword.reObserve(viewLifecycleOwner){
             binding.errorPassword = it
         }
-        viewModelAuth.isAuthenticationInProgress.reObserve(viewLifecycleOwner){
-           binding.isAuthenticationInProgress = it
+        viewModelAuth.authenticationState.reObserve(viewLifecycleOwner) {
+            binding.isAuthenticationInProgress = it == ViewModelAuth.AuthenticationState.AUTHENTICATING
         }
-
     }
 
     private fun initializeUI() {

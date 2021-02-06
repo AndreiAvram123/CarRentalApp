@@ -2,10 +2,7 @@ package com.andrei.engine.repository.implementation
 
 import androidx.lifecycle.*
 import com.andrei.engine.CallRunner
-import com.andrei.engine.DTOEntities.BasicUserLoginData
 import com.andrei.engine.State
-import com.andrei.engine.helpers.TokenManager
-import com.andrei.engine.helpers.TokenState
 import com.andrei.engine.helpers.UserManager
 import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.repositoryInterfaces.AuthRepoInterface
@@ -15,33 +12,23 @@ import javax.inject.Inject
 
 class LoginRepositoryImpl @Inject constructor(
     private val userManager: UserManager,
-    private val tokenManager: TokenManager,
     private val authRepo: AuthRepoInterface,
     private val callRunner: CallRunner
 ): LoginRepository{
 
-    override val isUserLoggedIn: MediatorLiveData<Boolean>  by lazy {
-        MediatorLiveData<Boolean>().apply {
-            addSource(userLoginData){
-                if(it!=null && tokenManager.userToken.value is TokenState.Valid ){
-                    value = true
-                }
-            }
-            addSource(tokenManager.userToken){
-                if(it is TokenState.Valid && userLoginData.value != null){
-                    value = true
+
+    override val loginFlowState: MediatorLiveData<LoginFlowState> by lazy {
+        MediatorLiveData<LoginFlowState>().apply {
+            addSource(userManager.isUserLoggedIn){
+                value = if (it){
+                    LoginFlowState.LoggedIn
+                }else{
+                    LoginFlowState.NotLoggedIn
                 }
             }
         }
     }
 
-    override val userLoginData: LiveData<BasicUserLoginData> by lazy {
-        userManager.userLoginData
-    }
-
-    override val loginFlowState: MutableLiveData<LoginFlowState> by lazy {
-        MutableLiveData()
-    }
 
     override suspend fun startLoginFlow(email: String, password: String) {
 
@@ -53,8 +40,8 @@ class LoginRepositoryImpl @Inject constructor(
            when(it){
                is State.Success -> {
                    if (it.data != null) {
-                       userManager.setNewUser(it.data.basicUserLoginData)
-                       tokenManager.setNewToken(it.data.token)
+                       userManager.saveNewUser(it.data)
+                       loginFlowState.postValue(LoginFlowState.LoggedIn)
                    }
                }
                is State.Loading -> {
@@ -70,6 +57,10 @@ class LoginRepositoryImpl @Inject constructor(
            }
        }
 
+    }
+
+    override fun signOut() {
+        userManager.signOut()
     }
 
 }
