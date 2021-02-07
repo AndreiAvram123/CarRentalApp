@@ -1,16 +1,16 @@
 package com.andrei.UI.adapters.bookings
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.andrei.UI.fragments.BookingsFragment
-import com.andrei.carrental.databinding.PreviousBookingLayoutBinding
 import com.andrei.carrental.entities.Booking
+import com.andrei.carrental.factories.BookingsVHFactory
+import com.andrei.carrental.factories.BookingsVHFactoryImpl
 
 class BookingsAdapter(private val bookingType: BookingsFragment.BookingType): RecyclerView.Adapter<BaseViewHolderBooking>() {
 
     private val bookings:MutableList<Booking> = mutableListOf()
-
+    private val factory: BookingsVHFactory = BookingsVHFactoryImpl()
 
     fun setNewBookings(newBookings:List<Booking>){
         bookings.clear()
@@ -20,18 +20,7 @@ class BookingsAdapter(private val bookingType: BookingsFragment.BookingType): Re
 
     override fun getItemCount(): Int = bookings.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolderBooking {
-        when (bookingType) {
-            BookingsFragment.BookingType.PREVIOUS -> {
-                val binding = PreviousBookingLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-                return ViewHolderPreviousBooking(binding)
-            }
-            else -> {
-                val binding = PreviousBookingLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                return ViewHolderPreviousBooking(binding)
-            }
-        }
-     }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolderBooking = factory.create(parent,bookingType)
 
     override fun onBindViewHolder(holder: BaseViewHolderBooking, position: Int) {
         holder.bind(bookings[position])

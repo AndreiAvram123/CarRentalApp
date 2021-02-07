@@ -11,7 +11,6 @@ class ViewModelSignUp @ViewModelInject constructor(
 
 
 
-
     val enteredUsername :MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }

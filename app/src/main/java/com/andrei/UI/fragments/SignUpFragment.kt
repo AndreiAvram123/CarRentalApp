@@ -70,16 +70,18 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up_layout){
             val callback  =  Runnable{
                 val text  = tfUsername.editText?.text.toString()
                     viewModelSignUp.enteredUsername.postValue(text)
-                }
+            }
+
             tfUsername.editText?.addTextChangedListener{
                 handler.executeDelayed(callback)
             }
         }
     }
-
-    private fun Handler.executeDelayed(callback:Runnable, time : Long = 500){
-       removeCallbacks(callback)
-       postDelayed(callback,1000)
+    private fun Handler.executeDelayed(callback:Runnable){
+        removeCallbacks(callback)
+        postDelayed(callback,1000)
     }
+
+
 
 }
