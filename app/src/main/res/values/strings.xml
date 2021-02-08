@@ -46,4 +46,5 @@
     <string name="username_error_format">Format error</string>
     <string name="password_not_long_enough">Password not long enough</string>
     <string name="password_too_weak">Password too weak</string>
+    <string name="email_format_invalid">Invalid email format</string>
 </resources>

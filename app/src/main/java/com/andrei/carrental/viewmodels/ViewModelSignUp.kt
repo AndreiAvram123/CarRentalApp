@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.andrei.engine.repository.implementation.SignUpRepositoryImpl
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
+import com.andrei.utils.isEmailInvalid
 
 class ViewModelSignUp @ViewModelInject constructor(
   private val signUpRepo: SignUpRepositoryImpl
@@ -19,6 +20,10 @@ class ViewModelSignUp @ViewModelInject constructor(
         MutableLiveData<String>()
     }
 
+    private val _enteredEmail:MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+
 
      val validationStateUsername :LiveData<UsernameValidationState> = Transformations.switchMap(_enteredUsername){
        signUpRepo.validateUsername(it).asLiveData()
@@ -28,6 +33,10 @@ class ViewModelSignUp @ViewModelInject constructor(
         signUpRepo.validatePassword(it).asLiveData()
     }
 
+    val emailInvalid:LiveData<Boolean> = Transformations.map(_enteredEmail){
+        it.isEmailInvalid()
+    }
+
 
     fun setUsername(username:String){
         _enteredUsername.postValue(username)
@@ -35,6 +44,9 @@ class ViewModelSignUp @ViewModelInject constructor(
 
     fun setPassword(password:String){
         _enteredPassword.postValue(password)
+    }
+    fun setEmail(email:String){
+        _enteredEmail.postValue(email)
     }
 
 

@@ -13,6 +13,7 @@ import com.andrei.carrental.viewmodels.ViewModelSignUp
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.utils.reObserve
+import com.andrei.utils.text
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,13 +25,17 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
     private val  binding:FragmentSignUpLayoutBinding by viewBinding()
 
     private val runnableUsername  =  Runnable{
-        val text  = binding.tfUsername.editText?.text.toString()
+        val text  = binding.tfUsername.editText.text()
         viewModelSignUp.setUsername(text)
     }
 
     private val runnablePassword  =  Runnable{
-        val text  = binding.tfUsername.editText?.text.toString()
+        val text  = binding.tfUsername.editText.text()
         viewModelSignUp.setPassword(text)
+    }
+    private val runnableEmail = Runnable {
+        val text = binding.tfEmail.editText.text()
+        viewModelSignUp.setEmail(text)
     }
 
     private val observerValidationStateUsername = Observer<UsernameValidationState>{
@@ -59,6 +64,13 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
             }
         }
     }
+    private val observerEmailInvalid = Observer<Boolean>{
+        if(it){
+            binding.errorEmail = requireContext().getString(R.string.email_format_invalid)
+        }else{
+            binding.errorEmail = null
+        }
+    }
 
 
     private val handler = Handler(Looper.getMainLooper())
@@ -67,6 +79,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
     override fun initializeUI() {
         attachObservers()
         attachListeners()
+
     }
 
     private fun attachListeners() {
@@ -77,6 +90,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
     private fun attachObservers() {
          viewModelSignUp.validationStateUsername.reObserve(viewLifecycleOwner,observerValidationStateUsername)
          viewModelSignUp.validationStatePassword.reObserve(viewLifecycleOwner,observerValidationStatePassword)
+        viewModelSignUp.emailInvalid.reObserve(viewLifecycleOwner,observerEmailInvalid)
     }
 
     private fun attachListenerForUsername() {
@@ -86,6 +100,9 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
             }
             tfPassword.editText?.addTextChangedListener {
                handler.executeDelayed(runnablePassword)
+            }
+            tfEmail.editText?.addTextChangedListener {
+                handler.executeDelayed(runnableEmail)
             }
 
 

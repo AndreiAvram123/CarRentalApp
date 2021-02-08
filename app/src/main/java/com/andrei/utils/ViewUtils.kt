@@ -3,6 +3,7 @@ package com.andrei.utils
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
@@ -10,6 +11,11 @@ import java.time.DayOfWeek
 import java.time.temporal.WeekFields
 import java.util.*
 import java.util.Locale.UK
+
+
+fun EditText?.text():String{
+    return this?.text.toString()
+}
 
 fun View.hide(){
     visibility = View.INVISIBLE
@@ -48,3 +54,4 @@ fun GradientDrawable.setCornerRadius(
             bottomLeft, bottomLeft
     ).toFloatArray()
 }
+
