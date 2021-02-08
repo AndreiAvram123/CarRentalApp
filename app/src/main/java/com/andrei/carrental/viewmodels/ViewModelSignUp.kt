@@ -6,6 +6,7 @@ import com.andrei.engine.State
 import com.andrei.engine.repository.implementation.SignUpRepositoryImpl
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
+import com.andrei.engine.states.RegistrationFlowState
 import com.andrei.utils.isEmailValid
 import kotlinx.coroutines.launch
 
@@ -28,11 +29,11 @@ class ViewModelSignUp @ViewModelInject constructor(
         MutableLiveData<String>()
     }
 
-    private val _registrationState:MutableLiveData<State<Nothing>> by lazy {
+    private val _registrationState:MutableLiveData<RegistrationFlowState> by lazy {
         signUpRepo.registrationState
     }
 
-    val registrationState:LiveData<State<Nothing>>
+    val registrationState:LiveData<RegistrationFlowState>
     get() = _registrationState
 
 

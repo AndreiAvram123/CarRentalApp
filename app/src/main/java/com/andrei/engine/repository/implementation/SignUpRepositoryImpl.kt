@@ -8,6 +8,7 @@ import com.andrei.engine.repository.interfaces.SignUpRepository
 import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.engine.repositoryInterfaces.SignUpAPI
 import com.andrei.engine.requestModels.RegisterRequest
+import com.andrei.engine.states.RegistrationFlowState
 import com.andrei.utils.isPasswordTooShort
 import com.andrei.utils.isUsernameInvalid
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +23,7 @@ class SignUpRepositoryImpl @Inject constructor(
 ) : SignUpRepository {
 
 
-    override val registrationState:MutableLiveData<State<Nothing>> by lazy {
+    override val registrationState:MutableLiveData<RegistrationFlowState> by lazy {
         MutableLiveData()
     }
 
@@ -62,7 +63,11 @@ class SignUpRepositoryImpl @Inject constructor(
                 password = password
         )
          callRunner.makeApiCall(signUpRepo.register(registerRequest)){
-             registrationState.postValue(it)
+             when(it){
+                 is State.Success -> registrationState.postValue(RegistrationFlowState.Finished)
+                 is State.Loading -> registrationState.postValue(RegistrationFlowState.Loading)
+                 is State.Error -> registrationState.postValue(RegistrationFlowState.RegistrationError.mapError(it.error))
+             }
          }
     }
 
