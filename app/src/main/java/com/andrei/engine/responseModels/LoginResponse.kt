@@ -1,7 +1,7 @@
-package com.andrei.engine.DTOEntities
+package com.andrei.engine.responseModels
 
+import com.andrei.engine.DTOEntities.BasicUserLoginData
 import com.google.gson.annotations.SerializedName
-
 
 data class LoginResponse(
         @SerializedName("basicUserLoginData")

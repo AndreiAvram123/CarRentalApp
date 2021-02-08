@@ -4,9 +4,7 @@ import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -17,12 +15,12 @@ import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentConfirmSelectionBinding
 import com.andrei.carrental.entities.BookingDate
 import com.andrei.carrental.viewmodels.ViewModelCar
-import com.andrei.carrental.viewmodels.ViewModelAuth
 import com.andrei.carrental.viewmodels.ViewModelPayment
-import com.andrei.engine.DTOEntities.*
 import com.andrei.engine.State
 import com.andrei.engine.helpers.UserManager
 import com.andrei.engine.requestModels.NewBookingRequestModel
+import com.andrei.engine.requestModels.PaymentRequest
+import com.andrei.engine.responseModels.TokenResponse
 import com.andrei.utils.formatWithPattern
 import com.andrei.utils.observeRequest
 import com.andrei.utils.reObserve

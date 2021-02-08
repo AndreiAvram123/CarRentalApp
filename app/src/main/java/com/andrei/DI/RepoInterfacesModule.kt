@@ -20,7 +20,7 @@ class RepoInterfacesModule {
     @Provides
     fun provideSignUphRepoInterface(
             @RetrofitInterceptorNoToken
-            retrofit: Retrofit): SignUpRepositoryInterface = retrofit.create(SignUpRepositoryInterface::class.java)
+            retrofit: Retrofit): SignUpAPI = retrofit.create(SignUpAPI::class.java)
 
 
     @Provides

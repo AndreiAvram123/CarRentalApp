@@ -1,11 +1,10 @@
 package com.andrei.engine
 
 import android.net.ConnectivityManager
-import com.andrei.engine.DTOEntities.ApiResult
+import com.andrei.engine.configuration.ApiResult
 import com.andrei.engine.configuration.CallWrapper
 import com.andrei.utils.isNotConnected
 import com.google.gson.Gson
-import retrofit2.Call
 import retrofit2.awaitResponse
 import javax.inject.Inject
 
@@ -43,9 +42,9 @@ class CallRunner @Inject constructor(
         }
     }
 
-    private fun  convertJsonErrorBodyToApiResult(body:String):ApiResult<*>{
+    private fun  convertJsonErrorBodyToApiResult(body:String): ApiResult<*> {
         val gson = Gson()
-        return gson.fromJson(body,ApiResult::class.java)
+        return gson.fromJson(body, ApiResult::class.java)
     }
 
 

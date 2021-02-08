@@ -1,7 +1,7 @@
 package com.andrei.utils
 
- fun String.isEmailInvalid():Boolean{
-    return this.length < 10
+ fun String.isEmailValid():Boolean{
+    return this.length >=10
 
 }
  fun String.isUsernameInvalid():Boolean{

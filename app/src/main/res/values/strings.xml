@@ -7,7 +7,7 @@
     <string name="hint_email">Enter email</string>
     <string name="hint_password">Password</string>
     <string name="hint_reenter_password">Reenter password</string>
-    <string name="finish_button_text">Finish</string>
+    <string name="finish">Finish</string>
     <string name="rented_by_text">Lend by</string>
     <string name="start_date">Start date</string>
     <string name="end_date">End date</string>

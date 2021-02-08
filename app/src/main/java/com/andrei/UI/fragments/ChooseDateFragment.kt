@@ -11,6 +11,7 @@ import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.Example4CalendarDayBinding
 import com.andrei.carrental.databinding.Example4FragmentBinding
@@ -32,7 +33,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 
-class ChooseDateFragment : Fragment (){
+class ChooseDateFragment : BaseFragment (R.layout.example_4_fragment){
 
 
     private val today = LocalDate.now()
@@ -54,7 +55,7 @@ class ChooseDateFragment : Fragment (){
         ContextCompat.getDrawable(requireContext(),R.drawable.example_4_continuous_selected_bg_end) as GradientDrawable
     }
 
-    private lateinit var binding: Example4FragmentBinding
+    private val binding: Example4FragmentBinding by viewBinding()
 
    inner class DayViewContainer(view: View) : ViewContainer(view) {
         lateinit var day: CalendarDay // Will be set when this container is bound.
@@ -87,13 +88,12 @@ class ChooseDateFragment : Fragment (){
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = Example4FragmentBinding.inflate(inflater,container, false)
+
         fetchUnavailableDates()
-        initializeUI()
         return binding.root
     }
 
-    private fun initializeUI() {
+    override fun initializeUI() {
 
         binding.backButtonChooseDateFrg.setOnClickListener{
             findNavController().popBackStack()
@@ -123,8 +123,8 @@ class ChooseDateFragment : Fragment (){
 
         // Set the First day of week depending on Locale
         val daysOfWeek = daysOfWeekFromLocale()
-        binding.legendLayout.legendLayout.children.forEachIndexed { index, view ->
-            (view as TextView).apply {
+        binding.legendLayout.legendLayout.children.forEachIndexed { index, tv ->
+            (tv as TextView).apply {
                 text = daysOfWeek[index].getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
                 setTextColorRes(R.color.example_4_grey)

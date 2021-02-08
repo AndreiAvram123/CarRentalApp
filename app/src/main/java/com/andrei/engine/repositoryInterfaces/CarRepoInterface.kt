@@ -2,7 +2,7 @@ package com.andrei.engine.repositoryInterfaces
 
 import com.andrei.carrental.entities.CarSearchEntity
 import com.andrei.carrental.entities.CarToRent
-import com.andrei.engine.DTOEntities.ApiResult
+import com.andrei.engine.configuration.ApiResult
 import com.andrei.engine.DTOEntities.BookingDateDTO
 import com.andrei.engine.configuration.CallWrapper
 import retrofit2.Call

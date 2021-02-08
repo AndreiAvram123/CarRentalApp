@@ -1,8 +1,8 @@
-package com.andrei.engine.DTOEntities
+package com.andrei.engine.responseModels
 
 import com.google.gson.annotations.SerializedName
 
-data  class UsernameValidResponse (
+data class UsernameValidResponse (
         @SerializedName("usernameValid")
         val usernameValid:Boolean,
         @SerializedName("reason")

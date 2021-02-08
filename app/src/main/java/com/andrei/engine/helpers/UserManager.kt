@@ -5,10 +5,9 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import com.andrei.carrental.R
 import com.andrei.engine.DTOEntities.BasicUserLoginData
-import com.andrei.engine.DTOEntities.LoginResponse
+import com.andrei.engine.responseModels.LoginResponse
 import com.andrei.utils.edit
 import com.andrei.utils.getIntOrNull
 import com.andrei.utils.getStringOrNull

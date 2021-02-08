@@ -1,4 +1,4 @@
-package com.andrei.engine.DTOEntities
+package com.andrei.engine.responseModels
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,10 +1,8 @@
 package com.andrei.engine.repositoryInterfaces
 
-import com.andrei.engine.DTOEntities.ApiResult
-import com.andrei.engine.DTOEntities.TokenResponse
+import com.andrei.engine.responseModels.TokenResponse
 import com.andrei.engine.configuration.CallWrapper
 import com.andrei.engine.requestModels.NewBookingRequestModel
-import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

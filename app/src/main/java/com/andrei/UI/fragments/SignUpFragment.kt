@@ -12,6 +12,7 @@ import com.andrei.carrental.databinding.FragmentSignUpLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelSignUp
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
+import com.andrei.engine.states.RegistrationFlowState
 import com.andrei.utils.reObserve
 import com.andrei.utils.text
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,32 +21,28 @@ import dagger.hilt.android.AndroidEntryPoint
 class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
 
 
-    private val viewModelSignUp:ViewModelSignUp by viewModels ()
+    private val _viewModelSignUp:ViewModelSignUp by viewModels ()
 
     private val  binding:FragmentSignUpLayoutBinding by viewBinding()
 
     private val runnableUsername  =  Runnable{
         val text  = binding.tfUsername.editText.text()
-        viewModelSignUp.setUsername(text)
+        _viewModelSignUp.setUsername(text)
     }
     private val runnableEmail = Runnable {
         val text = binding.tfEmail.editText.text()
-        viewModelSignUp.setEmail(text)
+        _viewModelSignUp.setEmail(text)
     }
 
     private val runnablePassword  =  Runnable{
         val text  = binding.tfPassword.editText.text()
-        viewModelSignUp.setPassword(text)
+        _viewModelSignUp.setPassword(text)
     }
     private val runnableReenterPassword = Runnable {
       val confirmedPassword = binding.tfReenterPassword.editText.text()
-      val password = binding.tfPassword.editText.text()
-        if(confirmedPassword !=  password){
-            binding.errorConfirmedPassword = requireContext().getString(R.string.passwords_no_match)
-        }else{
-            binding.errorConfirmedPassword  = null
-        }
+      _viewModelSignUp.setReenteredPassword(confirmedPassword)
     }
+
 
     private val observerValidationStateUsername = Observer<UsernameValidationState>{
         when(it){
@@ -73,42 +70,55 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
             }
         }
     }
-    private val observerEmailInvalid = Observer<Boolean>{
+    private val observerEmailValid = Observer<Boolean>{
         if(it){
-            binding.errorEmail = requireContext().getString(R.string.email_format_invalid)
-        }else{
             binding.errorEmail = null
+        }else{
+            binding.errorEmail = requireContext().getString(R.string.email_format_invalid)
         }
     }
+    private val observerConfirmedPasswordValid = Observer<Boolean> {valid->
+        if(valid){
+            binding.errorConfirmedPassword = null
+        }else{
+            binding.errorConfirmedPassword = requireContext().getString(R.string.passwords_no_match)
+        }
+    }
+
+
+    private val observerRegistrationFlow = Observer<RegistrationFlowState> {
+        when(it){
+            is RegistrationFlowState.Finished -> {
+
+            }
+
+        }
+    }
+
 
 
     private val handler = Handler(Looper.getMainLooper())
 
 
     override fun initializeUI() {
+        binding.viewModelSignUp = _viewModelSignUp
+        binding.lifecycleOwner = viewLifecycleOwner
         attachObservers()
         attachListeners()
 
     }
 
     private fun attachListeners() {
-        binding.btBack.setOnClickListener { findNavController().popBackStack() }
-        attachListenerForUsername()
-    }
-
-    private fun attachObservers() {
-         viewModelSignUp.validationStateUsername.reObserve(viewLifecycleOwner,observerValidationStateUsername)
-         viewModelSignUp.validationStatePassword.reObserve(viewLifecycleOwner,observerValidationStatePassword)
-          viewModelSignUp.emailInvalid.reObserve(viewLifecycleOwner,observerEmailInvalid)
-    }
-
-    private fun attachListenerForUsername() {
         binding.apply {
+            btBack.setOnClickListener{findNavController().popBackStack()}
+            btRegister.setOnClickListener {
+                _viewModelSignUp.startRegistrationFlow()
+            }
             tfUsername.editText?.addTextChangedListener{
                 handler.executeDelayed(runnableUsername)
             }
             tfPassword.editText?.addTextChangedListener {
-               handler.executeDelayed(runnablePassword)
+                handler.executeDelayed(runnablePassword)
             }
             tfEmail.editText?.addTextChangedListener {
                 handler.executeDelayed(runnableEmail)
@@ -118,12 +128,20 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
                 handler.executeDelayed(runnableReenterPassword)
             }
         }
+
     }
+
+    private fun attachObservers() {
+         _viewModelSignUp.validationStateUsername.reObserve(viewLifecycleOwner,observerValidationStateUsername)
+         _viewModelSignUp.validationStatePassword.reObserve(viewLifecycleOwner,observerValidationStatePassword)
+        _viewModelSignUp.emailValid.reObserve(viewLifecycleOwner,observerEmailValid)
+        _viewModelSignUp.reenteredPasswordValid.reObserve(viewLifecycleOwner,observerConfirmedPasswordValid)
+        _viewModelSignUp.registrationState.reObserve(viewLifecycleOwner,observerRegistrationFlow)
+    }
+
     private fun Handler.executeDelayed(callback:Runnable){
         removeCallbacks(callback)
         postDelayed(callback,1200)
     }
-
-
 
 }
