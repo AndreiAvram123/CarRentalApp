@@ -12,6 +12,7 @@ import com.andrei.utils.loadFromURl
 import com.andrei.utils.show
 
 import com.bumptech.glide.Glide
+import com.google.android.material.textfield.TextInputLayout
 
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,21 +36,7 @@ fun changeVisibilityBasedOnBoolean(view :View, visible:Boolean){
      }
 }
 
-
-@BindingAdapter("dateFromUnix")
-fun getDateFromUnix(textView: TextView, unixTime: Long) {
-    if (unixTime > 0) {
-        val compareDate = SimpleDateFormat("yyyy-MM-dd", Locale.UK)
-
-        val nowDate = Date(Calendar.getInstance().timeInMillis)
-        val messageDate = Date(unixTime * 1000)
-
-        if (compareDate.format(nowDate) == compareDate.format(messageDate)) {
-            val dateFormat = SimpleDateFormat("HH:mm", Locale.UK);
-            textView.text = dateFormat.format(messageDate)
-        } else {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.UK);
-            textView.text = dateFormat.format(messageDate)
-        }
-    }
+@BindingAdapter("endIconVisible")
+fun showEndIcon(field:TextInputLayout,visible: Boolean){
+   field.isEndIconVisible = visible
 }

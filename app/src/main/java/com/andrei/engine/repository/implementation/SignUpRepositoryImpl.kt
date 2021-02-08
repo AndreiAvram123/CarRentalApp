@@ -2,9 +2,12 @@ package com.andrei.engine.repository.implementation
 
 import com.andrei.engine.CallRunner
 import com.andrei.engine.State
+import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.SignUpRepository
-import com.andrei.engine.repository.interfaces.UsernameState
+import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.engine.repositoryInterfaces.SignUpRepositoryInterface
+import com.andrei.utils.isPasswordTooShort
+import com.andrei.utils.isUsernameInvalid
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -15,18 +18,18 @@ class SignUpRepositoryImpl @Inject constructor(
 ) : SignUpRepository {
 
 
-    override fun getValidationErrorForUsername(username: String): Flow<UsernameState> = flow {
+    override fun validateUsername(username: String): Flow<UsernameValidationState> = flow {
         if(username.isUsernameInvalid()){
-            emit(UsernameState.ErrorFormat)
+            emit(UsernameValidationState.ErrorFormat)
             return@flow
         }
         callRunner.makeApiCall(signUpRepo.checkIfUsernameIsAvailable(username)) {
             if (it is State.Success) {
                 if (it.data != null) {
                     when {
-                        it.data.usernameValid -> emit(UsernameState.Valid)
-                        it.data.reason == errorUsernameTaken -> emit(UsernameState.AlreadyTaken)
-                        else ->  emit(UsernameState.ErrorFormat)
+                        it.data.usernameValid -> emit(UsernameValidationState.Valid)
+                        it.data.reason == errorUsernameTaken -> emit(UsernameValidationState.AlreadyTaken)
+                        else ->  emit(UsernameValidationState.ErrorFormat)
                     }
                 }
 
@@ -34,16 +37,16 @@ class SignUpRepositoryImpl @Inject constructor(
         }
     }
 
-
-    private fun String.isUsernameInvalid():Boolean{
-        return (this.isBlank() || this.length < 5)
+    override fun validatePassword(password: String): Flow<PasswordValidationState>  = flow{
+        if(password.isPasswordTooShort()){
+            emit(PasswordValidationState.TooShort)
+            return@flow
+        }
     }
 
 
 
-
     companion object ErrorMessages{
-        const val errorInvalidUsernameFormat = "Invalid username format"
         const val errorUsernameTaken  = "Username already taken"
     }
 }

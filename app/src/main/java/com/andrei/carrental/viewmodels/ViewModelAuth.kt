@@ -4,6 +4,8 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.states.LoginFlowState
+import com.andrei.utils.isEmailInvalid
+import com.andrei.utils.isPasswordTooShort
 import kotlinx.coroutines.launch
 
 class ViewModelAuth  @ViewModelInject constructor(
@@ -54,7 +56,7 @@ class ViewModelAuth  @ViewModelInject constructor(
         MediatorLiveData<String?>().apply {
             addSource(passwordEntered){
                 value = null
-                if(it.isPasswordInvalid()){
+                if(it.isPasswordTooShort()){
                     value = errorInvalidPasswordFormat
                 }
             }
@@ -88,13 +90,6 @@ class ViewModelAuth  @ViewModelInject constructor(
     }
 
 
-    private fun String.isEmailInvalid():Boolean{
-        return this.length < 10
-
-    }
-    private fun String.isPasswordInvalid():Boolean{
-        return this.length < 6
-    }
 
 
   companion object{

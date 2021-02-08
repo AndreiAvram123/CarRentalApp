@@ -3,9 +3,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+
         <variable
             name="errorUsername"
             type="String" />
+        <variable
+            name="errorEmail"
+            type="String" />
+
+        <variable
+            name="errorPassword"
+            type="String" />
+        <variable
+            name="errorConfirmedPassword"
+            type="String" />
+
+
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -38,15 +51,85 @@
             android:id="@+id/tf_username"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:hint="@string/screens_sign_up_username_hint"
             app:endIconMode="custom"
             app:errorText="@{errorUsername}"
+            app:endIconDrawable="@drawable/ic_check_24"
+            app:endIconVisible = "@{errorUsername != null}"
             app:errorTextAppearance="@style/inputFieldErrorAppearance"
             app:hintTextAppearance="@style/inputFieldLabelAppearance"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tf_email"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/email"
+            app:endIconMode="custom"
+            app:errorText="@{errorEmail}"
+            app:errorTextAppearance="@style/inputFieldErrorAppearance"
+            app:hintTextAppearance="@style/inputFieldLabelAppearance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="10dp"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tf_password"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/password"
+            app:endIconMode="password_toggle"
+            app:errorText="@{errorPassword}"
+            app:endIconDrawable="@drawable/ic_check_24"
+            app:endIconVisible = "@{errorPassword != null}"
+            app:errorTextAppearance="@style/inputFieldErrorAppearance"
+            app:hintTextAppearance="@style/inputFieldLabelAppearance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="20dp"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tf_reenter_password"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/confirm_password"
+            app:endIconMode="password_toggle"
+            app:errorText="@{errorConfirmedPassword}"
+            app:errorTextAppearance="@style/inputFieldErrorAppearance"
+            app:hintTextAppearance="@style/inputFieldLabelAppearance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="20dp"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
