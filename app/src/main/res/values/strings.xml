@@ -47,4 +47,5 @@
     <string name="password_not_long_enough">Password not long enough</string>
     <string name="password_too_weak">Password too weak</string>
     <string name="email_format_invalid">Invalid email format</string>
+    <string name="passwords_no_match">The passwords are different </string>
 </resources>

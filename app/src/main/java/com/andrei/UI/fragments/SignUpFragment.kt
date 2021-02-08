@@ -28,14 +28,23 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
         val text  = binding.tfUsername.editText.text()
         viewModelSignUp.setUsername(text)
     }
-
-    private val runnablePassword  =  Runnable{
-        val text  = binding.tfUsername.editText.text()
-        viewModelSignUp.setPassword(text)
-    }
     private val runnableEmail = Runnable {
         val text = binding.tfEmail.editText.text()
         viewModelSignUp.setEmail(text)
+    }
+
+    private val runnablePassword  =  Runnable{
+        val text  = binding.tfPassword.editText.text()
+        viewModelSignUp.setPassword(text)
+    }
+    private val runnableReenterPassword = Runnable {
+      val confirmedPassword = binding.tfReenterPassword.editText.text()
+      val password = binding.tfPassword.editText.text()
+        if(confirmedPassword !=  password){
+            binding.errorConfirmedPassword = requireContext().getString(R.string.passwords_no_match)
+        }else{
+            binding.errorConfirmedPassword  = null
+        }
     }
 
     private val observerValidationStateUsername = Observer<UsernameValidationState>{
@@ -90,7 +99,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
     private fun attachObservers() {
          viewModelSignUp.validationStateUsername.reObserve(viewLifecycleOwner,observerValidationStateUsername)
          viewModelSignUp.validationStatePassword.reObserve(viewLifecycleOwner,observerValidationStatePassword)
-        viewModelSignUp.emailInvalid.reObserve(viewLifecycleOwner,observerEmailInvalid)
+          viewModelSignUp.emailInvalid.reObserve(viewLifecycleOwner,observerEmailInvalid)
     }
 
     private fun attachListenerForUsername() {
@@ -105,12 +114,14 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
                 handler.executeDelayed(runnableEmail)
             }
 
-
+            tfReenterPassword.editText?.addTextChangedListener {
+                handler.executeDelayed(runnableReenterPassword)
+            }
         }
     }
     private fun Handler.executeDelayed(callback:Runnable){
-        removeCallbacksAndMessages(callback)
-        postDelayed(callback,1000)
+        removeCallbacks(callback)
+        postDelayed(callback,1200)
     }
 
 
