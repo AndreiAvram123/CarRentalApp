@@ -16,7 +16,7 @@ class RepoInterfacesModule {
     @Provides
     fun provideAuthRepoInterface(
             @RetrofitInterceptorNoToken
-            retrofit: Retrofit): AuthRepoInterface = retrofit.create(AuthRepoInterface::class.java)
+            retrofit: Retrofit): LoginAPI = retrofit.create(LoginAPI::class.java)
     @Provides
     fun provideSignUphRepoInterface(
             @RetrofitInterceptorNoToken

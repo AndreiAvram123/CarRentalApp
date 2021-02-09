@@ -5,15 +5,15 @@ import com.andrei.engine.CallRunner
 import com.andrei.engine.State
 import com.andrei.engine.helpers.UserManager
 import com.andrei.engine.repository.interfaces.LoginRepository
-import com.andrei.engine.repositoryInterfaces.AuthRepoInterface
+import com.andrei.engine.repositoryInterfaces.LoginAPI
 import com.andrei.engine.requestModels.LoginRequest
 import com.andrei.engine.states.LoginFlowState
 import javax.inject.Inject
 
 class LoginRepositoryImpl @Inject constructor(
-    private val userManager: UserManager,
-    private val authRepo: AuthRepoInterface,
-    private val callRunner: CallRunner
+        private val userManager: UserManager,
+        private val loginAPI: LoginAPI,
+        private val callRunner: CallRunner
 ): LoginRepository{
 
 
@@ -36,7 +36,7 @@ class LoginRepositoryImpl @Inject constructor(
                 email = email,
                 password = password
         )
-       callRunner.makeApiCall(authRepo.attemptLogin(loginRequest)){
+       callRunner.makeApiCall(loginAPI.attemptLogin(loginRequest)){
            when(it){
                is State.Success -> {
                    if (it.data != null) {

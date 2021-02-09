@@ -38,8 +38,8 @@ class ViewModelAuth  @ViewModelInject constructor(
         MediatorLiveData<String?>().apply {
             addSource(emailEntered){
                 value = null
-                if(it.isEmailValid()){
-                  value =   errorInvalidEmailFormat
+                 if(!it.isEmailValid()){
+                   value =   errorInvalidEmailFormat
                 }
             }
             addSource(loginRepository.loginFlowState){

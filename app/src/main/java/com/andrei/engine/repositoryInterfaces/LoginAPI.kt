@@ -7,7 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 
-interface AuthRepoInterface {
+interface LoginAPI {
     @POST("/login")
     fun attemptLogin(@Body loginRequest: LoginRequest): CallWrapper<LoginResponse>
 }

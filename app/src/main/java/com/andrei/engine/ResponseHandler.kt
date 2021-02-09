@@ -35,7 +35,7 @@ class ResponseHandler private constructor(){
     }
 
     private fun logException(e:Exception){
-        e.printStackTrace()
+       Log.e(ResponseHandler::class.simpleName,e.stackTraceToString())
         if(!BuildConfig.DEBUG){
           firebaseCrashlytics.recordException(e)
         }
