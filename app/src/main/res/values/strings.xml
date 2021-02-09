@@ -48,4 +48,5 @@
     <string name="password_too_weak">Password too weak</string>
     <string name="email_format_invalid">Invalid email format</string>
     <string name="passwords_no_match">The passwords are different </string>
+    <string name="go_to_login">Go to login</string>
 </resources>

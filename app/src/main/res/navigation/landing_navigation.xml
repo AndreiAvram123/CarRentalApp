@@ -18,5 +18,19 @@
         android:id="@+id/signUpFragment"
         android:name="com.andrei.UI.fragments.SignUpFragment"
         android:label="SignUpFragment"
-        />
+        >
+        <action
+            android:id="@+id/action_signUpFragment_to_registrationCompleteFragment"
+            app:destination="@id/registrationCompleteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registrationCompleteFragment"
+        android:name="com.andrei.UI.fragments.RegistrationCompleteFragment"
+        android:label="RegistrationCompleteFragment" >
+        <action
+            android:id="@+id/action_registrationCompleteFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>
