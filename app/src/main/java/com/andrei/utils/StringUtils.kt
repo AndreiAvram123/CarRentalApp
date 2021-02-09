@@ -1,7 +1,10 @@
 package com.andrei.utils
 
- fun String.isEmailValid():Boolean{
-    return this.length >=10
+import android.util.Patterns
+
+fun String.isEmailValid():Boolean{
+    val regex = Patterns.EMAIL_ADDRESS.toRegex()
+    return this.matches(regex)
 
 }
  fun String.isUsernameInvalid():Boolean{

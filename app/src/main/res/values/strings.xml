@@ -41,12 +41,14 @@
 
 
 
-    <!-- validation error -->
+    <!-- Registration-->
+    <string name="email_already_taken">Email already taken</string>
     <string name="username_taken">Username already taken</string>
-    <string name="username_error_format">Format error</string>
-    <string name="password_not_long_enough">Password not long enough</string>
-    <string name="password_too_weak">Password too weak</string>
+    <string name="go_to_login">Go to login</string>
     <string name="email_format_invalid">Invalid email format</string>
     <string name="passwords_no_match">The passwords are different </string>
-    <string name="go_to_login">Go to login</string>
+    <string name="password_not_long_enough">Password not long enough</string>
+    <string name="password_too_weak">Password too weak</string>
+    <string name="username_too_short">Username too sho</string>
+
 </resources>

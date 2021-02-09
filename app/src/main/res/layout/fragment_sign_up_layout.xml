@@ -104,8 +104,6 @@
             android:hint="@string/password"
             app:endIconMode="password_toggle"
             app:errorText="@{errorPassword}"
-            app:endIconDrawable="@drawable/ic_check_24"
-            app:endIconVisible = "@{errorPassword != null}"
             app:errorTextAppearance="@style/inputFieldErrorAppearance"
             app:hintTextAppearance="@style/inputFieldLabelAppearance"
             app:layout_constraintEnd_toEndOf="parent"

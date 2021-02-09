@@ -3,6 +3,7 @@ package com.andrei.UI.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.CallSuper
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import com.andrei.carrental.databinding.FragmentNoInternetLayoutBinding
 import com.andrei.utils.PermissionHandlerFragment

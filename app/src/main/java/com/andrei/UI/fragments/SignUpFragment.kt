@@ -10,6 +10,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentSignUpLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelSignUp
+import com.andrei.engine.repository.interfaces.EmailValidationState
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.engine.states.RegistrationFlowState
@@ -52,8 +53,8 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
             is UsernameValidationState.AlreadyTaken -> {
                 binding.errorUsername = requireContext().getString(R.string.username_taken)
             }
-            is UsernameValidationState.ErrorFormat -> {
-                binding.errorUsername = requireContext().getString(R.string.username_error_format)
+            is UsernameValidationState.TooShort -> {
+                binding.errorUsername = requireContext().getString(R.string.username_too_short)
             }
         }
     }
@@ -63,22 +64,23 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
                 binding.errorPassword = null
             }
             is PasswordValidationState.TooWeak -> {
-                binding.errorPassword = requireContext().getString(R.string.password_too_weak)
+                binding.errorPassword = getString(R.string.password_too_weak)
             }
         }
     }
-    private val observerEmailValid = Observer<Boolean>{
-        if(it){
-            binding.errorEmail = null
-        }else{
-            binding.errorEmail = requireContext().getString(R.string.email_format_invalid)
+    private val observerEmailValid = Observer<EmailValidationState>{
+       binding.errorEmail =  when(it){
+            is EmailValidationState.Valid -> null
+            is EmailValidationState.AlreadyTaken -> getString(R.string.email_already_taken)
+            is EmailValidationState.InvalidFormat -> getString(R.string.email_format_invalid)
         }
+
     }
     private val observerConfirmedPasswordValid = Observer<Boolean> {valid->
         if(valid){
             binding.errorConfirmedPassword = null
         }else{
-            binding.errorConfirmedPassword = requireContext().getString(R.string.passwords_no_match)
+            binding.errorConfirmedPassword = getString(R.string.passwords_no_match)
         }
     }
 
@@ -132,7 +134,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
     private fun attachObservers() {
          _viewModelSignUp.validationStateUsername.reObserve(viewLifecycleOwner,observerValidationStateUsername)
          _viewModelSignUp.validationStatePassword.reObserve(viewLifecycleOwner,observerValidationStatePassword)
-        _viewModelSignUp.emailValid.reObserve(viewLifecycleOwner,observerEmailValid)
+        _viewModelSignUp.validationStateEmail.reObserve(viewLifecycleOwner,observerEmailValid)
         _viewModelSignUp.reenteredPasswordValid.reObserve(viewLifecycleOwner,observerConfirmedPasswordValid)
         _viewModelSignUp.registrationState.reObserve(viewLifecycleOwner,observerRegistrationFlow)
     }

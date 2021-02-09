@@ -2,12 +2,11 @@ package com.andrei.carrental.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.andrei.engine.State
 import com.andrei.engine.repository.implementation.SignUpRepositoryImpl
+import com.andrei.engine.repository.interfaces.EmailValidationState
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.engine.states.RegistrationFlowState
-import com.andrei.utils.isEmailValid
 import kotlinx.coroutines.launch
 
 class ViewModelSignUp @ViewModelInject constructor(
@@ -37,16 +36,25 @@ class ViewModelSignUp @ViewModelInject constructor(
     get() = _registrationState
 
 
-     val validationStateUsername :LiveData<UsernameValidationState> = Transformations.switchMap(_enteredUsername){
-       signUpRepo.validateUsername(it).asLiveData()
-    }
+     val validationStateUsername :MediatorLiveData<UsernameValidationState> by lazy {
+         MediatorLiveData<UsernameValidationState>().apply {
+             addSource(_enteredUsername){
+                 viewModelScope.launch {
+                     value = signUpRepo.validateUsername(it)
+                 }
+             }
+             addSource(registrationState){
+                 if(it is RegistrationFlowState.RegistrationError.UsernameAlreadyTaken){
+                     value = UsernameValidationState.AlreadyTaken
+                 }
+             }
+         }
+     }
 
     val validationStatePassword:MediatorLiveData<PasswordValidationState> by lazy {
         MediatorLiveData<PasswordValidationState>().apply {
             addSource(_enteredPassword){
-                viewModelScope.launch {
                     value = signUpRepo.validatePassword(it)
-                }
             }
             addSource(_registrationState){
                 if(it is RegistrationFlowState.RegistrationError.PasswordTooWeak){
@@ -56,10 +64,20 @@ class ViewModelSignUp @ViewModelInject constructor(
         }
     }
 
-    val emailValid:LiveData<Boolean> = Transformations.map(_enteredEmail){
-        it.isEmailValid()
+    val validationStateEmail:MediatorLiveData<EmailValidationState> by lazy {
+        MediatorLiveData<EmailValidationState>().apply {
+            addSource(_enteredEmail){
+               viewModelScope.launch {
+                   value = signUpRepo.validateEmail(it)
+               }
+            }
+            addSource(registrationState){
+                if(it is RegistrationFlowState.RegistrationError.EmailAlreadyTaken){
+                    value = EmailValidationState.AlreadyTaken
+                }
+            }
+        }
     }
-
     val reenteredPasswordValid:LiveData<Boolean> = Transformations.map(_reenteredPassword){
         it == _enteredPassword.value
     }
@@ -70,7 +88,7 @@ class ViewModelSignUp @ViewModelInject constructor(
             addSource(validationStateUsername){
                value = canStartRegistrationFlow()
             }
-            addSource(emailValid){
+            addSource(validationStateEmail){
                 value = canStartRegistrationFlow()
             }
             addSource(validationStatePassword){
@@ -111,7 +129,8 @@ class ViewModelSignUp @ViewModelInject constructor(
             check(username != null) {}
             check(password != null) {}
             check(email != null) {}
-                viewModelScope.launch { signUpRepo.register(username = username,
+                viewModelScope.launch {
+                    signUpRepo.register(username = username,
                         email = email,
                         password = password)
                 }
@@ -121,7 +140,7 @@ class ViewModelSignUp @ViewModelInject constructor(
     private fun canStartRegistrationFlow():Boolean{
         return validationStateUsername.value is UsernameValidationState.Valid
                 && validationStatePassword.value is PasswordValidationState.Valid
-                && emailValid.value == true
+                && validationStateEmail.value  is EmailValidationState.Valid
                 && reenteredPasswordValid.value == true
     }
 

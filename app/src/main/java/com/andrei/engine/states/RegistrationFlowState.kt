@@ -19,9 +19,11 @@ sealed class RegistrationFlowState{
             const val emailAlreadyTaken = "Email already taken"
 
             fun mapError(error: String):RegistrationError{
-                when(error){
-                    unknownError -> return RegistrationError.UnknownError
-                    else -> return RegistrationError.UnknownError
+                return when(error){
+                    passwordTooWeak-> PasswordTooWeak
+                    usernameAlreadyTaken -> UsernameAlreadyTaken
+                    emailAlreadyTaken -> EmailAlreadyTaken
+                    else -> return UnknownError
                 }
             }
         }
