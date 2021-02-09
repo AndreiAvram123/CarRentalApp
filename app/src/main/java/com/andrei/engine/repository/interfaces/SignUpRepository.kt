@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SignUpRepository {
     fun validateUsername(username:String) : Flow<UsernameValidationState>
-    fun validatePassword(password:String) : Flow<PasswordValidationState>
+    fun validatePassword(password:String): PasswordValidationState
     suspend fun register(username: String, email: String, password: String)
     val registrationState: MutableLiveData<RegistrationFlowState>
 }
@@ -20,6 +20,5 @@ sealed class UsernameValidationState{
 
 sealed class PasswordValidationState{
     object Valid:PasswordValidationState()
-    object TooShort:PasswordValidationState()
     object TooWeak:PasswordValidationState()
 }

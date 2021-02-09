@@ -41,8 +41,19 @@ class ViewModelSignUp @ViewModelInject constructor(
        signUpRepo.validateUsername(it).asLiveData()
     }
 
-    val validationStatePassword:LiveData<PasswordValidationState> = Transformations.switchMap(_enteredPassword){
-        signUpRepo.validatePassword(it).asLiveData()
+    val validationStatePassword:MediatorLiveData<PasswordValidationState> by lazy {
+        MediatorLiveData<PasswordValidationState>().apply {
+            addSource(_enteredPassword){
+                viewModelScope.launch {
+                    value = signUpRepo.validatePassword(it)
+                }
+            }
+            addSource(_registrationState){
+                if(it is RegistrationFlowState.RegistrationError.PasswordTooWeak){
+                    value = PasswordValidationState.TooWeak
+                }
+            }
+        }
     }
 
     val emailValid:LiveData<Boolean> = Transformations.map(_enteredEmail){

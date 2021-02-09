@@ -8,6 +8,6 @@ package com.andrei.utils
     return length < 5
 }
 
-fun String.isPasswordTooShort():Boolean{
+fun String.isPasswordTooWeak():Boolean{
     return this.length < 7
 }

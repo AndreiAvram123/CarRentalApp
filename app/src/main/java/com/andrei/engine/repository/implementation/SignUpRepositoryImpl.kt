@@ -9,7 +9,7 @@ import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.engine.repositoryInterfaces.SignUpAPI
 import com.andrei.engine.requestModels.RegisterRequest
 import com.andrei.engine.states.RegistrationFlowState
-import com.andrei.utils.isPasswordTooShort
+import com.andrei.utils.isPasswordTooWeak
 import com.andrei.utils.isUsernameInvalid
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -47,11 +47,11 @@ class SignUpRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun validatePassword(password: String): Flow<PasswordValidationState>  = flow{
-        if(password.isPasswordTooShort()){
-            emit(PasswordValidationState.TooShort)
-            return@flow
+    override fun validatePassword(password: String):PasswordValidationState{
+        if(password.isPasswordTooWeak()){
+            return PasswordValidationState.TooWeak
         }
+        return PasswordValidationState.Valid
     }
 
 

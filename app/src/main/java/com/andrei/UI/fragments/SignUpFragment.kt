@@ -62,9 +62,6 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
             is PasswordValidationState.Valid -> {
                 binding.errorPassword = null
             }
-            is PasswordValidationState.TooShort -> {
-                binding.errorPassword = requireContext().getString(R.string.password_not_long_enough)
-            }
             is PasswordValidationState.TooWeak -> {
                 binding.errorPassword = requireContext().getString(R.string.password_too_weak)
             }
@@ -87,11 +84,8 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
 
 
     private val observerRegistrationFlow = Observer<RegistrationFlowState> {
-        when(it){
-            is RegistrationFlowState.Finished -> {
-
-            }
-
+        if(it is RegistrationFlowState.Finished){
+            navigateToRegistrationCompleteFragment()
         }
     }
 
@@ -129,6 +123,10 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
             }
         }
 
+    }
+    private fun navigateToRegistrationCompleteFragment(){
+        val action = SignUpFragmentDirections.actionSignUpFragmentToRegistrationCompleteFragment()
+        findNavController().navigate(action)
     }
 
     private fun attachObservers() {
