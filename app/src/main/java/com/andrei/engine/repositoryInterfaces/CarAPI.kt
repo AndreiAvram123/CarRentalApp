@@ -7,7 +7,7 @@ import com.andrei.engine.configuration.CallWrapper
 import retrofit2.Call
 import retrofit2.http.*
 
-interface CarRepoInterface {
+interface CarAPI {
     @GET("/cars/nearby")
     fun getNearbyCars(@Query("latitude") latitude:Double,
                       @Query("longitude") longitude:Double): Call<ApiResult<List<Car>>>
@@ -15,7 +15,7 @@ interface CarRepoInterface {
     @GET("/cars/search")
     fun search(@Query("latitude") latitude:Double,
                       @Query("longitude") longitude:Double,
-                      @Query("query") query: String): Call<ApiResult<List<CarSearchEntity>>>
+                      @Query("query") query: String): Call<ApiResult<List<Car>>>
 
     @GET("/cars/{carID}")
     fun getCarByID(@Path("carID") carID:Long):Call<ApiResult<Car>>
