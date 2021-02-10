@@ -1,7 +1,6 @@
 package com.andrei.engine.repositoryInterfaces
 
-import com.andrei.carrental.entities.CarSearchEntity
-import com.andrei.carrental.entities.CarToRent
+import com.andrei.carrental.entities.Car
 import com.andrei.engine.configuration.ApiResult
 import com.andrei.engine.DTOEntities.BookingDateDTO
 import com.andrei.engine.configuration.CallWrapper
@@ -11,7 +10,7 @@ import retrofit2.http.*
 interface CarRepoInterface {
     @GET("/cars/nearby")
     fun getNearbyCars(@Query("latitude") latitude:Double,
-                      @Query("longitude") longitude:Double): Call<ApiResult<List<CarToRent>>>
+                      @Query("longitude") longitude:Double): Call<ApiResult<List<Car>>>
 
     @GET("/cars/search")
     fun search(@Query("latitude") latitude:Double,
@@ -19,7 +18,7 @@ interface CarRepoInterface {
                       @Query("query") query: String): Call<ApiResult<List<CarSearchEntity>>>
 
     @GET("/cars/{carID}")
-    fun getCarByID(@Path("carID") carID:Long):Call<ApiResult<CarToRent>>
+    fun getCarByID(@Path("carID") carID:Long):Call<ApiResult<Car>>
 
     @GET("/cars/{carID}/unavailableDates")
     fun getUnavailableDates(@Path("carID") carID:Long):CallWrapper<List<BookingDateDTO>>

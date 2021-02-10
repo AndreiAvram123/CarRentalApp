@@ -1,29 +1,24 @@
 package com.andrei.UI.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentExpandedCarBinding
-import com.andrei.carrental.entities.CarToRent
+import com.andrei.carrental.entities.Car
 import com.andrei.carrental.entities.Image
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.engine.DTOEntities.toLatLng
 import com.andrei.engine.State
 import com.andrei.utils.loadFromURl
 import com.andrei.utils.reObserve
-import com.bumptech.glide.Glide
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 
@@ -94,7 +89,7 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
         binding.mapCarLocation.onStart()
     }
 
-    private fun updateUI(state : State<CarToRent>) {
+    private fun updateUI(state : State<Car>) {
         when (state) {
             is State.Success -> {
                 state.data?.let {

@@ -14,7 +14,7 @@
             type="String" />
         <variable
             name="car"
-            type="com.andrei.carrental.entities.CarToRent" />
+            type="com.andrei.carrental.entities.Car" />
     </data>
     <ScrollView
         android:layout_width="match_parent"

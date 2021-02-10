@@ -4,13 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
-import com.andrei.carrental.entities.CarToRent
+import com.andrei.carrental.entities.Car
 import com.andrei.carrental.entities.BookingDate
 import com.andrei.engine.CallRunner
-import com.andrei.carrental.entities.CarSearchEntity
 import com.andrei.engine.DTOEntities.toBookingDate
 import com.andrei.engine.State
-import com.andrei.engine.repositoryInterfaces.CarRepoInterface
+import com.andrei.engine.repositoryInterfaces.CarAPI
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.flow
@@ -19,18 +18,18 @@ import javax.inject.Inject
 
 class CarRepositoryImpl @Inject constructor(
         private val callRunner:CallRunner,
-        private val carRepo:CarRepoInterface,
+        private val carAPI:CarAPI,
 ){
 
 
 
      val searchSuggestions by lazy {
-         MutableLiveData<State<List<CarSearchEntity>>>()
+         MutableLiveData<State<List<Car>>>()
      }
 
     val currentCarID : MutableLiveData<Long> = MutableLiveData()
 
-    val currentSelectedCar : LiveData<State<CarToRent>> = Transformations.switchMap(currentCarID) { carID ->
+    val currentSelectedCar : LiveData<State<Car>> = Transformations.switchMap(currentCarID) { carID ->
         return@switchMap fetchCarById(carID).asLiveData()
     }
 
@@ -41,26 +40,26 @@ class CarRepositoryImpl @Inject constructor(
 
 
      fun fetchNearbyCars (position:LatLng) = flow{
-         callRunner.makeApiCall(carRepo.getNearbyCars(latitude = position.latitude, longitude = position.longitude)){
+         callRunner.makeApiCall(carAPI.getNearbyCars(latitude = position.latitude, longitude = position.longitude)){
                  emit(it)
          }
      }
 
     suspend fun fetchSuggestions(query:String, position: LatLng){
-        callRunner.makeApiCall(carRepo.search(latitude = position.latitude, longitude = position.longitude,query = query)){
+        callRunner.makeApiCall(carAPI.search(latitude = position.latitude, longitude = position.longitude,query = query)){
             searchSuggestions.postValue(it)
         }
     }
 
     private fun fetchCarById(id:Long) = flow {
-        callRunner.makeApiCall(carRepo.getCarByID(id)){
+        callRunner.makeApiCall(carAPI.getCarByID(id)){
             emit(it)
         }
     }
 
 
    private  fun fetchUnavailableDates(carID:Long)  = flow{
-        callRunner.makeApiCall(carRepo.getUnavailableDates(carID)){
+        callRunner.makeApiCall(carAPI.getUnavailableDates(carID)){
             when(it){
                 is State.Success-> emit(State.Success(it.data?.map { date -> date.toBookingDate() }))
                 is State.Loading -> emit(State.Loading)

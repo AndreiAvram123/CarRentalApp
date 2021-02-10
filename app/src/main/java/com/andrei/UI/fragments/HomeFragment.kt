@@ -1,16 +1,15 @@
 package com.andrei.UI.fragments
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.adapters.CustomDivider
-import com.andrei.UI.adapters.SuggestionsAdapter
+import com.andrei.UI.adapters.CarsRVSearchAdapter
+import com.andrei.carrental.R
 
 import com.andrei.carrental.databinding.FragmentHomeBinding
+import com.andrei.carrental.entities.Car
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelLocation
 import com.andrei.engine.State
@@ -18,33 +17,56 @@ import com.andrei.utils.hide
 import com.andrei.utils.reObserve
 import com.andrei.utils.show
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
-class HomeFragment : Fragment() {
+class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
-  private lateinit var binding:FragmentHomeBinding
+  private val   binding:FragmentHomeBinding by viewBinding()
 
 
   private var currentLocation :LatLng? = null
 
   private val viewModelCar:ViewModelCar by activityViewModels()
-   private val viewModelLocation:ViewModelLocation by activityViewModels()
+    private val viewModelLocation:ViewModelLocation by activityViewModels()
 
+    private val currentLocationObserver = Observer<LatLng>{
+        if(it != null){
+            currentLocation = it
+        }
+    }
 
-  private val suggestionsAdapter:SuggestionsAdapter by lazy {
-      SuggestionsAdapter()
-  }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        // Inflate the layout for this fragment
-        binding = FragmentHomeBinding.inflate(layoutInflater,container,false)
-        configureSearchView()
-        viewModelLocation.currentLocation.reObserve(viewLifecycleOwner){
-            if(it !=null){
-               currentLocation = it
+    private val nearbyCarsObserver = Observer<State<List<Car>>>{
+        when(it){
+            is State.Success ->  if(it.data != null){
+                bottomSheetRVAdapter.setData(it.data)
             }
         }
-        return binding.root
+    }
+
+  private val searchRVAdapter:CarsRVSearchAdapter by lazy {
+      CarsRVSearchAdapter()
+  }
+
+  private val bottomSheetRVAdapter:CarsRVSearchAdapter by lazy {
+      CarsRVSearchAdapter()
+  }
+
+
+    override fun initializeUI() {
+        configureSearchView()
+        configureBottomSheet()
+        viewModelLocation.currentLocation.reObserve(viewLifecycleOwner,currentLocationObserver)
+        viewModelLocation.nearbyCars.reObserve(viewLifecycleOwner,nearbyCarsObserver)
+    }
+
+    private fun configureBottomSheet() {
+        val behavior = BottomSheetBehavior.from(binding.bottomSheetNearby)
+        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        binding.rvSheetNearbyCars.apply {
+            adapter = bottomSheetRVAdapter
+            addItemDecoration(CustomDivider(10))
+            layoutManager = LinearLayoutManager(requireContext())
+        }
     }
 
     private fun configureSearchView() {
@@ -60,7 +82,7 @@ class HomeFragment : Fragment() {
                 if(query.isNotEmpty()){
                     currentLocation?.let{ viewModelCar.fetchSuggestions(query,it)}
                 }else{
-                   suggestionsAdapter.clearData()
+                   searchRVAdapter.clearData()
                 }
                 return true
             }
@@ -70,7 +92,7 @@ class HomeFragment : Fragment() {
 
     private fun configureRecyclerView() {
         binding.recyclerViewSuggestions.apply {
-            adapter = suggestionsAdapter
+            adapter = searchRVAdapter
             addItemDecoration(CustomDivider(10))
             layoutManager = LinearLayoutManager(requireContext())
         }
@@ -78,7 +100,7 @@ class HomeFragment : Fragment() {
             when(it){
                 is State.Success -> {
                       if(it.data !=null){
-                          suggestionsAdapter.setData(it.data)
+                          searchRVAdapter.setData(it.data)
                       }
                        binding.pbSearch.hide()
                 }
@@ -89,4 +111,5 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
 }

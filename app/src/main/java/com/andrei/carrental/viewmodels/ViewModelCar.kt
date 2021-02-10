@@ -2,8 +2,7 @@ package com.andrei.carrental.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.andrei.carrental.entities.CarSearchEntity
-import com.andrei.carrental.entities.CarToRent
+import com.andrei.carrental.entities.Car
 import com.andrei.carrental.entities.BookingDate
 import com.andrei.engine.State
 import com.andrei.engine.repository.implementation.CarRepositoryImpl
@@ -15,7 +14,7 @@ class ViewModelCar @ViewModelInject constructor(
         private val carRepositoryImpl: CarRepositoryImpl
 ) : ViewModel (){
 
-    val searchSuggestions :MutableLiveData<State<List<CarSearchEntity>>> by lazy {
+    val searchSuggestions :MutableLiveData<State<List<Car>>> by lazy {
         carRepositoryImpl.searchSuggestions
     }
 
@@ -24,7 +23,7 @@ class ViewModelCar @ViewModelInject constructor(
       carRepositoryImpl.currentCarID
     }
 
-    val currentSelectedCar: LiveData<State<CarToRent>> by lazy {
+    val currentSelectedCar: LiveData<State<Car>> by lazy {
         carRepositoryImpl.currentSelectedCar
     }
 

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="car"
-            type="com.andrei.carrental.entities.CarSearchEntity" />
+            type="com.andrei.carrental.entities.Car" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -25,8 +25,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:adjustViewBounds="true"
-            android:contentDescription=""
-            app:imageFromURL="@{car.image}"
+            app:imageFromURL="@{car.images.get(0)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -38,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:text="@{car.name}"
+            android:text="@{car.carModel.name}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintBottom_toBottomOf="@+id/iv_car"
             app:layout_constraintLeft_toLeftOf="parent"

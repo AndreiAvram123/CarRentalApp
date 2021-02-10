@@ -26,7 +26,7 @@ class RepoInterfacesModule {
     @Provides
     fun provideCarRarRepoInterface(
             @RetrofitInterceptorWithToken retrofit: Retrofit
-    ):CarRepoInterface = retrofit.create(CarRepoInterface::class.java)
+    ):CarAPI = retrofit.create(CarAPI::class.java)
 
 
     @Provides
