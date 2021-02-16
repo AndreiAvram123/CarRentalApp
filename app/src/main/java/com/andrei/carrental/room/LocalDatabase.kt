@@ -1,22 +1,19 @@
-package com.andrei.dataLayer
+package com.andrei.carrental.room
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.andrei.kit.models.*
-import com.andrei.dataLayer.interfaces.dao.*
+import com.andrei.carrental.entities.Message
+import com.andrei.carrental.room.dao.MessageDao
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
-@Database(entities = [Post::class, Comment::class, User::class, Message::class, Chat::class], version = 6, exportSchema = false)
+@Database(entities = [Message::class], version = 1, exportSchema = false)
 abstract class LocalDatabase : RoomDatabase() {
 
-    abstract fun postDao(): RoomPostDao
-    abstract fun commentDao(): RoomCommentDao
-    abstract fun userDao(): UserDao
     abstract fun messageDao(): MessageDao
-    abstract fun chatDao(): ChatDao
+
 
     companion object {
         @Volatile
@@ -24,7 +21,7 @@ abstract class LocalDatabase : RoomDatabase() {
 
         @OptIn(InternalCoroutinesApi::class)
         fun getDatabase(application: Context): LocalDatabase {
-            val tempInstance = INSTANCE;
+            val tempInstance = INSTANCE
             if (tempInstance != null) {
                 return tempInstance
             }

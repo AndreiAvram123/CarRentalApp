@@ -1,3 +1,20 @@
 package com.andrei.carrental.room.dao
 
-data class MessageDao()
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.andrei.carrental.entities.Message
+
+@Dao
+interface MessageDao{
+    @Query("SELECT * FROM message WHERE chatID = :chatID ORDER BY date DESC")
+     fun findLastChatMessage(chatID:Long):LiveData<Message>
+
+     @Insert(onConflict = OnConflictStrategy.REPLACE)
+     fun insertMessage(message: Message)
+
+     @Insert(onConflict = OnConflictStrategy.REPLACE)
+     suspend fun insertMessages(messages:List<Message>)
+}
