@@ -11,6 +11,7 @@ import android.content.SharedPreferences
 fun SharedPreferences.getStringOrNull(key:String):String?{
    return this.getString(key,null)
 }
+
 fun SharedPreferences.getIntOrNull(key:String):Int?{
     val value = this.getInt(key,0)
     if(value == 0){

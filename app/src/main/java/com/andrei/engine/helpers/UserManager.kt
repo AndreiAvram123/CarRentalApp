@@ -19,7 +19,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@ActivityScoped
 class UserManager @Inject constructor(
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val  context:Context,

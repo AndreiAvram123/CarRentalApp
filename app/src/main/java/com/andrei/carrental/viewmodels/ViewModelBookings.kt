@@ -1,6 +1,5 @@
 package com.andrei.carrental.viewmodels
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
@@ -9,9 +8,12 @@ import com.andrei.engine.DTOEntities.toBooking
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.BookingsRepository
 import com.andrei.utils.toDate
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
+import javax.inject.Inject
 
-class ViewModelBookings @ViewModelInject constructor(
+@HiltViewModel
+class ViewModelBookings @Inject constructor(
         private val bookingsRepository: BookingsRepository
 ) : ViewModel() {
 

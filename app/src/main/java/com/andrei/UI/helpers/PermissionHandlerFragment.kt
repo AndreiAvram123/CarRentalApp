@@ -1,7 +1,5 @@
-package com.andrei.utils
+package com.andrei.UI.helpers
 
-import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment

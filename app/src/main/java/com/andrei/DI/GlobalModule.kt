@@ -6,15 +6,19 @@ import android.net.ConnectivityManager
 import com.andrei.carrental.R
 import com.andrei.engine.helpers.TokenManager
 import com.andrei.utils.getConnectivityManager
+import com.andrei.utils.getStringOrNull
+import com.pusher.client.Pusher
+import com.pusher.client.PusherOptions
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.DefineComponent
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@InstallIn(ApplicationComponent::class)
 @Module
+@InstallIn(SingletonComponent::class)
 
 class GlobalModule {
 
@@ -25,5 +29,6 @@ class GlobalModule {
     @Singleton
     @Provides
     fun provideNetworkManager(@ApplicationContext context:Context) : ConnectivityManager = context.getConnectivityManager()
+
 
 }

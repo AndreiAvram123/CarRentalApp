@@ -13,7 +13,9 @@ import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentLoginLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelAuth
 import com.andrei.utils.reObserve
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginFragment :Fragment(R.layout.fragment_login_layout) {
 
     private  val  binding:FragmentLoginLayoutBinding by viewBinding()

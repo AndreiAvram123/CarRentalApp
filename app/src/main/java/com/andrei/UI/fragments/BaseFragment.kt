@@ -3,14 +3,13 @@ package com.andrei.UI.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.CallSuper
-import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import com.andrei.carrental.databinding.FragmentNoInternetLayoutBinding
-import com.andrei.utils.PermissionHandlerFragment
+import com.andrei.UI.helpers.PermissionHandlerFragment
+import dagger.hilt.android.AndroidEntryPoint
 
 abstract class BaseFragment (layoutID:Int) : Fragment(layoutID) {
 
-    protected lateinit var permissionHandlerFragment :PermissionHandlerFragment
+    protected lateinit var permissionHandlerFragment : PermissionHandlerFragment
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

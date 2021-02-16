@@ -22,8 +22,8 @@ class BookingsAdapter(private val bookingType: BookingsFragment.BookingType): Re
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolderBooking = factory.create(parent,bookingType)
 
-    override fun onBindViewHolder(holder: BaseViewHolderBooking, position: Int) {
-        holder.bind(bookings[position])
+    override fun onBindViewHolder(holderBaseBooking: BaseViewHolderBooking, position: Int) {
+        holderBaseBooking.bind(bookings[position])
     }
 
 }

@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
-@ActivityScoped
 class TokenManager @Inject constructor(
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val  context: Context) {

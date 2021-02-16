@@ -38,7 +38,7 @@ class BookingsFragment(
                 binding.pbBookings.show()
             }
             is State.Error ->{
-
+                binding.pbBookings.hide()
             }
         }
     }
@@ -73,9 +73,8 @@ class BookingsFragment(
 
     private fun initializeRecyclerView() {
         binding.rvBookings.apply {
-            adapter = bookingsAdapter
             addItemDecoration(CustomDivider(10))
-            layoutManager = LinearLayoutManager(requireContext())
-        }
+            layoutManager = LinearLayoutManager(context)
+            adapter = bookingsAdapter}
     }
 }

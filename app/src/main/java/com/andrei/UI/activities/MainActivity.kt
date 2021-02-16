@@ -9,21 +9,23 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.helpers.InternetConnectionHandler
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
 import com.andrei.carrental.viewmodels.ViewModelAuth
 import com.andrei.engine.helpers.UserManager
 import com.andrei.engine.states.LoginFlowState
+import com.andrei.services.ChannelService
 import com.andrei.utils.*
+import com.pusher.client.Pusher
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
-
-    private lateinit var binding:ActivityMainBinding
+    private  val binding:ActivityMainBinding by viewBinding()
     private lateinit var navController:NavController
     private val  viewModelAuth:ViewModelAuth by viewModels()
     private var internetConnectionHandler:InternetConnectionHandler? = null
@@ -35,17 +37,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+   @Inject
+   lateinit var locationSettingsHandler: LocationSettingsHandler
 
-    @Inject
-      lateinit var locationSettingsHandler: LocationSettingsHandler
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        setUpNavigation()
+         setUpNavigation()
         attachLocationObserver()
         viewModelAuth.authenticationState.reObserve(this,observerUserLoggedIn)
-
     }
 
     private fun startInternetConnectionHandler() {

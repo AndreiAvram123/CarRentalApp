@@ -1,13 +1,15 @@
 package com.andrei.carrental.viewmodels
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.andrei.carrental.entities.Car
 import com.andrei.engine.State
 import com.andrei.engine.repository.implementation.CarRepositoryImpl
 import com.google.android.gms.maps.model.LatLng
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ViewModelLocation @ViewModelInject constructor(
+@HiltViewModel
+class ViewModelLocation @Inject constructor(
     private val carRepositoryImpl: CarRepositoryImpl
 ) : ViewModel() {
 

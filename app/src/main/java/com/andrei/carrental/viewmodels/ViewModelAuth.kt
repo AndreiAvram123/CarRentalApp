@@ -1,13 +1,16 @@
 package com.andrei.carrental.viewmodels
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import com.andrei.engine.repository.implementation.LoginRepositoryImpl
 import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.states.LoginFlowState
 import com.andrei.utils.isEmailValid
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ViewModelAuth  @ViewModelInject constructor(
+@HiltViewModel
+class ViewModelAuth  @Inject constructor(
         private val loginRepository: LoginRepository
 ):   ViewModel() {
 

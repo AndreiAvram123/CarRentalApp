@@ -12,7 +12,7 @@ interface CarAPI {
     fun getNearbyCars(@Query("latitude") latitude:Double,
                       @Query("longitude") longitude:Double): Call<ApiResult<List<Car>>>
 
-    @GET("/cars/search")
+    @GET("/cars")
     fun search(@Query("latitude") latitude:Double,
                       @Query("longitude") longitude:Double,
                       @Query("query") query: String): Call<ApiResult<List<Car>>>

@@ -73,5 +73,13 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.andrei.UI.fragments.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="SettingsFragment" >
+        <action
+            android:id="@+id/action_settingsFragment_to_chatsFragment"
+            app:destination="@id/chatsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatsFragment"
+        android:name="com.andrei.UI.fragments.ChatsFragment"
+        android:label="ChatsFragment" />
 </navigation>
