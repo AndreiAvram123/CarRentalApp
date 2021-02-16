@@ -36,16 +36,13 @@ class HelpersModule {
     }
 
     @Provides
-    fun providePusher( @ApplicationContext context: Context, authorizer: HttpAuthorizer): Pusher {
+    fun providePusherOptions( @ApplicationContext context: Context, authorizer: HttpAuthorizer): PusherOptions {
         val options = PusherOptions()
 
         options.apply {
             setCluster(context.getString(R.string.pusher_app_cluster))
             setAuthorizer(authorizer)
         }
-        return Pusher(
-            context.getString(
-                R.string.pusher_key
-            ),options)
+        return options
     }
 }

@@ -14,6 +14,7 @@ import com.andrei.carrental.viewmodels.ViewModelLocation
 import com.andrei.services.MessengerService
 import com.andrei.utils.reObserve
 import com.pusher.client.Pusher
+import com.pusher.client.PusherOptions
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -21,7 +22,7 @@ import javax.inject.Inject
 class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
     @Inject
-    lateinit var pusher: Pusher
+    lateinit var pusherOptions: PusherOptions
 
     private val binding:FragmentChatsBinding by viewBinding()
 
@@ -31,7 +32,7 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
     override fun initializeUI() {
          initializeRecyclerView()
-            val messengerService = MessengerService(usersIDs = listOf(1),pusher)
+            val messengerService = MessengerService(usersIDs = listOf(1),requireContext(),pusherOptions)
             messengerService.connect()
 
             val mockChat = Chat(User(1,"andrei"),
@@ -49,8 +50,4 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        pusher.disconnect()
-    }
 }

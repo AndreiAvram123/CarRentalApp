@@ -43,6 +43,9 @@ class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner) : RecyclerView.A
             chat.isUserOnline.reObserve(_lifecycleOwner){
               binding.isUserOnline = it
             }
+            chat.lastMessage.reObserve(_lifecycleOwner){
+                binding.lastMessage = it.content
+            }
         }
 
 

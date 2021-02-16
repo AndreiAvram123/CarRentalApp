@@ -13,6 +13,9 @@
         <variable
             name="isUserOnline"
             type="Boolean" />
+        <variable
+            name="lastMessage"
+            type="String" />
 
     </data>
 
@@ -54,6 +57,18 @@
             app:layout_constraintBottom_toBottomOf="@+id/user_image"
             app:layout_constraintEnd_toEndOf="@+id/user_image"
             app:srcCompat="@drawable/round_shape_user_online" />
+
+        <TextView
+            style="@style/important_text"
+            android:id="@+id/tv_last_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="@{lastMessage}"
+            tools:text="something"
+            app:layout_constraintBottom_toBottomOf="@+id/user_image"
+            app:layout_constraintStart_toEndOf="@+id/user_image"
+            app:layout_constraintTop_toBottomOf="@+id/user_name_request" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
