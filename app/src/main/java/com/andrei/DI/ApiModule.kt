@@ -12,7 +12,7 @@ import retrofit2.Retrofit
 
 @Module
 @InstallIn(ViewModelComponent::class)
-class RepoInterfacesModule {
+class ApiModule {
 
     @Provides
     fun provideAuthRepoInterface(
@@ -44,5 +44,8 @@ class RepoInterfacesModule {
     fun provideBookingsRepoInterface(
             @RetrofitInterceptorWithToken retrofit: Retrofit
     ):BookingRepoInterface = retrofit.create(BookingRepoInterface::class.java)
+
+    @Provides
+    fun provideChatAPI(@RetrofitInterceptorWithToken retrofit: Retrofit):ChatAPI = retrofit.create(ChatAPI::class.java)
 
 }

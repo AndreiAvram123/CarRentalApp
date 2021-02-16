@@ -3,6 +3,8 @@ package com.andrei.DI
 import android.content.Context
 import android.content.SharedPreferences
 import com.andrei.carrental.R
+import com.andrei.carrental.room.dao.MessageDao
+import com.andrei.services.MessengerService
 import com.andrei.utils.LocationSettingsHandler
 import com.andrei.utils.getStringOrNull
 import com.pusher.client.Pusher
@@ -18,7 +20,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@InstallIn(SingletonComponent::class)
+@InstallIn(ActivityComponent::class)
 @Module
 
 class HelpersModule {
@@ -44,5 +46,12 @@ class HelpersModule {
             setAuthorizer(authorizer)
         }
         return options
+    }
+
+    @Provides
+    fun provideMessengerService(@ApplicationContext context: Context, pusherOptions: PusherOptions, messageDao: MessageDao):MessengerService{
+        return MessengerService(context = context,
+                                pusherOptions = pusherOptions,
+                                messagesDao = messageDao)
     }
 }

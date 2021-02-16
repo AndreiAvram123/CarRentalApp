@@ -9,11 +9,10 @@ import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentChatsBinding
 import com.andrei.carrental.entities.Chat
 import com.andrei.carrental.entities.User
-import com.andrei.carrental.viewmodels.ViewModelBookings
-import com.andrei.carrental.viewmodels.ViewModelLocation
+import com.andrei.carrental.viewmodels.ViewModelChat
+import com.andrei.engine.State
 import com.andrei.services.MessengerService
 import com.andrei.utils.reObserve
-import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -21,10 +20,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
+
     @Inject
-    lateinit var pusherOptions: PusherOptions
+    lateinit var messengerService: MessengerService
 
     private val binding:FragmentChatsBinding by viewBinding()
+    private val viewModelChat:ViewModelChat by viewModels()
 
     private val chatsAdapter:ChatsAdapter by lazy {
         ChatsAdapter(viewLifecycleOwner)
@@ -32,14 +33,19 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
     override fun initializeUI() {
          initializeRecyclerView()
-            val messengerService = MessengerService(usersIDs = listOf(1),requireContext(),pusherOptions)
-            messengerService.connect()
+         viewModelChat.userChats.reObserve(viewLifecycleOwner){
+             when(it){
+                 is State.Success -> {
+                     if(it.data !=null){
+                         messengerService.setChannelsIds(it.data.map {chatDTO ->  chatDTO.id })
+                         messengerService.connect()
+                         chatsAdapter.setData(messengerService.getObservableChats())
+                     }
+                 }
+             }
+         }
 
-            val mockChat = Chat(User(1,"andrei"),
-                isUserOnline= messengerService.getUserOnlineLiveData(1),
-                lastMessage = messengerService.getLastMessageLiveData(1))
 
-            chatsAdapter.setData(listOf(mockChat))
     }
 
     private fun initializeRecyclerView() {

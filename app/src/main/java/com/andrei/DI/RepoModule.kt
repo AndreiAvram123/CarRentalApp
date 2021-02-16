@@ -1,9 +1,11 @@
 package com.andrei.DI
 
 import com.andrei.engine.repository.implementation.BookingsRepositoryImpl
+import com.andrei.engine.repository.implementation.ChatRepositoryImpl
 import com.andrei.engine.repository.implementation.LoginRepositoryImpl
 import com.andrei.engine.repository.implementation.SignUpRepositoryImpl
 import com.andrei.engine.repository.interfaces.BookingsRepository
+import com.andrei.engine.repository.interfaces.ChatRepository
 import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.repository.interfaces.SignUpRepository
 import dagger.Binds
@@ -24,5 +26,8 @@ abstract class RepoModule {
 
     @Binds
     abstract fun bindBookingRepository(bookingRepositoryImpl: BookingsRepositoryImpl): BookingsRepository
+
+    @Binds
+    abstract fun bindChatRepository(chatRepositoryImpl: ChatRepositoryImpl): ChatRepository
 
 }

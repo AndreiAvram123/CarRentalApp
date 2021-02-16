@@ -1,23 +1,26 @@
 package com.andrei.services
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import com.andrei.carrental.R
-import com.andrei.carrental.entities.chats.MessageEventWrapper
+import com.andrei.carrental.entities.Message
 import com.andrei.carrental.factories.PusherFactory
-import com.andreia.carrental.entities.Message
+import com.andrei.carrental.room.dao.MessageDao
+import com.andrei.engine.DTOEntities.MessageDTO
+import com.andrei.engine.DTOEntities.toMessage
 import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
-import com.pusher.client.channel.ChannelEventListener
-import com.pusher.client.channel.PusherEvent
+
 
 class ChannelService(
     private val chatID:Long,
     private val pusherOptions: PusherOptions,
-    private val context:Context) {
+    private val pusherKey:String,
+    private val messageDao: MessageDao
+    ) {
 
     private val pushers :MutableList<Pusher> = mutableListOf()
 
@@ -28,11 +31,10 @@ class ChannelService(
     val isUserOnline:LiveData<Boolean>
     get() = _isUserOnline
 
-    private val _lastMessageSent:MutableLiveData<Message> by lazy {
-        MutableLiveData()
+
+    val lastMessageDTO:LiveData<Message> by lazy {
+        messageDao.findLastChatMessage(chatID)
     }
-    val lastMessageSent:LiveData<Message>
-    get() = _lastMessageSent
 
 
 
@@ -42,18 +44,18 @@ class ChannelService(
     }
 
     private fun bindToNewMessagesEvent() {
-        val pusher = PusherFactory.createPusher(pusherOptions,context.getString(R.string.pusher_key))
+        val pusher = PusherFactory.createPusher(pusherOptions,pusherKey)
         pushers.add(pusher)
         val messagesChannel = pusher.subscribe("chats-$chatID")
         messagesChannel.bind(eventNewMessage){
-          val message = Gson().fromJson(it.data,Message::class.java)
-            _lastMessageSent.postValue(message)
+          val message = Gson().fromJson(it.data, MessageDTO::class.java).toMessage()
+           messageDao.insertMessage(message)
         }
     }
 
     private fun bindToNewUserAddedEvent() {
         val listener = CustomPresenceChannelListener()
-        val pusher = PusherFactory.createPusher(pusherOptions,context.getString(R.string.pusher_key))
+        val pusher = PusherFactory.createPusher(pusherOptions,pusherKey)
         pushers.add(pusher)
         pusher.subscribePresence("presence-chats-$chatID",listener, eventNewUserAdded)
 
@@ -67,9 +69,8 @@ class ChannelService(
             _isUserOnline.postValue(users != null && users.size > 1)
         }
 
-
-
     }
+
 
     fun connect(){
         pushers.forEach {
