@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -14,11 +13,7 @@ import com.andrei.UI.helpers.InternetConnectionHandler
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
 import com.andrei.carrental.viewmodels.ViewModelAuth
-import com.andrei.engine.helpers.UserManager
-import com.andrei.engine.states.LoginFlowState
-import com.andrei.services.ChannelService
 import com.andrei.utils.*
-import com.pusher.client.Pusher
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -33,7 +28,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val observerUserLoggedIn = Observer<ViewModelAuth.AuthenticationState>{
         if(it ==  ViewModelAuth.AuthenticationState.NOT_AUTHENTICATED){
-            startNewActivity<LandingActivity>()
+            startNewActivity<LoginFlowActivity>()
         }
     }
 

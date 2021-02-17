@@ -9,7 +9,7 @@ inline fun <reified T: Activity> Activity.startNewActivity(){
     Intent(this,T::class.java).also {
         startActivity(it)
     }
-    finishAffinity()
+    finish()
 }
 
 fun Int.isResultOk() = this == Activity.RESULT_OK

@@ -16,8 +16,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CarRental">
+        <activity android:name="com.andrei.UI.activities.SplashScreenActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <activity android:name="com.andrei.UI.activities.LandingActivity">
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.andrei.UI.activities.LoginFlowActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

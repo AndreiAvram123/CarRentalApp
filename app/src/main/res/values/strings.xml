@@ -40,7 +40,6 @@
     <string name="confirm_password">Confirm password</string>
 
 
-
     <!-- Registration-->
     <string name="email_already_taken">Email already taken</string>
     <string name="username_taken">Username already taken</string>
