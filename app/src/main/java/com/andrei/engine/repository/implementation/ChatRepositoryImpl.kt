@@ -13,6 +13,7 @@ import com.andrei.engine.State
 import com.andrei.engine.helpers.UserManager
 import com.andrei.engine.repository.interfaces.ChatRepository
 import com.andrei.engine.repositoryInterfaces.ChatAPI
+import com.andreia.carrental.requestModels.CreateMessageRequest
 import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
@@ -27,12 +28,26 @@ class ChatRepositoryImpl @Inject constructor(
         fetchUserChats(it.id)
     }
 
+
     override suspend fun getInitialChatMessages(chatID:Long):List<Message>{
        return  messageDao.findLastChatMessages(chatID)
     }
 
     override fun getLastChatMessage(chatID: Long): LiveData<Message> {
         return messageDao.findLastChatMessage(chatID)
+    }
+
+    override suspend fun sendMessage(text: String, currentChatID: Long) {
+        val userID =  userManager.userLoginData.value?.id
+        check(userID!=null){}
+        val requestModel = CreateMessageRequest(
+            content = text,
+            senderID = userID,
+            chatID = currentChatID
+        )
+        callRunner.makeApiCall(chatAPI.postMessage(requestModel)){
+
+        }
     }
 
 

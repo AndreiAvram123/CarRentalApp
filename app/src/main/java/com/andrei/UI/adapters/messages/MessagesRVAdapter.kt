@@ -102,6 +102,7 @@ class MessagesRVAdapter(val expand: (image:Image) -> Unit) : RecyclerView.Adapte
                  addMessage(newMessage)
              }
         }
+        scrollToLast()
     }
 
     fun clear() {

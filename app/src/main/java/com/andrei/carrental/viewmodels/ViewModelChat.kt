@@ -7,6 +7,7 @@ import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.ChatRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,4 +63,15 @@ class ViewModelChat @Inject constructor(
     fun setMessageText(messageText:String){
         _enteredMessageText.value = messageText
     }
+
+    fun sendMessage(){
+        val text = _enteredMessageText.value
+        val currentChatID = currentOpenedChat.value
+        if(text != null && currentChatID !=null){
+             viewModelScope.launch {
+                 chatRepository.sendMessage(text,currentChatID)
+             }
+        }
+
+        }
 }

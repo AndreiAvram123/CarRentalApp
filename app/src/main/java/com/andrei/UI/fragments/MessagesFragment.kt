@@ -46,10 +46,11 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
 
     private fun attachListeners() {
         binding.sendBt.setOnClickListener {
-
+            viewModelChat.sendMessage()
+            binding.messageInput.setText("")
         }
         binding.messageInput.addTextChangedListener {
-            viewModelChat.setMessageText(it.toString())
+            viewModelChat.setMessageText(it.toString().trim())
         }
     }
 
