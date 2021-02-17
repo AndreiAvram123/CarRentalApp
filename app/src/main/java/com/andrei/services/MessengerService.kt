@@ -7,7 +7,9 @@ import com.andrei.carrental.R
 import com.andrei.carrental.entities.Chat
 import com.andrei.carrental.entities.User
 import com.andrei.carrental.room.dao.MessageDao
+import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.DTOEntities.MessageDTO
+import com.andrei.engine.DTOEntities.toUser
 import com.pusher.client.PusherOptions
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -21,12 +23,15 @@ class MessengerService @Inject constructor (
 
     private val channels : MutableMap<Long,ChannelService> = mutableMapOf()
 
-    fun setChannelsIds(channelIDs:List<Long>){
+
+    fun configureChannels(chats:List<ChatDTO>){
           channels.clear()
-          channels.putAll(channelIDs.map { it to ChannelService(it,
+          channels.putAll(chats.map { it.id to ChannelService(it.id,
                    pusherOptions,
                    context.getString(R.string.pusher_key),
-                   messagesDao)
+                   messagesDao,
+                   it.friend.toUser()
+          )
                }.toMap())
     }
 
@@ -34,7 +39,7 @@ class MessengerService @Inject constructor (
         val chats = mutableListOf<Chat>()
         channels.forEach {
             val chat = Chat(
-                   friend = User(id = 3,username = "andrei"),
+                   friend = it.value.friend,
                    isUserOnline = it.value.isUserOnline,
                    lastMessageDTO = it.value.lastMessageDTO
             )
@@ -42,6 +47,8 @@ class MessengerService @Inject constructor (
         }
         return chats
     }
+
+
 
     fun connect(){
       channels.forEach{

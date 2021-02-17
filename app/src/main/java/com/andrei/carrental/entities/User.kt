@@ -5,12 +5,14 @@ import com.google.gson.annotations.SerializedName
 data class User(
         val id :Long,
         val username:String,
+        private val _profilePicture:Image?
 ){
-        var profilePicture:Image? = null
-        get() {
-                if(field == null){
-                   return Image("https://robohash.org/139.162.116.133.png")
+        val profilePicture:Image
+                get() {
+                        if(_profilePicture == null){
+                                return Image("https://robohash.org/139.162.116.133.png")
+
+                        }
+                        return _profilePicture
                 }
-                return field
-        }
 }

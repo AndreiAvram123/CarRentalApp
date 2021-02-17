@@ -6,9 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import com.andrei.carrental.R
 import com.andrei.carrental.entities.Message
+import com.andrei.carrental.entities.User
 import com.andrei.carrental.factories.PusherFactory
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.DTOEntities.MessageDTO
+import com.andrei.engine.DTOEntities.UserDTO
 import com.andrei.engine.DTOEntities.toMessage
 import com.google.gson.Gson
 import com.pusher.client.Pusher
@@ -19,7 +21,8 @@ class ChannelService(
     private val chatID:Long,
     private val pusherOptions: PusherOptions,
     private val pusherKey:String,
-    private val messageDao: MessageDao
+    private val messageDao: MessageDao,
+    val friend:User,
     ) {
 
     private val pushers :MutableList<Pusher> = mutableListOf()

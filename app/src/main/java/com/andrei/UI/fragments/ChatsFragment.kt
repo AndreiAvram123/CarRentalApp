@@ -7,13 +7,10 @@ import com.andrei.UI.adapters.CustomDivider
 import com.andrei.UI.adapters.chats.ChatsAdapter
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentChatsBinding
-import com.andrei.carrental.entities.Chat
-import com.andrei.carrental.entities.User
 import com.andrei.carrental.viewmodels.ViewModelChat
 import com.andrei.engine.State
 import com.andrei.services.MessengerService
 import com.andrei.utils.reObserve
-import com.pusher.client.PusherOptions
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -37,7 +34,7 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
              when(it){
                  is State.Success -> {
                      if(it.data !=null){
-                         messengerService.setChannelsIds(it.data.map {chatDTO ->  chatDTO.id })
+                         messengerService.configureChannels(it.data)
                          messengerService.connect()
                          chatsAdapter.setData(messengerService.getObservableChats())
                      }

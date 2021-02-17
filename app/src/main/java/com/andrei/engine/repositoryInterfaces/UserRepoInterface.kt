@@ -5,6 +5,5 @@ import com.andrei.engine.configuration.CallWrapper
 import retrofit2.http.GET
 
 interface UserRepoInterface {
-  @GET("/users/{userID}")
-  fun getUserByID(id:Int):CallWrapper<User>
+
 }
