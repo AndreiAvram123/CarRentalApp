@@ -1,5 +1,6 @@
 package com.andrei.UI.fragments
 
+import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 import okhttp3.Dispatcher
 import javax.inject.Inject
 
+@Suppress("UNUSED_ANONYMOUS_PARAMETER")
 class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
 
     private val binding:FragmentMessagesBinding by viewBinding ()
@@ -41,6 +43,13 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
         viewModelChat.setCurrentOpenedChatID(navArgs.chatID)
         populateRVWithData()
         attachListeners()
+        binding.messagesList.addOnLayoutChangeListener { _, _, _, bottom, _, _, p6, p7, oldBottom ->
+            if (bottom <  oldBottom) {
+            binding.messagesList.postDelayed({
+                   binding.messagesList.smoothScrollToPosition(0)
+           },100)
+        }
+        }
     }
 
 
