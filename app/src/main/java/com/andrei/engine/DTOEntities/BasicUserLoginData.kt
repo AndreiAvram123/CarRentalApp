@@ -6,5 +6,5 @@ data class BasicUserLoginData(
         @SerializedName("email")
         val email:String,
         @SerializedName("id")
-        val id :Int
+        val id :Long
 )

@@ -7,5 +7,5 @@ import retrofit2.http.Path
 
 interface ChatAPI {
     @GET("/users/{userID}/chats")
-    fun getAllUserChats(@Path("userID") userID:Int):CallWrapper<List<ChatDTO>>
+    fun getAllUserChats(@Path("userID") userID:Long):CallWrapper<List<ChatDTO>>
 }

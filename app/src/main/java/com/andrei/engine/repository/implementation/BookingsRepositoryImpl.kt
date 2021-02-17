@@ -23,14 +23,11 @@ class BookingsRepositoryImpl @Inject constructor(
         fetchBookings(it.id)
     }
 
-    private fun fetchBookings(userID:Int?) : LiveData<State<List<BookingDTO>>> = liveData<State<List<BookingDTO>>>{
-          if(userID == null){
-              emit(State.Success(emptyList()))
-          }else {
+    private fun fetchBookings(userID:Long) : LiveData<State<List<BookingDTO>>> = liveData<State<List<BookingDTO>>>{
               callRunner.makeApiCall(bookingRepo.getBookings(userID)) {
                   emit(it)
               }
-          }
+
 
     }
 

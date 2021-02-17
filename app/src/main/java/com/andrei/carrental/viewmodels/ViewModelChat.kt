@@ -1,6 +1,7 @@
 package com.andrei.carrental.viewmodels
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.State
@@ -18,4 +19,13 @@ class ViewModelChat @Inject constructor(
    val userChats:LiveData<State<List<ChatDTO>>> by lazy {
        chatRepository.userChats
    }
+
+   private val currentOpenedChat:MutableLiveData<Long> by lazy {
+       MutableLiveData()
+   }
+
+    fun setCurrentOpenedChatID(chatID:Long){
+        currentOpenedChat.value = chatID
+    }
+
 }

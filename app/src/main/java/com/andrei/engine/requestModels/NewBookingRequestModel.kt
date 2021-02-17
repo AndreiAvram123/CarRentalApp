@@ -12,5 +12,5 @@ data class NewBookingRequestModel(
         @SerializedName("carID")
         val carID:Long,
         @SerializedName("userID")
-        val userID:Int
+        val userID:Long
 )

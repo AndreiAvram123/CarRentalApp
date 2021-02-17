@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import com.andrei.carrental.R
 import com.andrei.carrental.entities.Message
+import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.entities.User
 import com.andrei.carrental.factories.PusherFactory
 import com.andrei.carrental.room.dao.MessageDao
@@ -15,6 +16,8 @@ import com.andrei.engine.DTOEntities.toMessage
 import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
+import com.pusher.client.channel.PusherEvent
+import com.pusher.client.channel.SubscriptionEventListener
 
 
 class ChannelService(
@@ -39,6 +42,16 @@ class ChannelService(
         messageDao.findLastChatMessage(chatID)
     }
 
+    private val eventNewMessageListener = SubscriptionEventListener{
+        val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
+        when {
+            messageDTO.isImageMessage && messageDTO.sender.id != friend.id -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_SENT_IMAGE))
+            messageDTO.isImageMessage && messageDTO.sender.id == friend.id -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_IMAGE))
+
+            !messageDTO.isImageMessage && messageDTO.sender.id != friend.id -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_SENT_TEXT))
+            !messageDTO.isImageMessage && messageDTO.sender.id == friend.id -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_TEXT))
+        }
+    }
 
 
     init {
@@ -50,10 +63,7 @@ class ChannelService(
         val pusher = PusherFactory.createPusher(pusherOptions,pusherKey)
         pushers.add(pusher)
         val messagesChannel = pusher.subscribe("chats-$chatID")
-        messagesChannel.bind(eventNewMessage){
-          val message = Gson().fromJson(it.data, MessageDTO::class.java).toMessage()
-           messageDao.insertMessage(message)
-        }
+         messagesChannel.bind(eventNewMessage,eventNewMessageListener)
     }
 
     private fun bindToNewUserAddedEvent() {

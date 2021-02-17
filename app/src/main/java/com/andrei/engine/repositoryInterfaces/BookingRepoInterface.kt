@@ -8,5 +8,5 @@ import retrofit2.http.Path
 
 interface BookingRepoInterface {
 @GET("/users/{userID}/bookings")
-fun getBookings(@Path("userID") userID:Int): CallWrapper<List<BookingDTO>>
+fun getBookings(@Path("userID") userID:Long): CallWrapper<List<BookingDTO>>
 }

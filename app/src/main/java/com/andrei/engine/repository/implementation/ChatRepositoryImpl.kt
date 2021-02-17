@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.liveData
 import com.andrei.carrental.entities.Chat
+import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.CallRunner
 import com.andrei.engine.DTOEntities.ChatDTO
@@ -22,22 +23,31 @@ class ChatRepositoryImpl @Inject constructor(
 
 ): ChatRepository {
 
-    override val userChats: LiveData<State<List<ChatDTO>>> = Transformations.switchMap(userManager.userLoginData){
-       fetchUserChats(it.id)
+    override val userChats: LiveData<State<List<ChatDTO>>> = Transformations.switchMap(userManager.userLoginData) {
+        fetchUserChats(it.id)
     }
 
-    private fun fetchUserChats(userID:Int):LiveData<State<List<ChatDTO>>> = liveData{
-      callRunner.makeApiCall(chatAPI.getAllUserChats(userID)){
-          if(it is State.Success){
-              //insert into room
-               if(it.data != null){
-                    it.data.forEach { chatDTO->
-                        val messages = chatDTO.lastMessages.map {messageDTO ->  messageDTO.toMessage() }
+    private fun fetchUserChats(userID: Long): LiveData<State<List<ChatDTO>>> = liveData {
+        callRunner.makeApiCall(chatAPI.getAllUserChats(userID)) {
+            if (it is State.Success) {
+                //insert into room
+                if (it.data != null) {
+                    it.data.forEach { chatDTO ->
+                        val messages = chatDTO.lastMessages.map { messageDTO ->
+                            when {
+                                messageDTO.isImageMessage && messageDTO.sender.id == userID -> messageDTO.toMessage(MessageType.MESSAGE_SENT_IMAGE)
+                                messageDTO.isImageMessage && messageDTO.sender.id != userID -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_IMAGE)
+                                !messageDTO.isImageMessage && messageDTO.sender.id == userID -> messageDTO.toMessage(MessageType.MESSAGE_SENT_TEXT)
+                                else -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_TEXT)
+                            }
+                        }
                         messageDao.insertMessages(messages)
+
                     }
-               }
-          }
-          emit(it)
-      }
+                }
+                emit(it)
+            }
+        }
     }
+
 }

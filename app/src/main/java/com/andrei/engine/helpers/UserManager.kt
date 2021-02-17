@@ -8,10 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import com.andrei.carrental.R
 import com.andrei.engine.DTOEntities.BasicUserLoginData
 import com.andrei.engine.responseModels.LoginResponse
-import com.andrei.utils.edit
-import com.andrei.utils.getIntOrNull
-import com.andrei.utils.getStringOrNull
-import com.andrei.utils.removeValue
+import com.andrei.utils.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.Dispatchers
@@ -71,7 +68,7 @@ class UserManager @Inject constructor(
 
     private fun saveUserInSharedPrefs(userLoginData:BasicUserLoginData){
         sharedPreferences.edit {
-            putInt(context.getString(R.string.key_user_id),userLoginData.id)
+            putLong(context.getString(R.string.key_user_id),userLoginData.id)
             putString(context.getString(R.string.key_user_email),userLoginData.email)
         }
     }
@@ -91,8 +88,8 @@ class UserManager @Inject constructor(
     private fun getUserDetailsFromStorage() {
         GlobalScope.launch(Dispatchers.IO) {
             val email = sharedPreferences.getStringOrNull(context.getString(R.string.key_user_email))
-            val id = sharedPreferences.getIntOrNull(context.getString(R.string.key_user_id))
-            if (email != null && id != null) {
+            val id = sharedPreferences.getLongOrZero(context.getString(R.string.key_user_id))
+            if (email != null && id != 0L) {
                 _userLoginData.postValue(BasicUserLoginData(
                         email = email,
                         id = id

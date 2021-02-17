@@ -18,4 +18,11 @@ data class Message(
     val userID:Long,
     @ColumnInfo(name = "chatID")
     val chatID:Long,
+    @ColumnInfo(name = "type")
+    val messageType:MessageType
 )
+
+enum class MessageType(val id: Int) {
+   MESSAGE_RECEIVED_TEXT(1), MESSAGE_SENT_TEXT(2), MESSAGE_SENT_IMAGE(3), MESSAGE_RECEIVED_IMAGE(4),
+}
+
