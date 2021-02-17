@@ -1,12 +1,13 @@
 package com.andrei.carrental.entities
 
-import com.google.gson.annotations.SerializedName
+import com.stfalcon.chatkit.commons.models.IUser
 
 data class User(
-        val id :Long,
+        val userID :Long,
         val username:String,
         private val _profilePicture:Image?
-){
+):IUser{
+
         val profilePicture:Image
                 get() {
                         if(_profilePicture == null){
@@ -15,4 +16,11 @@ data class User(
                         }
                         return _profilePicture
                 }
+
+        override fun getId(): String = userID.toString()
+
+        override fun getName(): String = username
+
+
+        override fun getAvatar(): String  = profilePicture.imagePath
 }

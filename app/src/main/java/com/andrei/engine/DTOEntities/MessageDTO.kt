@@ -13,7 +13,7 @@ data class MessageDTO(
    @SerializedName("date")
    val date:Long,
    @SerializedName("sender")
-   val sender: User,
+   val sender: UserDTO,
    @SerializedName("chatID")
    val chatID:Long,
    @SerializedName("isImageMessage")
@@ -21,10 +21,10 @@ data class MessageDTO(
 )
 
 fun MessageDTO.toMessage(messageType: MessageType): Message {
-   return Message(id = this.id,
+   return Message(messageID = this.id,
            content = this.content,
            date = this.date ,
-           userID =  this.sender.id ,
+            sender =  this.sender.toUser() ,
            chatID = this.chatID,
            messageType = messageType)
 }

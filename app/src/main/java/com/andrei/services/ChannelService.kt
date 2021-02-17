@@ -1,22 +1,17 @@
 package com.andrei.services
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
-import com.andrei.carrental.R
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.entities.User
 import com.andrei.carrental.factories.PusherFactory
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.DTOEntities.MessageDTO
-import com.andrei.engine.DTOEntities.UserDTO
 import com.andrei.engine.DTOEntities.toMessage
 import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
-import com.pusher.client.channel.PusherEvent
 import com.pusher.client.channel.SubscriptionEventListener
 
 
@@ -45,11 +40,11 @@ class ChannelService(
     private val eventNewMessageListener = SubscriptionEventListener{
         val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
         when {
-            messageDTO.isImageMessage && messageDTO.sender.id != friend.id -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_SENT_IMAGE))
-            messageDTO.isImageMessage && messageDTO.sender.id == friend.id -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_IMAGE))
+            messageDTO.isImageMessage && messageDTO.sender.userID != friend.userID -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_SENT_IMAGE))
+            messageDTO.isImageMessage && messageDTO.sender.userID == friend.userID -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_IMAGE))
 
-            !messageDTO.isImageMessage && messageDTO.sender.id != friend.id -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_SENT_TEXT))
-            !messageDTO.isImageMessage && messageDTO.sender.id == friend.id -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_TEXT))
+            !messageDTO.isImageMessage && messageDTO.sender.userID != friend.userID -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_SENT_TEXT))
+            !messageDTO.isImageMessage && messageDTO.sender.userID == friend.userID -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_TEXT))
         }
     }
 
@@ -88,6 +83,12 @@ class ChannelService(
     fun connect(){
         pushers.forEach {
             it.connect()
+        }
+    }
+
+    fun disconnect(){
+        pushers.forEach {
+            it.disconnect()
         }
     }
 

@@ -1,21 +1,28 @@
 package com.andrei.UI.fragments
 
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.adapters.CustomDivider
-import com.andrei.UI.adapters.messages.MessagesRVAdapter
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentMessagesBinding
 import com.andrei.carrental.entities.Image
+import com.andrei.carrental.entities.Message
 import com.andrei.carrental.viewmodels.ViewModelChat
+import com.andrei.engine.helpers.UserManager
+import com.andrei.utils.loadFromURl
 import com.andrei.utils.observeOnce
 import com.andrei.utils.reObserve
-import com.andrei.utils.text
+import com.stfalcon.chatkit.commons.ImageLoader
+import com.stfalcon.chatkit.messages.MessageInput
+import com.stfalcon.chatkit.messages.MessagesListAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
+import javax.inject.Inject
 
 class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
 
@@ -23,62 +30,49 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     private val viewModelChat:ViewModelChat by activityViewModels()
     private val navArgs:MessagesFragmentArgs by navArgs()
 
-    private val messagesAdapter:MessagesRVAdapter by lazy{
-        MessagesRVAdapter(this::expandImage)
+     private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.loadFromURl(it) } }
+
+    private val messagesAdapter:MessagesListAdapter<Message> by lazy {
+        MessagesListAdapter(UserManager.getUserID(requireContext()).toString(),imageLoader)
     }
 
 
     override fun initializeUI() {
         viewModelChat.setCurrentOpenedChatID(navArgs.chatID)
-        initializeRecyclerView()
+        populateRVWithData()
         attachListeners()
-        attachObservers()
     }
 
-    private fun attachObservers() {
-        viewModelChat.enteredMessageText.observeOnce(viewLifecycleOwner){
-            if(it.isNotEmpty()) {
-                binding.messageInput.setText(it)
-            }
-        }
-
-    }
 
     private fun attachListeners() {
-        binding.sendBt.setOnClickListener {
-            viewModelChat.sendMessage()
-            binding.messageInput.setText("")
-        }
-        binding.messageInput.addTextChangedListener {
-            viewModelChat.setMessageText(it.toString().trim())
+        binding.inputMessage.setInputListener {
+            viewModelChat.sendMessage(it.toString())
+            true
         }
     }
 
     private fun populateRVWithData(){
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             val data = viewModelChat.getInitialChatMessages()
-            messagesAdapter.setData(data)
-            startObservingLastMessage()
+            addAdapterData(data)
         }
     }
 
-    private fun initializeRecyclerView() {
-        binding.rvMessages.apply {
-            adapter = messagesAdapter
-            addItemDecoration(CustomDivider(10))
-            layoutManager = LinearLayoutManager(context)
+    private fun addAdapterData(data:List<Message>){
+        lifecycleScope.launch(Dispatchers.Main) {
+            data.forEach {
+                messagesAdapter.addToStart(it,true)
+            }
+            binding.messagesList.setAdapter(messagesAdapter)
+            startObservingNewMessage()
         }
-        populateRVWithData()
     }
 
-    private fun startObservingLastMessage(){
-          viewModelChat.lastChatMessage.reObserve(viewLifecycleOwner){
-             messagesAdapter.addMessage(it)
-          }
+    private fun startObservingNewMessage() {
+        viewModelChat.lastChatMessage.reObserve(viewLifecycleOwner){
+            messagesAdapter.addToStart(it,true)
+        }
     }
-
-    private fun expandImage(image:Image){
-
-    }
-
 }
+
+

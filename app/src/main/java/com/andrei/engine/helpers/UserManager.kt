@@ -5,17 +5,21 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.andrei.carrental.R
 import com.andrei.engine.DTOEntities.BasicUserLoginData
 import com.andrei.engine.responseModels.LoginResponse
 import com.andrei.utils.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UserManager @Inject constructor(
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val  context:Context,
@@ -57,6 +61,10 @@ class UserManager @Inject constructor(
     val userLoginData:LiveData<BasicUserLoginData>
     get() = _userLoginData
 
+
+    val userID:LiveData<Long> = Transformations.map(_userLoginData){
+        it.id
+    }
 
 
    fun saveNewUser(loginResponse: LoginResponse){
@@ -100,4 +108,11 @@ class UserManager @Inject constructor(
         }
     }
 
+    companion object{
+        fun getUserID(context:Context):Long{
+            val id = context.getSharedPreferences(context.getString(R.string.key_preferences),Context.MODE_PRIVATE).getLongOrZero(context.getString(R.string.key_user_id))
+            check(id != 0L){"The user ID should not be 0 when this method is called"}
+            return id
+        }
+    }
 }

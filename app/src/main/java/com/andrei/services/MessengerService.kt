@@ -52,4 +52,9 @@ class MessengerService @Inject constructor (
           it.value.connect()
       }
     }
+    fun disconnect(){
+        channels.forEach{
+            it.value.disconnect()
+        }
+    }
 }

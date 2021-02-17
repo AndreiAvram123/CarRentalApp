@@ -59,18 +59,17 @@ class ChatRepositoryImpl @Inject constructor(
                     it.data.forEach { chatDTO ->
                         val messages = chatDTO.lastMessages.map { messageDTO ->
                             when {
-                                messageDTO.isImageMessage && messageDTO.sender.id == userID -> messageDTO.toMessage(MessageType.MESSAGE_SENT_IMAGE)
-                                messageDTO.isImageMessage && messageDTO.sender.id != userID -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_IMAGE)
-                                !messageDTO.isImageMessage && messageDTO.sender.id == userID -> messageDTO.toMessage(MessageType.MESSAGE_SENT_TEXT)
+                                messageDTO.isImageMessage && messageDTO.sender.userID == userID -> messageDTO.toMessage(MessageType.MESSAGE_SENT_IMAGE)
+                                messageDTO.isImageMessage && messageDTO.sender.userID != userID -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_IMAGE)
+                                !messageDTO.isImageMessage && messageDTO.sender.userID == userID -> messageDTO.toMessage(MessageType.MESSAGE_SENT_TEXT)
                                 else -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_TEXT)
                             }
                         }
                         messageDao.insertMessages(messages)
-
                     }
                 }
-                emit(it)
             }
+            emit(it)
         }
     }
 

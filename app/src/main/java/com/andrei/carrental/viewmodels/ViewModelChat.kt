@@ -30,19 +30,6 @@ class ViewModelChat @Inject constructor(
        chatRepository.getLastChatMessage(it)
    }
 
-   private val _enteredMessageText:MediatorLiveData<String> by lazy {
-       MediatorLiveData<String>().apply {
-           addSource(currentOpenedChat){
-              if(it !=null){
-                  value = ""
-              }
-           }
-       }
-   }
-
-
-   val enteredMessageText:LiveData<String>
-   get() = _enteredMessageText
 
 
 
@@ -60,18 +47,12 @@ class ViewModelChat @Inject constructor(
     }
 
 
-    fun setMessageText(messageText:String){
-        _enteredMessageText.value = messageText
-    }
-
-    fun sendMessage(){
-        val text = _enteredMessageText.value
+    fun sendMessage(text:String){
         val currentChatID = currentOpenedChat.value
-        if(text != null && currentChatID !=null){
+        if( currentChatID !=null){
              viewModelScope.launch {
                  chatRepository.sendMessage(text,currentChatID)
              }
         }
-
         }
 }

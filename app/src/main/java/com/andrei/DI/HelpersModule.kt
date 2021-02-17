@@ -20,7 +20,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@InstallIn(SingletonComponent::class)
+@InstallIn(ActivityComponent::class)
 @Module
 
 class HelpersModule {

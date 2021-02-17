@@ -82,7 +82,7 @@ class MessagesRVAdapter(val expand: (image:Image) -> Unit) : RecyclerView.Adapte
 
 
     fun addMessage(message: Message) {
-        if(messages.find { it.id == message.id } == null) {
+        if(messages.find { it.messageID == message.messageID } == null) {
             messages.add(message)
             notifyItemInserted(messages.size - 1)
              scrollToLast()
@@ -98,7 +98,7 @@ class MessagesRVAdapter(val expand: (image:Image) -> Unit) : RecyclerView.Adapte
 
     fun setData(newMessages: List<Message>) {
         newMessages.forEach {newMessage->
-             if(messages.find { it.id ==  newMessage.id} == null){
+             if(messages.find { it.messageID ==  newMessage.messageID} == null){
                  addMessage(newMessage)
              }
         }

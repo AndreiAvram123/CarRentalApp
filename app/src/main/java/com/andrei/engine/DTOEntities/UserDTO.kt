@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 data class UserDTO(
         @SerializedName("id")
-        val id :Long,
+        val userID :Long,
         @SerializedName("username")
         val username:String,
         @SerializedName("email")
@@ -16,6 +16,6 @@ data class UserDTO(
 )
 
 fun UserDTO.toUser():User{
-    return User(id = this.id, username =this.username, _profilePicture = this.profilePicture)
+    return User(userID = this.userID, username =this.username, _profilePicture = this.profilePicture)
 }
 

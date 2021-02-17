@@ -60,4 +60,8 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        messengerService.disconnect()
+    }
 }

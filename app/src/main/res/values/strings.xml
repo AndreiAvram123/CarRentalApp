@@ -50,5 +50,6 @@
     <string name="password_too_weak">Password too weak</string>
     <string name="username_too_short">Username too sho</string>
     <string name="navigation_chats">Chats</string>
+    <string name="hint_enter_a_message">Enter a message</string>
 
 </resources>
