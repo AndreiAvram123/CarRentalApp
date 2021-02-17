@@ -1,6 +1,7 @@
 package com.andrei.UI.fragments
 
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.adapters.CustomDivider
@@ -25,7 +26,7 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
     private val viewModelChat:ViewModelChat by viewModels()
 
     private val chatsAdapter:ChatsAdapter by lazy {
-        ChatsAdapter(viewLifecycleOwner)
+        ChatsAdapter(viewLifecycleOwner, navigateToMessagesCallback = this::goToMessagesFragment)
     }
 
     override fun initializeUI() {
@@ -44,6 +45,12 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
 
     }
+
+    private fun goToMessagesFragment(chatID:Long){
+        val action = ChatsFragmentDirections.actionChatsFragmentToMessagesFragment(chatID)
+        findNavController().navigate(action)
+    }
+
 
     private fun initializeRecyclerView() {
         binding.rvChats.apply {

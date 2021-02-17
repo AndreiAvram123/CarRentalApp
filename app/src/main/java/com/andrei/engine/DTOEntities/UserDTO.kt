@@ -9,6 +9,8 @@ data class UserDTO(
         val id :Long,
         @SerializedName("username")
         val username:String,
+        @SerializedName("email")
+        val email:String,
         @SerializedName("profilePicture")
         val profilePicture:Image?
 )

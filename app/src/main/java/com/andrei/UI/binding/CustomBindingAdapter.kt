@@ -47,7 +47,7 @@ fun getDateFromUnix(textView: TextView, unixTime: Long) {
         val compareDate = SimpleDateFormat("yyyy-MM-dd", Locale.UK)
 
         val nowDate = Date(Calendar.getInstance().timeInMillis)
-        val messageDate = Date(unixTime * 1000)
+        val messageDate = Date(unixTime)
 
         if (compareDate.format(nowDate) == compareDate.format(messageDate)) {
             val dateFormat = SimpleDateFormat("HH:mm", Locale.UK);

@@ -9,10 +9,15 @@ import com.andrei.carrental.entities.Message
 
 @Dao
 interface MessageDao{
-    @Query("SELECT * FROM message WHERE chatID = :chatID ORDER BY date DESC")
+     @Query("SELECT * FROM message WHERE chatID = :chatID ORDER BY date DESC")
      fun findLastChatMessage(chatID:Long):LiveData<Message>
 
-     @Insert(onConflict = OnConflictStrategy.REPLACE)
+
+    @Query("SELECT * FROM message WHERE chatID = :chatID ORDER BY date ASC LIMIT 30 ")
+    suspend fun findLastChatMessages(chatID:Long):List<Message>
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
      fun insertMessage(message: Message)
 
      @Insert(onConflict = OnConflictStrategy.REPLACE)

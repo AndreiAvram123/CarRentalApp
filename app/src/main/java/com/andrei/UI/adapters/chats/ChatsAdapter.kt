@@ -6,16 +6,17 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.andrei.UI.adapters.bookings.ViewHolderChat
 import com.andrei.carrental.databinding.ItemChatBinding
-import com.andrei.carrental.entities.Chat
+import com.andrei.carrental.entities.ObservableChat
 import com.andrei.utils.reObserve
 
 
-class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner) : RecyclerView.Adapter<ViewHolderChat>() {
-    private var chats:MutableList<Chat> = mutableListOf()
+class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner,
+                   private val navigateToMessagesCallback: (chatID:Long)->Unit) : RecyclerView.Adapter<ViewHolderChat>() {
+    private var observableChats:MutableList<ObservableChat> = mutableListOf()
 
-    fun setData(data: List<Chat>) {
-        chats.clear()
-        chats.addAll(data)
+    fun setData(data: List<ObservableChat>) {
+        observableChats.clear()
+        observableChats.addAll(data)
         notifyDataSetChanged()
     }
 
@@ -28,23 +29,26 @@ class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner) : RecyclerView.A
         holder: ViewHolderChat,
         position: Int
     ) {
-        holder.bind(chats[position])
+        holder.bind(observableChats[position])
         holder.setIsRecyclable(false)
     }
 
     override fun getItemCount(): Int {
-        return chats.size
+        return observableChats.size
     }
 
 
     inner class ViewHolderChatImpl(private val binding: ItemChatBinding) : ViewHolderChat(binding.root) {
-        override fun bind(chat: Chat) {
-           binding.chat = chat
-            chat.isUserOnline.reObserve(_lifecycleOwner){
+        override fun bind(observableChat: ObservableChat) {
+           binding.chat = observableChat
+            observableChat.isUserOnline.reObserve(_lifecycleOwner){
               binding.isUserOnline = it
             }
-            chat.lastMessageDTO.reObserve(_lifecycleOwner){
+            observableChat.lastMessageDTO.reObserve(_lifecycleOwner){
                 binding.lastMessage = it.content
+            }
+            binding.root.setOnClickListener {
+                navigateToMessagesCallback(observableChat.id)
             }
         }
 

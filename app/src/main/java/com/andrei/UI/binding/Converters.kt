@@ -1,4 +1,4 @@
-package com.andrei.carrental.binding
+package com.andrei.UI.binding
 
 import androidx.databinding.BindingConversion
 import com.andrei.utils.formatWithPattern

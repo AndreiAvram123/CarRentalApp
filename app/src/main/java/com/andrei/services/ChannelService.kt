@@ -21,7 +21,7 @@ import com.pusher.client.channel.SubscriptionEventListener
 
 
 class ChannelService(
-    private val chatID:Long,
+     val chatID:Long,
     private val pusherOptions: PusherOptions,
     private val pusherKey:String,
     private val messageDao: MessageDao,

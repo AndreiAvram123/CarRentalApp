@@ -1,8 +1,6 @@
-package com.andrei.carrental.binding
+package com.andrei.UI.binding
 
-import androidx.annotation.StringRes
 import androidx.databinding.BindingAdapter
-import com.andrei.carrental.R
 import com.google.android.material.textfield.TextInputLayout
 
 @BindingAdapter("errorText")

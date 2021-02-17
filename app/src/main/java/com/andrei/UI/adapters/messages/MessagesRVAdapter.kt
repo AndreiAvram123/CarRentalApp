@@ -8,10 +8,14 @@ import com.andrei.carrental.databinding.MessageImageReceivedBinding
 import com.andrei.carrental.databinding.MessageImageSentBinding
 import com.andrei.carrental.databinding.MessageReceivedBinding
 import com.andrei.carrental.databinding.MessageSentBinding
+import com.andrei.carrental.entities.Image
 import com.andrei.carrental.entities.Message
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
-class MessageAdapter(val expand: (imageURL: String) -> Unit) : RecyclerView.Adapter<MessageAdapter.ViewHolderMessage>() {
+class MessagesRVAdapter(val expand: (image:Image) -> Unit) : RecyclerView.Adapter<MessagesRVAdapter.ViewHolderMessage>() {
     private val messages: ArrayList<Message> = ArrayList()
 
     private var adapterRecyclerView: RecyclerView? = null
@@ -53,11 +57,11 @@ class MessageAdapter(val expand: (imageURL: String) -> Unit) : RecyclerView.Adap
     }
 
     fun expandImage(message: Message) {
-        expand(message.content)
+        expand(Image(message.content))
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageAdapter.ViewHolderMessage {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessagesRVAdapter.ViewHolderMessage {
         val inflator: LayoutInflater = LayoutInflater.from(parent.context)
                 val binding = MessageReceivedBinding.inflate(inflator, parent, false)
                 return MessageReceivedViewHolderMessage(binding)
@@ -74,19 +78,21 @@ class MessageAdapter(val expand: (imageURL: String) -> Unit) : RecyclerView.Adap
         return messages.size
     }
 
-    override fun onBindViewHolder(viewHolderMessage: MessageAdapter.ViewHolderMessage, position: Int) = viewHolderMessage.bind(messages[position])
+    override fun onBindViewHolder(viewHolderMessagesRV: MessagesRVAdapter.ViewHolderMessage, position: Int) = viewHolderMessagesRV.bind(messages[position])
 
 
     fun addMessage(message: Message) {
         if(messages.find { it.id == message.id } == null) {
             messages.add(message)
             notifyItemInserted(messages.size - 1)
-            scrollToLast()
+             scrollToLast()
         }
     }
 
     private fun scrollToLast() {
-        adapterRecyclerView?.scrollToPosition(messages.size - 1)
+        GlobalScope.launch(Dispatchers.Main) {
+            adapterRecyclerView?.scrollToPosition(messages.size - 1)
+        }
     }
 
 

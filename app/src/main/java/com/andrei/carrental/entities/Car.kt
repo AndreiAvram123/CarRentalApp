@@ -1,6 +1,7 @@
 package com.andrei.carrental.entities
 
 import com.andrei.engine.DTOEntities.GeoPoint
+import com.andrei.engine.DTOEntities.UserDTO
 import com.google.gson.annotations.SerializedName
 
 data class Car(
@@ -11,7 +12,7 @@ data class Car(
         @SerializedName("pricePerDay")
         val pricePerDay:Double,
         @SerializedName("basicUser")
-        val basicUser: BasicUser,
+        val basicUser: UserDTO,
         @SerializedName("location")
         val location:GeoPoint,
         @SerializedName("distanceFromLocation")

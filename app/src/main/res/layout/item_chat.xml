@@ -9,7 +9,7 @@
 
         <variable
             name="chat"
-            type="com.andrei.carrental.entities.Chat" />
+            type="com.andrei.carrental.entities.ObservableChat" />
         <variable
             name="isUserOnline"
             type="Boolean" />
