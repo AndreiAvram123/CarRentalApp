@@ -1,10 +1,8 @@
 package com.andrei.carrental.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.andrei.carrental.entities.Message
+import com.andrei.carrental.helpers.ConsumeLiveData
 import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.ChatRepository
@@ -18,6 +16,7 @@ class ViewModelChat @Inject constructor(
 
 ) {
 
+
    val userChats:LiveData<State<List<ChatDTO>>> by lazy {
        chatRepository.userChats
    }
@@ -29,6 +28,21 @@ class ViewModelChat @Inject constructor(
    val lastChatMessage:LiveData<Message> = Transformations.switchMap(currentOpenedChat){
        chatRepository.getLastChatMessage(it)
    }
+
+   private val _enteredMessageText:MediatorLiveData<String> by lazy {
+       MediatorLiveData<String>().apply {
+           addSource(currentOpenedChat){
+              if(it !=null){
+                  value = ""
+              }
+           }
+       }
+   }
+
+
+   val enteredMessageText:LiveData<String>
+   get() = _enteredMessageText
+
 
 
     suspend fun getInitialChatMessages():List<Message>{
@@ -44,4 +58,8 @@ class ViewModelChat @Inject constructor(
         currentOpenedChat.value = chatID
     }
 
+
+    fun setMessageText(messageText:String){
+        _enteredMessageText.value = messageText
+    }
 }

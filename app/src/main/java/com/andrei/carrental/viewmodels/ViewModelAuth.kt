@@ -1,7 +1,6 @@
 package com.andrei.carrental.viewmodels
 
 import androidx.lifecycle.*
-import com.andrei.engine.repository.implementation.LoginRepositoryImpl
 import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.states.LoginFlowState
 import com.andrei.utils.isEmailValid
@@ -15,12 +14,18 @@ class ViewModelAuth  @Inject constructor(
 ):   ViewModel() {
 
 
-    val emailEntered : MutableLiveData<String> by lazy {
+    private val _emailEntered : MutableLiveData<String> by lazy {
         MutableLiveData()
     }
-    val passwordEntered : MutableLiveData<String> by lazy {
+    val emailEntered:LiveData<String>
+    get() = _emailEntered
+
+    private val _passwordEntered : MutableLiveData<String> by lazy {
         MutableLiveData()
     }
+    val passwordEntered:LiveData<String>
+    get() = _passwordEntered
+
 
 
 
@@ -39,7 +44,7 @@ class ViewModelAuth  @Inject constructor(
 
     val errorEmail : MediatorLiveData<String?> by lazy {
         MediatorLiveData<String?>().apply {
-            addSource(emailEntered){
+            addSource(_emailEntered){
                 value = null
                  if(!it.isEmailValid()){
                    value =   errorInvalidEmailFormat
@@ -56,7 +61,7 @@ class ViewModelAuth  @Inject constructor(
 
     val errorPassword :MediatorLiveData<String?> by lazy {
         MediatorLiveData<String?>().apply {
-            addSource(passwordEntered){
+            addSource(_passwordEntered){
                 value = null
                 if(it.isBlank()){
                     value = errorPasswordBlank
@@ -71,15 +76,35 @@ class ViewModelAuth  @Inject constructor(
         }
     }
 
+    private val observerEmail = Observer<String> {
+       val password= _passwordEntered.value
+       if(it != null && password != null) {
+           startLoginFlow(it,password)
+       }
+    }
+    private val observerPassword = Observer<String>{
+        val email = _emailEntered.value
+        if(it != null && email != null) {
+            startLoginFlow(email,it)
+        }
+    }
+
+ init {
+     _emailEntered.observeForever(observerEmail)
+     _passwordEntered.observeForever(observerPassword)
+ }
 
 
-    fun startLoginFlow(){
-        val email=  emailEntered.value
-        val password = passwordEntered.value
+    override fun onCleared() {
+        super.onCleared()
+        _emailEntered.removeObserver(observerEmail)
+        _passwordEntered.removeObserver(observerPassword)
+    }
 
-        if(errorPassword.value == null && errorEmail.value == null){
-            check(email !=null){}
-            check(password !=null){}
+    private fun startLoginFlow(email:String, password: String){
+
+        if(errorPassword.value == null
+            && errorEmail.value == null){
 
            viewModelScope.launch {
                loginRepository.startLoginFlow(email = email,password = password)
@@ -91,6 +116,13 @@ class ViewModelAuth  @Inject constructor(
         loginRepository.signOut()
     }
 
+    fun setEmail(email:String){
+        _emailEntered.postValue(email)
+    }
+
+    fun setPassword(password:String){
+        _passwordEntered.value = (password)
+    }
 
 
 

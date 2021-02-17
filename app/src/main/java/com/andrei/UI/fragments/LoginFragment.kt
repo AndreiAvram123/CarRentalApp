@@ -13,6 +13,7 @@ import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentLoginLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelAuth
 import com.andrei.utils.reObserve
+import com.andrei.utils.text
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,9 +46,8 @@ class LoginFragment :Fragment(R.layout.fragment_login_layout) {
     private fun attachViewListeners() {
         binding.apply {
             btLogin.setOnClickListener {
-            viewModelAuth.emailEntered.value = binding.tfEmail.editText?.text.toString()
-            viewModelAuth.passwordEntered.value = binding.tfPassword.editText?.text.toString()
-            viewModelAuth.startLoginFlow()
+            viewModelAuth.setPassword(binding.tfPassword.editText.text())
+            viewModelAuth.setEmail(binding.tfEmail.editText.text())
         }
             tfRegister.setOnClickListener {
                 val action = LoginFragmentDirections.actionLoginFragmentToSignUpFragment()

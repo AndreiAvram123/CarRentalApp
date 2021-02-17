@@ -14,7 +14,7 @@ import java.util.Locale.UK
 
 
 fun EditText?.text():String{
-    return this?.text.toString()
+    return this?.text.toString().trim()
 }
 
 fun View.hide(){
