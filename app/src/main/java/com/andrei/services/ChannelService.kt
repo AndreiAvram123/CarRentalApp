@@ -13,6 +13,7 @@ import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.SubscriptionEventListener
+import com.pusher.client.connection.ConnectionState
 
 
 class ChannelService(
@@ -82,7 +83,9 @@ class ChannelService(
 
     fun connect(){
         pushers.forEach {
-            it.connect()
+            if(it.connection.state == ConnectionState.DISCONNECTED) {
+                it.connect()
+            }
         }
     }
 

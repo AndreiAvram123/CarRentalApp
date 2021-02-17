@@ -45,7 +45,9 @@
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
 
-        <activity android:name="com.andrei.UI.activities.MainActivity">
+        <activity android:name="com.andrei.UI.activities.MainActivity"
+            android:windowSoftInputMode="adjustResize"
+            >
 
         </activity>
         <activity
