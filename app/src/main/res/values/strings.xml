@@ -51,5 +51,6 @@
     <string name="username_too_short">Username too short</string>
     <string name="navigation_chats">Chats</string>
     <string name="hint_enter_a_message">Enter a message</string>
+    <string name="unsend">Unsend</string>
 
 </resources>

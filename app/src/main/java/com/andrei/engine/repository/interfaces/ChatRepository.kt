@@ -9,4 +9,5 @@ interface ChatRepository {
     val userChats: LiveData<State<List<ChatDTO>>>
     suspend fun getInitialChatMessages(chatID: Long): List<Message>
     suspend fun sendMessage(text: String, currentChatID: Long)
+    fun unsendMessage(messages:Message) :LiveData<State<Message>>
 }

@@ -6,7 +6,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.andrei.UI.bottomSheets.OptionsMessageBottomSheet
 import com.andrei.carrental.R
+import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.databinding.FragmentMessagesBinding
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.viewmodels.ViewModelChat
@@ -32,11 +34,57 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     @Inject
     lateinit var messengerService: MessengerService
 
+    private val bottomSheet:OptionsMessageBottomSheet by lazy {
+        OptionsMessageBottomSheet(this::unsendMessage).apply {
+            isCancelable = false
+        }
+    }
 
      private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.loadFromURl(it) } }
 
+
+
+
     private val messagesAdapter:MessagesListAdapter<Message> by lazy {
-        MessagesListAdapter(UserManager.getUserID(requireContext()).toString(),imageLoader)
+        MessagesListAdapter<Message>(UserDataManager.getUserID(requireContext()).toString(),imageLoader).also {
+            configureMessageAdapter()
+        }
+    }
+
+
+    inner class CustomSelectionListener(private val currentUserID : String):MessagesListAdapter.SelectionListener{
+        override fun onSelectionChanged(count: Int) {
+            when{
+                count == 1 -> {
+                    if(messagesAdapter.selectedMessages.first().user.id != currentUserID){
+                        messagesAdapter.unselectAllItems()
+                    }else{
+                        showBottomSheet()
+                    }
+                }
+                count > 1 -> {
+                    bottomSheet.dismiss()
+                    messagesAdapter.unselectAllItems()
+                }
+            }
+        }
+
+    }
+
+    private fun configureMessageAdapter() {
+        lifecycleScope.launch(Dispatchers.Main) {
+            messagesAdapter.apply {
+                enableSelectionMode(CustomSelectionListener(UserDataManager.getUserID(requireContext()).toString()))
+            }
+        }
+    }
+
+    private fun unsendMessage(){
+        val messages =   messagesAdapter.selectedMessages.first()
+        viewModelChat.setMessageToUnsend(messages)
+    }
+    private fun showBottomSheet() {
+        bottomSheet.show(requireActivity().supportFragmentManager, "bottomSheetMessage")
     }
 
 
@@ -78,13 +126,13 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
 
 
     private fun configureRV() {
-        binding.messagesList.addOnLayoutChangeListener { _, _, _, bottom, _, _, _, _, oldBottom ->
-            if (bottom < oldBottom) {
-                binding.messagesList.postDelayed({
-                    binding.messagesList.smoothScrollToPosition(0)
-                }, 100)
-            }
-        }
+//        binding.messagesList.addOnLayoutChangeListener { _, _, _, bottom, _, _, _, _, oldBottom ->
+//            if (bottom < oldBottom) {
+//                binding.messagesList.postDelayed({
+//                    binding.messagesList.smoothScrollToPosition(0)
+//                }, 100)
+//            }
+//        }
     }
 
 

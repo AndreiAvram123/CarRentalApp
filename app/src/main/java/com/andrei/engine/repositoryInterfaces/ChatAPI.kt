@@ -3,10 +3,7 @@ package com.andrei.engine.repositoryInterfaces
 import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.configuration.CallWrapper
 import com.andreia.carrental.requestModels.CreateMessageRequest
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ChatAPI {
     @GET("/users/{userID}/chats")
@@ -14,4 +11,7 @@ interface ChatAPI {
 
     @POST("/chats/messages")
     fun postMessage(@Body requestBody: CreateMessageRequest): CallWrapper<Nothing>
+
+    @DELETE("/messages/{messageID}")
+    fun deleteMessage(@Path("messageID") messageID:Long):CallWrapper<Nothing>
 }
