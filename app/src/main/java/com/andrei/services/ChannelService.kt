@@ -34,7 +34,7 @@ class ChannelService(
     get() = _isUserOnline
 
 
-    val lastMessageDTO:LiveData<Message> by lazy {
+    val lastChatMessage:LiveData<Message> by lazy {
         messageDao.findLastChatMessage(chatID)
     }
 

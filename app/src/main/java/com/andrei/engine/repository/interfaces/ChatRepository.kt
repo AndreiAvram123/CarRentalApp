@@ -8,6 +8,5 @@ import com.andrei.engine.State
 interface ChatRepository {
     val userChats: LiveData<State<List<ChatDTO>>>
     suspend fun getInitialChatMessages(chatID: Long): List<Message>
-    fun getLastChatMessage(chatID:Long):LiveData<Message>
     suspend fun sendMessage(text: String, currentChatID: Long)
 }

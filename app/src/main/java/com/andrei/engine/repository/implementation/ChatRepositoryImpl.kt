@@ -33,9 +33,6 @@ class ChatRepositoryImpl @Inject constructor(
        return  messageDao.findLastChatMessages(chatID)
     }
 
-    override fun getLastChatMessage(chatID: Long): LiveData<Message> {
-        return messageDao.findLastChatMessage(chatID)
-    }
 
     override suspend fun sendMessage(text: String, currentChatID: Long) {
         val userID =  userManager.userLoginData.value?.id

@@ -26,11 +26,6 @@ class ViewModelChat @Inject constructor(
        MutableLiveData()
    }
 
-   val lastChatMessage:LiveData<Message> = Transformations.switchMap(currentOpenedChat){
-       chatRepository.getLastChatMessage(it)
-   }
-
-
 
 
     suspend fun getInitialChatMessages():List<Message>{

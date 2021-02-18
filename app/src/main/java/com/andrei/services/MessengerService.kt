@@ -1,7 +1,10 @@
 package com.andrei.services
 
 import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.andrei.carrental.R
+import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.ObservableChat
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.DTOEntities.ChatDTO
@@ -38,11 +41,17 @@ class MessengerService @Inject constructor (
                     id = it.value.chatID,
                     friend = it.value.friend,
                     isUserOnline = it.value.isUserOnline,
-                    lastMessageDTO = it.value.lastMessageDTO
+                    lastMessageDTO = it.value.lastChatMessage
             )
             chats.add(chat)
         }
         return chats
+    }
+
+    fun getObservableLastMessage(chatID:Long):LiveData<Message>{
+        val channelService = channels[chatID]
+        channelService?.let { return channelService.lastChatMessage }
+        return MutableLiveData()
     }
 
 
