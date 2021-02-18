@@ -43,7 +43,7 @@ class ChatRepositoryImpl @Inject constructor(
             chatID = currentChatID
         )
         callRunner.makeApiCall(chatAPI.postMessage(requestModel)){
-
+          print(it)
         }
     }
 
@@ -58,6 +58,7 @@ class ChatRepositoryImpl @Inject constructor(
             if (it is State.Success) {
                 //insert into room
                 if (it.data != null) {
+                    messageDao.clean()
                     it.data.forEach { chatDTO ->
                         val messages = chatDTO.lastMessages.map { messageDTO ->
                             when {

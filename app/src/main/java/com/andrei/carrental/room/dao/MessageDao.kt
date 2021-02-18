@@ -9,7 +9,7 @@ import com.andrei.carrental.entities.Message
 
 @Dao
 interface MessageDao{
-     @Query("SELECT * FROM message WHERE chatID = :chatID ORDER BY date DESC")
+     @Query("SELECT * FROM message WHERE chatID = :chatID ORDER BY date DESC LIMIT 1")
      fun findLastChatMessage(chatID:Long):LiveData<Message>
 
 
@@ -22,4 +22,7 @@ interface MessageDao{
 
      @Insert(onConflict = OnConflictStrategy.REPLACE)
      suspend fun insertMessages(messages:List<Message>)
+
+     @Query("DELETE FROM message")
+     suspend fun clean()
 }

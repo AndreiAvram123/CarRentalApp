@@ -1,10 +1,12 @@
 package com.andrei.UI.fragments
 
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.bottomSheets.OptionsMessageBottomSheet
 import com.andrei.carrental.R
@@ -21,6 +23,7 @@ import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.logging.Handler
 import javax.inject.Inject
 
 
@@ -30,6 +33,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     private val binding:FragmentMessagesBinding by viewBinding ()
     private val viewModelChat:ViewModelChat by activityViewModels()
     private val navArgs:MessagesFragmentArgs by navArgs()
+    private var skipScroll: Boolean = false
 
     @Inject
     lateinit var messengerService: MessengerService
@@ -54,22 +58,18 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
 
     inner class CustomSelectionListener(private val currentUserID : String):MessagesListAdapter.SelectionListener{
         override fun onSelectionChanged(count: Int) {
-            when{
-                count == 1 -> {
-                    if(messagesAdapter.selectedMessages.first().user.id != currentUserID){
-                        messagesAdapter.unselectAllItems()
-                    }else{
-                        showBottomSheet()
-                    }
-                }
-                count > 1 -> {
-                    bottomSheet.dismiss()
+            if (count > 0) {
+                if (messagesAdapter.selectedMessages.first().user.id != currentUserID) {
                     messagesAdapter.unselectAllItems()
+                } else {
+                    showBottomSheet()
                 }
             }
         }
 
     }
+
+
 
     private fun configureMessageAdapter() {
         lifecycleScope.launch(Dispatchers.Main) {
@@ -80,12 +80,22 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     }
 
     private fun unsendMessage(){
+        dismissBottomSheet()
         val messages =   messagesAdapter.selectedMessages.first()
+        messagesAdapter.unselectAllItems()
         viewModelChat.setMessageToUnsend(messages)
     }
     private fun showBottomSheet() {
+        skipScroll = true
         bottomSheet.show(requireActivity().supportFragmentManager, "bottomSheetMessage")
     }
+    private fun dismissBottomSheet(){
+        bottomSheet.dismiss()
+        android.os.Handler(Looper.getMainLooper()).postDelayed({
+            skipScroll = false
+        },200)
+    }
+
 
 
     override fun initializeUI() {
@@ -95,7 +105,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
         populateRVWithData()
         attachListeners()
         attachObservers()
-
     }
 
     private fun attachObservers() {
@@ -126,14 +135,22 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
 
 
     private fun configureRV() {
-//        binding.messagesList.addOnLayoutChangeListener { _, _, _, bottom, _, _, _, _, oldBottom ->
-//            if (bottom < oldBottom) {
-//                binding.messagesList.postDelayed({
-//                    binding.messagesList.smoothScrollToPosition(0)
-//                }, 100)
-//            }
-//        }
+        binding.messagesList.addOnLayoutChangeListener { _, _, _, bottom, _, _, _, _, oldBottom ->
+            if (shouldScroll(bottom,oldBottom)) {
+                binding.messagesList.postDelayed({
+                    binding.messagesList.smoothScrollToPosition(0)
+                }, 50)
+            }
+        }
     }
+
+    private fun shouldScroll(bottom:Int, oldBottom:Int):Boolean{
+        if(skipScroll){
+            return false
+        }
+        return bottom < oldBottom && messagesAdapter.selectedMessages.isEmpty()
+    }
+
 
 
     private fun attachListeners() {

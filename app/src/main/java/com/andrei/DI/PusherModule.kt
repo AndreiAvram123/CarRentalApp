@@ -23,7 +23,7 @@ import javax.inject.Singleton
 @InstallIn(ActivityComponent::class)
 @Module
 
-class HelpersModule {
+class PusherModule {
 
     @ActivityScoped
     @Provides

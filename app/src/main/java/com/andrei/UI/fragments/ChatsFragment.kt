@@ -1,5 +1,7 @@
 package com.andrei.UI.fragments
 
+import android.view.ViewTreeObserver
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,18 +25,18 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
     lateinit var messengerService: MessengerService
 
     private val binding:FragmentChatsBinding by viewBinding()
-    private val viewModelChat:ViewModelChat by viewModels()
+    private val viewModelChat:ViewModelChat by activityViewModels()
 
     private var chatsAdapter:ChatsAdapter? = null
 
     override fun initializeUI() {
 
          initializeRecyclerView()
+
          viewModelChat.userChats.reObserve(viewLifecycleOwner){
              when(it){
                  is State.Success -> {
                      if(it.data !=null){
-
                          messengerService.configureChannels(it.data)
                          messengerService.connect()
                          chatsAdapter?.setData(messengerService.getObservableChats())

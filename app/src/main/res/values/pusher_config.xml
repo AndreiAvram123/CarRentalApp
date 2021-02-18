@@ -3,5 +3,5 @@
     <string name="pusher_app_cluster">eu</string>
     <string name="pusher_key">10e8967fe0f1a0bf104e</string>
     <string name="pusher_app_id">1156451</string>
-    <string name="pusher_auth_endpoint">https://car-rental-api-kotlin.herokuapp.com/chats/authenticate</string>
+    <string name="pusher_auth_endpoint">https://car-rental-api-kotlin.herokuapp.com/messages/authenticate</string>
 </resources>

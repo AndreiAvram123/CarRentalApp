@@ -9,7 +9,7 @@ interface ChatAPI {
     @GET("/users/{userID}/chats")
     fun getAllUserChats(@Path("userID") userID:Long):CallWrapper<List<ChatDTO>>
 
-    @POST("/chats/messages")
+    @POST("/messages")
     fun postMessage(@Body requestBody: CreateMessageRequest): CallWrapper<Nothing>
 
     @DELETE("/messages/{messageID}")

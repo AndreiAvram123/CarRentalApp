@@ -46,7 +46,7 @@ class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner,
             }
             observableChat.lastMessageDTO.reObserve(_lifecycleOwner){
                 if(it !=null){
-                 binding.lastMessage = it.content
+                       binding.lastMessage = it.content
                 }
             }
             binding.root.setOnClickListener {
