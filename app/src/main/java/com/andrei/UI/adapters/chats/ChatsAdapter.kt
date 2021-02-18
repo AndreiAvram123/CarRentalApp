@@ -45,7 +45,9 @@ class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner,
               binding.isUserOnline = it
             }
             observableChat.lastMessageDTO.reObserve(_lifecycleOwner){
+                if(it !=null){
                 binding.lastMessage = it.content
+                }
             }
             binding.root.setOnClickListener {
                 navigateToMessagesCallback(observableChat.id)

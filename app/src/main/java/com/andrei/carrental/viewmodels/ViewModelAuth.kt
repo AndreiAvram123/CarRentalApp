@@ -17,14 +17,10 @@ class ViewModelAuth  @Inject constructor(
     private val _emailEntered : MutableLiveData<String> by lazy {
         MutableLiveData()
     }
-    val emailEntered:LiveData<String>
-    get() = _emailEntered
-
     private val _passwordEntered : MutableLiveData<String> by lazy {
         MutableLiveData()
     }
-    val passwordEntered:LiveData<String>
-    get() = _passwordEntered
+
 
 
 
@@ -77,15 +73,13 @@ class ViewModelAuth  @Inject constructor(
     }
 
     private val observerEmail = Observer<String> {
-       val password= _passwordEntered.value
-       if(it != null && password != null) {
-           startLoginFlow(it,password)
-       }
+        if(canStartUserFlow()){
+            startLoginFlow()
+        }
     }
     private val observerPassword = Observer<String>{
-        val email = _emailEntered.value
-        if(it != null && email != null) {
-            startLoginFlow(email,it)
+        if(canStartUserFlow()){
+            startLoginFlow()
         }
     }
 
@@ -95,29 +89,41 @@ class ViewModelAuth  @Inject constructor(
  }
 
 
+    private fun canStartUserFlow():Boolean{
+        val email = _emailEntered.value
+        val password = _passwordEntered.value
+        val errorEmail = errorEmail.value
+        val errorPassword = errorPassword.value
+       return  email != null && password != null && errorEmail == null && errorPassword == null
+    }
+
+    private fun startLoginFlow(){
+         val email = _emailEntered.value
+        val password = _passwordEntered.value
+        if(canStartUserFlow()) {
+            check(email != null) { "Login flow should not be started with null email, the email might have been changed in another thread" }
+            check(password != null) { "Login flow should not be started with null password, the passwod might have been changed in another thread" }
+                viewModelScope.launch {
+                    loginRepository.startLoginFlow(email = email, password = password)
+            }
+        }
+    }
+
+
     override fun onCleared() {
         super.onCleared()
         _emailEntered.removeObserver(observerEmail)
         _passwordEntered.removeObserver(observerPassword)
     }
 
-    private fun startLoginFlow(email:String, password: String){
 
-        if(errorPassword.value == null
-            && errorEmail.value == null){
-
-           viewModelScope.launch {
-               loginRepository.startLoginFlow(email = email,password = password)
-           }
-        }
-    }
 
     fun signOut(){
         loginRepository.signOut()
     }
 
     fun setEmail(email:String){
-        _emailEntered.postValue(email)
+        _emailEntered.value = email
     }
 
     fun setPassword(password:String){

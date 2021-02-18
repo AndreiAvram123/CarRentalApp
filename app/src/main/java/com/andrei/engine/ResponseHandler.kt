@@ -1,19 +1,11 @@
 package com.andrei.engine
 
 import android.util.Log
-import com.andrei.carrental.BuildConfig
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 
-class ResponseHandler private constructor(){
-     private val firebaseCrashlytics: FirebaseCrashlytics = FirebaseCrashlytics.getInstance()
-
-      companion object {
-         @JvmStatic
-         fun getInstance() = ResponseHandler()
-      }
-
+object ResponseHandler {
 
     private val TAG = ResponseHandler::class.java.simpleName
+
 
     fun <T : Any> handleSuccess(data: T?): State<T> {
         return State.Success(data)
@@ -36,8 +28,5 @@ class ResponseHandler private constructor(){
 
     private fun logException(e:Exception){
        Log.e(ResponseHandler::class.simpleName,e.stackTraceToString())
-        if(!BuildConfig.DEBUG){
-          firebaseCrashlytics.recordException(e)
-        }
     }
 }

@@ -7,8 +7,7 @@ apply plugin: "androidx.navigation.safeargs"
 
 
 apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
-apply plugin: 'com.google.firebase.firebase-perf'
+
 
 
 apply plugin: 'dagger.hilt.android.plugin'
@@ -53,7 +52,6 @@ dependencies {
     //chat
     implementation 'com.github.stfalcon-studio:Chatkit:0.4.1'
 
-
     //room
     def room_version = "2.2.6"
 
@@ -70,10 +68,8 @@ dependencies {
     //viewpager
     implementation "androidx.viewpager2:viewpager2:1.0.0"
 
-
     //binding
     implementation 'com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:1.4.1'
-
 
     //preferences
     implementation 'androidx.preference:preference-ktx:1.1.1'
@@ -84,17 +80,6 @@ dependencies {
     //hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
-
-    //firebase
-    // Import the BoM for the Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:26.3.0')
-
-    // Declare the dependencies for the Crashlytics and Analytics libraries
-    // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
-    implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation 'com.google.firebase:firebase-perf-ktx'
-
 
 
     implementation 'com.braintreepayments.api:drop-in:5.0.2'
@@ -144,16 +129,14 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
 
 
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    //roboelectric
     testImplementation "org.robolectric:robolectric:4.4"
 }

@@ -12,33 +12,32 @@ class CallRunner @Inject constructor(
         private val connectivityManager: ConnectivityManager
 ){
 
-    private val responseHandler = ResponseHandler.getInstance()
-
-
 
     suspend fun <T> makeApiCall(call: CallWrapper<T>, update:suspend (state: State<T>)->Unit){
 
         if(connectivityManager.isNotConnected()){
-            update(responseHandler.handleNoInternetError())
+            update(ResponseHandler.handleNoInternetError())
             return
         }
+
         update(State.Loading)
+
         val url = call.request().url.toString()
         try {
             val response = call.awaitResponse()
                 if(response.isSuccessful){
-                    response.body()?.let{update(responseHandler.handleSuccess(it.data))}
+                    response.body()?.let{update(ResponseHandler.handleSuccess(it.data))}
 
                 }else{
                     response.errorBody()?.let {
                         val convertedErrorResponse = convertJsonErrorBodyToApiResult(it.string())
                         if(convertedErrorResponse.error != null){
-                            update(responseHandler.handleResponseError(convertedErrorResponse.error))
+                            update(ResponseHandler.handleResponseError(convertedErrorResponse.error))
                         }
                     }
                 }
         } catch (e: Exception) {
-            update(responseHandler.handleResponseException(e,url))
+            update(ResponseHandler.handleResponseException(e,url))
         }
     }
 
