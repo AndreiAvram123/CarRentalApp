@@ -91,7 +91,9 @@ class ChannelService(
 
     fun disconnect(){
         pushers.forEach {
-            it.disconnect()
+            if(it.connection.state != ConnectionState.DISCONNECTED && it.connection.state != ConnectionState.DISCONNECTING){
+                it.disconnect()
+            }
         }
     }
 

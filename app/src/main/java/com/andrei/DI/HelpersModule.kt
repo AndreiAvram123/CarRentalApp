@@ -25,7 +25,7 @@ import javax.inject.Singleton
 
 class HelpersModule {
 
-
+    @ActivityScoped
     @Provides
     fun provideHttpAuthorizer(sharedPreferences: SharedPreferences, @ApplicationContext context: Context):HttpAuthorizer {
         val authorizer = HttpAuthorizer(context.getString(R.string.pusher_auth_endpoint))
@@ -36,7 +36,7 @@ class HelpersModule {
         authorizer.setHeaders(headers)
         return authorizer
     }
-
+    @ActivityScoped
     @Provides
     fun providePusherOptions( @ApplicationContext context: Context, authorizer: HttpAuthorizer): PusherOptions {
         val options = PusherOptions()
@@ -49,6 +49,7 @@ class HelpersModule {
     }
 
     @Provides
+    @ActivityScoped
     fun provideMessengerService(@ApplicationContext context: Context, pusherOptions: PusherOptions, messageDao: MessageDao):MessengerService{
         return MessengerService(context = context,
                                 pusherOptions = pusherOptions,

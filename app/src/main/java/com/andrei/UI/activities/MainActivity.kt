@@ -13,12 +13,14 @@ import com.andrei.UI.helpers.InternetConnectionHandler
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
 import com.andrei.carrental.viewmodels.ViewModelAuth
+import com.andrei.services.MessengerService
 import com.andrei.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
+
 
     private  val binding:ActivityMainBinding by viewBinding()
     private lateinit var navController:NavController
@@ -35,6 +37,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
    @Inject
    lateinit var locationSettingsHandler: LocationSettingsHandler
 
+   @Inject
+   lateinit var messengerService: MessengerService
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,5 +79,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onStop() {
         super.onStop()
         internetConnectionHandler = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        messengerService.disconnect()
     }
 }
