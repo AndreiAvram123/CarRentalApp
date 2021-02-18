@@ -25,26 +25,25 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
     private val binding:FragmentChatsBinding by viewBinding()
     private val viewModelChat:ViewModelChat by viewModels()
 
-    private val chatsAdapter:ChatsAdapter by lazy {
-        ChatsAdapter(viewLifecycleOwner, navigateToMessagesCallback = this::goToMessagesFragment)
-    }
+    private var chatsAdapter:ChatsAdapter? = null
 
     override fun initializeUI() {
+
          initializeRecyclerView()
          viewModelChat.userChats.reObserve(viewLifecycleOwner){
              when(it){
                  is State.Success -> {
                      if(it.data !=null){
+
                          messengerService.configureChannels(it.data)
                          messengerService.connect()
-                         chatsAdapter.setData(messengerService.getObservableChats())
+                         chatsAdapter?.setData(messengerService.getObservableChats())
                      }
                  }
              }
          }
-
-
     }
+
 
     private fun goToMessagesFragment(chatID:Long){
         val action = ChatsFragmentDirections.actionChatsFragmentToMessagesFragment(chatID)
@@ -53,6 +52,7 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
 
 
     private fun initializeRecyclerView() {
+        chatsAdapter = ChatsAdapter(viewLifecycleOwner,this::goToMessagesFragment)
         binding.rvChats.apply {
             adapter = chatsAdapter
             addItemDecoration(CustomDivider(10))

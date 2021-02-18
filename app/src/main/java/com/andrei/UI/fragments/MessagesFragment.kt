@@ -1,7 +1,9 @@
 package com.andrei.UI.fragments
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
@@ -40,14 +42,48 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
 
     override fun initializeUI() {
         viewModelChat.setCurrentOpenedChatID(navArgs.chatID)
+        configureToolbar()
+        configureRV()
         populateRVWithData()
         attachListeners()
-        binding.messagesList.addOnLayoutChangeListener { _, _, _, bottom, _, _, _, _, oldBottom ->
-            if (bottom <  oldBottom) {
-            binding.messagesList.postDelayed({
-                   binding.messagesList.smoothScrollToPosition(0)
-           },100)
+        attachObservers()
+
+    }
+
+    private fun attachObservers() {
+         messengerService.getUserOnlineObservable(navArgs.chatID).reObserve(viewLifecycleOwner){
+             if(it){
+                 binding.toolbar.subtitle = "Online"
+             }else{
+                 binding.toolbar.subtitle = "Offline"
+             }
+
+         }
+    }
+
+    private fun configureToolbar() {
+            val activity =  (requireActivity() as AppCompatActivity)
+            activity.apply {
+                setSupportActionBar(binding.toolbar)
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                supportActionBar?.setDisplayShowHomeEnabled(true)
+                messengerService.getChatFriend(navArgs.chatID)?.let { supportActionBar?.title = it.username }
+            }
+
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
+    }
+
+
+
+    private fun configureRV() {
+        binding.messagesList.addOnLayoutChangeListener { _, _, _, bottom, _, _, _, _, oldBottom ->
+            if (bottom < oldBottom) {
+                binding.messagesList.postDelayed({
+                    binding.messagesList.smoothScrollToPosition(0)
+                }, 100)
+            }
         }
     }
 

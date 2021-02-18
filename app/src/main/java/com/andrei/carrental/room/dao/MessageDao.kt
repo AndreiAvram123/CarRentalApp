@@ -13,7 +13,7 @@ interface MessageDao{
      fun findLastChatMessage(chatID:Long):LiveData<Message>
 
 
-    @Query("SELECT * FROM message WHERE chatID = :chatID ORDER BY date ASC LIMIT 30 ")
+    @Query("SELECT * FROM message WHERE chatID = :chatID ORDER BY date ASC LIMIT 20")
     suspend fun findLastChatMessages(chatID:Long):List<Message>
 
 

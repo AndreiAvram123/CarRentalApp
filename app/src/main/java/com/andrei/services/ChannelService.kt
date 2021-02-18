@@ -83,7 +83,7 @@ class ChannelService(
 
     fun connect(){
         pushers.forEach {
-            if(it.connection.state == ConnectionState.DISCONNECTED) {
+            if(it.isDisconnected()) {
                 it.connect()
             }
         }
@@ -91,10 +91,17 @@ class ChannelService(
 
     fun disconnect(){
         pushers.forEach {
-            if(it.connection.state != ConnectionState.DISCONNECTED && it.connection.state != ConnectionState.DISCONNECTING){
+            if(it.isConnected()){
                 it.disconnect()
             }
         }
+    }
+
+    private fun Pusher.isDisconnected():Boolean{
+        return connection.state == ConnectionState.DISCONNECTED || connection.state == ConnectionState.DISCONNECTING
+    }
+    private fun Pusher.isConnected():Boolean{
+        return connection.state == ConnectionState.CONNECTED ||  connection.state == ConnectionState.CONNECTING || connection.state == ConnectionState.RECONNECTING
     }
 
     companion object {

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.andrei.carrental.R
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.ObservableChat
+import com.andrei.carrental.entities.User
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.DTOEntities.toUser
@@ -24,6 +25,7 @@ class MessengerService @Inject constructor (
 
 
     fun configureChannels(chats:List<ChatDTO>){
+          channels.forEach { it.value.disconnect() }
           channels.clear()
           channels.putAll(chats.map { it.id to ChannelService(it.id,
                    pusherOptions,
@@ -51,6 +53,16 @@ class MessengerService @Inject constructor (
     fun getObservableLastMessage(chatID:Long):LiveData<Message>{
         val channelService = channels[chatID]
         channelService?.let { return channelService.lastChatMessage }
+        return MutableLiveData()
+    }
+
+    fun getChatFriend(chatID: Long):User?{
+        val channelService = channels[chatID]
+        channelService?.let { return it.friend }
+        return null
+    }
+    fun getUserOnlineObservable(chatID: Long):LiveData<Boolean>{
+        channels[chatID]?.let { return it.isUserOnline }
         return MutableLiveData()
     }
 
