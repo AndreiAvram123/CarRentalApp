@@ -52,7 +52,7 @@ class ChannelService(
     private val eventDeleteMessageListener = SubscriptionEventListener {
         val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
         GlobalScope.launch (Dispatchers.IO){
-            messageDao.deleteMessage(messageDTO.toMessage())
+            messageDao.insertMessage(messageDTO.toMessage())
         }
     }
 
