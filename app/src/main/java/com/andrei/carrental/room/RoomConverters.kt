@@ -7,13 +7,15 @@ import com.andrei.carrental.entities.MessageType
 class RoomConverters {
 
  @TypeConverter
- fun fromMessageTypeValue(messageTypeValue:Int?): MessageType?{
-     messageTypeValue?.let { return when(messageTypeValue){
-         MessageType.MESSAGE_RECEIVED_IMAGE.id -> MessageType.MESSAGE_RECEIVED_IMAGE
-         MessageType.MESSAGE_SENT_IMAGE.id -> MessageType.MESSAGE_SENT_IMAGE
-         MessageType.MESSAGE_RECEIVED_TEXT.id -> MessageType.MESSAGE_RECEIVED_TEXT
-         else->MessageType.MESSAGE_SENT_TEXT
-     } }
+ fun fromMessageTypeValue(messageTypeValue:Int?): MessageType? {
+     messageTypeValue?.let {
+         return when (messageTypeValue) {
+             MessageType.MESSAGE_TEXT.id -> MessageType.MESSAGE_TEXT
+             MessageType.MESSAGE_IMAGE.id -> MessageType.MESSAGE_IMAGE
+             MessageType.MESSAGE_UNSENT.id -> MessageType.MESSAGE_UNSENT
+             else -> null
+         }
+     }
      return null
  }
 

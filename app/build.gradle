@@ -50,6 +50,7 @@ android {
 dependencies {
 
     //chat
+    implementation "de.hdodenhof:circleimageview:2.2.0"
     implementation 'com.github.stfalcon-studio:Chatkit:0.4.1'
 
     //room

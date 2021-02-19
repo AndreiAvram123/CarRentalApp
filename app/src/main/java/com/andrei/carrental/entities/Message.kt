@@ -3,6 +3,7 @@ package com.andrei.carrental.entities
 import androidx.room.*
 import com.stfalcon.chatkit.commons.models.IMessage
 import com.stfalcon.chatkit.commons.models.IUser
+import com.stfalcon.chatkit.commons.models.MessageContentType
 import java.util.*
 
 @Entity
@@ -20,7 +21,7 @@ data class Message(
     val chatID:Long,
     @ColumnInfo(name = "type")
     val messageType:MessageType
-):IMessage{
+):IMessage, MessageContentType{
 
     @Ignore
     override fun getText(): String  = content
@@ -34,6 +35,9 @@ data class Message(
 }
 
 enum class MessageType(val id: Int) {
-   MESSAGE_RECEIVED_TEXT(1), MESSAGE_SENT_TEXT(2), MESSAGE_SENT_IMAGE(3), MESSAGE_RECEIVED_IMAGE(4),
+   MESSAGE_TEXT(1), MESSAGE_IMAGE(2), MESSAGE_UNSENT(3)
+
 }
+
+
 

@@ -1,10 +1,10 @@
 package com.andrei.engine.repository.implementation
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.liveData
 import com.andrei.carrental.entities.Message
-import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.helpers.ConsumeLiveData
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.CallRunner
@@ -67,12 +67,7 @@ class ChatRepositoryImpl @Inject constructor(
                     messageDao.clean()
                     it.data.forEach { chatDTO ->
                         val messages = chatDTO.lastMessages.map { messageDTO ->
-                            when {
-                                messageDTO.isImageMessage && messageDTO.sender.userID == userID -> messageDTO.toMessage(MessageType.MESSAGE_SENT_IMAGE)
-                                messageDTO.isImageMessage && messageDTO.sender.userID != userID -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_IMAGE)
-                                !messageDTO.isImageMessage && messageDTO.sender.userID == userID -> messageDTO.toMessage(MessageType.MESSAGE_SENT_TEXT)
-                                else -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_TEXT)
-                            }
+                            messageDTO.toMessage()
                         }
                         messageDao.insertMessages(messages)
                     }

@@ -3,7 +3,6 @@ package com.andrei.services
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.andrei.carrental.entities.Message
-import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.entities.User
 import com.andrei.carrental.factories.PusherFactory
 import com.andrei.carrental.room.dao.MessageDao
@@ -46,23 +45,14 @@ class ChannelService(
     private val eventNewMessageListener = SubscriptionEventListener{
         val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
         GlobalScope.launch (Dispatchers.IO){
-            messageDao.insertMessage(convertMessageDTOToMessage(messageDTO))
+            messageDao.insertMessage(messageDTO.toMessage())
         }
     }
 
     private val eventDeleteMessageListener = SubscriptionEventListener {
         val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
         GlobalScope.launch (Dispatchers.IO){
-            messageDao.deleteMessage(convertMessageDTOToMessage(messageDTO))
-        }
-    }
-
-    private fun convertMessageDTOToMessage(messageDTO:MessageDTO):Message{
-        return when {
-            messageDTO.isImageMessage && messageDTO.sender.userID != friend.userID ->messageDTO.toMessage(MessageType.MESSAGE_SENT_IMAGE)
-            messageDTO.isImageMessage && messageDTO.sender.userID == friend.userID -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_IMAGE)
-            !messageDTO.isImageMessage && messageDTO.sender.userID != friend.userID ->messageDTO.toMessage(MessageType.MESSAGE_SENT_TEXT)
-            else -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_TEXT)
+            messageDao.deleteMessage(messageDTO.toMessage())
         }
     }
 

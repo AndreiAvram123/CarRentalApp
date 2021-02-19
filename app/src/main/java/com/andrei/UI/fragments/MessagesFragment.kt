@@ -8,17 +8,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.andrei.UI.adapters.messages.IncomingUnsendMessageViewHolder
+import com.andrei.UI.adapters.messages.OutgoingMessageViewHolder
 import com.andrei.UI.bottomSheets.OptionsMessageBottomSheet
 import com.andrei.carrental.R
 import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.databinding.FragmentMessagesBinding
 import com.andrei.carrental.entities.Message
+import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.viewmodels.ViewModelChat
-import com.andrei.engine.State
 import com.andrei.services.MessengerService
 import com.andrei.utils.loadFromURl
 import com.andrei.utils.reObserve
 import com.stfalcon.chatkit.commons.ImageLoader
+import com.stfalcon.chatkit.messages.MessageHolders
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +30,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
+class MessagesFragment :BaseFragment(R.layout.fragment_messages) , MessageHolders.ContentChecker<Message> {
 
     private val binding:FragmentMessagesBinding by viewBinding ()
     private val viewModelChat:ViewModelChat by activityViewModels()
@@ -38,7 +41,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     lateinit var messengerService: MessengerService
 
     private val bottomSheet:OptionsMessageBottomSheet by lazy {
-        OptionsMessageBottomSheet(this::unsendMessage,this::sheetClosed).apply {
+        OptionsMessageBottomSheet(this::unsendMessage, this::sheetClosed).apply {
             isCancelable = false
         }
     }
@@ -46,20 +49,19 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     private fun sheetClosed() {
           Handler(Looper.getMainLooper()).postDelayed({
               skipScroll = false
-          },200)
+          }, 200)
     }
 
     private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.loadFromURl(it) } }
 
 
     private val messagesAdapter:MessagesListAdapter<Message> by lazy {
-        MessagesListAdapter<Message>(UserDataManager.getUserID(requireContext()).toString(),imageLoader).also {
-            configureMessageAdapter()
-        }
+        MessagesListAdapter<Message>(UserDataManager.getUserID(requireContext()).toString(),
+                getAdapterHolders(),imageLoader)
     }
 
 
-    inner class CustomSelectionListener(private val currentUserID : String):MessagesListAdapter.SelectionListener{
+    inner class CustomSelectionListener(private val currentUserID: String):MessagesListAdapter.SelectionListener{
         override fun onSelectionChanged(count: Int) {
             if (count > 0) {
                 if (messagesAdapter.selectedMessages.first().user.id != currentUserID) {
@@ -72,14 +74,23 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
 
     }
 
+    private fun getAdapterHolders():MessageHolders{
+        return MessageHolders()
+                .registerContentType(
+                        MessageType.MESSAGE_UNSENT.id.toByte(),
+                        IncomingUnsendMessageViewHolder::class.java,
+                        R.layout.item_custom_incoming_unsend_message,
+                        OutgoingMessageViewHolder::class.java,
+                        R.layout.item_custom_outcoming_unsend_message,
+                        this@MessagesFragment)
+
+    }
 
 
     private fun configureMessageAdapter() {
-        lifecycleScope.launch(Dispatchers.Main) {
             messagesAdapter.apply {
                 enableSelectionMode(CustomSelectionListener(UserDataManager.getUserID(requireContext()).toString()))
             }
-        }
     }
 
     private fun unsendMessage(){
@@ -100,6 +111,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
         viewModelChat.setCurrentOpenedChatID(navArgs.chatID)
         configureToolbar()
         configureRV()
+        configureMessageAdapter()
         populateRVWithData()
         attachListeners()
         attachObservers()
@@ -132,8 +144,10 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
 
 
     private fun configureRV() {
+        binding.messagesList.setAdapter(messagesAdapter)
+
         binding.messagesList.addOnLayoutChangeListener { _, _, _, bottom, _, _, _, _, oldBottom ->
-            if (shouldScroll(bottom,oldBottom)) {
+            if (shouldScroll(bottom, oldBottom)) {
                 binding.messagesList.postDelayed({
                     binding.messagesList.smoothScrollToPosition(0)
                 }, 50)
@@ -141,7 +155,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
         }
     }
 
-    private fun shouldScroll(bottom:Int, oldBottom:Int):Boolean{
+    private fun shouldScroll(bottom: Int, oldBottom: Int):Boolean{
         return bottom < oldBottom && messagesAdapter.selectedMessages.isEmpty() && !skipScroll
     }
 
@@ -161,12 +175,11 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
         }
     }
 
-    private fun addAdapterData(data:List<Message>){
+    private fun addAdapterData(data: List<Message>){
         lifecycleScope.launch(Dispatchers.Main) {
             data.forEach {
-                messagesAdapter.addToStart(it,true)
+                messagesAdapter.addToStart(it, true)
             }
-            binding.messagesList.setAdapter(messagesAdapter)
             startObservingNewMessage()
         }
     }
@@ -174,9 +187,16 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     private fun startObservingNewMessage() {
         messengerService.getObservableLastMessage(navArgs.chatID).reObserve(viewLifecycleOwner){
             if(it != null){
-                messagesAdapter.addToStart(it,true)
+                messagesAdapter.addToStart(it, true)
             }
         }
+    }
+
+    override fun hasContentFor(message: Message, type: Byte): Boolean {
+         if(type == message.messageType.id.toByte()){
+             return true
+         }
+        return false
     }
 }
 
