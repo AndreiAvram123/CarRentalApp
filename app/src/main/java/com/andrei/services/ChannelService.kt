@@ -12,8 +12,12 @@ import com.andrei.engine.DTOEntities.toMessage
 import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
+import com.pusher.client.channel.Channel
 import com.pusher.client.channel.SubscriptionEventListener
 import com.pusher.client.connection.ConnectionState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class ChannelService(
@@ -24,7 +28,8 @@ class ChannelService(
     val friend:User,
     ) {
 
-    private val pushers :MutableList<Pusher> = mutableListOf()
+    private val pusherPresenceChannel = PusherFactory.createPusher(pusherOptions,pusherKey)
+    private val pusherChannel = PusherFactory.createPusher(pusherOptions,pusherKey)
 
     private val _isUserOnline:MutableLiveData<Boolean> by lazy {
         MutableLiveData(false)
@@ -40,33 +45,52 @@ class ChannelService(
 
     private val eventNewMessageListener = SubscriptionEventListener{
         val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
-        when {
-            messageDTO.isImageMessage && messageDTO.sender.userID != friend.userID -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_SENT_IMAGE))
-            messageDTO.isImageMessage && messageDTO.sender.userID == friend.userID -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_IMAGE))
+        GlobalScope.launch (Dispatchers.IO){
+            messageDao.insertMessage(convertMessageDTOToMessage(messageDTO))
+        }
+    }
 
-            !messageDTO.isImageMessage && messageDTO.sender.userID != friend.userID -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_SENT_TEXT))
-            !messageDTO.isImageMessage && messageDTO.sender.userID == friend.userID -> messageDao.insertMessage(messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_TEXT))
+    private val eventDeleteMessageListener = SubscriptionEventListener {
+        val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
+        GlobalScope.launch (Dispatchers.IO){
+            messageDao.deleteMessage(convertMessageDTOToMessage(messageDTO))
+        }
+    }
+
+    private fun convertMessageDTOToMessage(messageDTO:MessageDTO):Message{
+        return when {
+            messageDTO.isImageMessage && messageDTO.sender.userID != friend.userID ->messageDTO.toMessage(MessageType.MESSAGE_SENT_IMAGE)
+            messageDTO.isImageMessage && messageDTO.sender.userID == friend.userID -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_IMAGE)
+            !messageDTO.isImageMessage && messageDTO.sender.userID != friend.userID ->messageDTO.toMessage(MessageType.MESSAGE_SENT_TEXT)
+            else -> messageDTO.toMessage(MessageType.MESSAGE_RECEIVED_TEXT)
         }
     }
 
 
     init {
-        bindToNewUserAddedEvent()
-        bindToNewMessagesEvent()
+        subscribeToPresenceChannel()
+        subscribeToChannel()
     }
 
-    private fun bindToNewMessagesEvent() {
-        val pusher = PusherFactory.createPusher(pusherOptions,pusherKey)
-        pushers.add(pusher)
-        val messagesChannel = pusher.subscribe("chats-$chatID")
-         messagesChannel.bind(eventNewMessage,eventNewMessageListener)
+    private fun bindToDeleteMessageEvent(channel: Channel) {
+         channel.bind(eventDeletedMessage,eventDeleteMessageListener)
     }
 
-    private fun bindToNewUserAddedEvent() {
+    private fun subscribeToChannel() {
+        val messagesChannel = pusherChannel.subscribe("chats-$chatID")
+        bindToNewMessageEvent(messagesChannel)
+        bindToDeleteMessageEvent(messagesChannel)
+    }
+
+    private fun bindToNewMessageEvent(channel: Channel){
+        channel.bind(eventNewMessage,eventNewMessageListener)
+    }
+
+
+    private fun subscribeToPresenceChannel() {
         val listener = CustomPresenceChannelListener()
-        val pusher = PusherFactory.createPusher(pusherOptions,pusherKey)
-        pushers.add(pusher)
-        pusher.subscribePresence("presence-chats-$chatID",listener, eventNewUserAdded)
+
+        pusherPresenceChannel.subscribePresence("presence-chats-$chatID",listener, eventNewUserAdded)
 
         listener.onUserSubscribed = { _,_ ->
             _isUserOnline.postValue(true)
@@ -82,18 +106,20 @@ class ChannelService(
 
 
     fun connect(){
-        pushers.forEach {
-            if(it.isDisconnected()) {
-                it.connect()
-            }
+        if(pusherChannel.isDisconnected()){
+            pusherChannel.connect()
+        }
+        if(pusherPresenceChannel.isDisconnected()){
+            pusherChannel.connect()
         }
     }
 
     fun disconnect(){
-        pushers.forEach {
-            if(it.isConnected()){
-                it.disconnect()
-            }
+        if(pusherChannel.isConnected()){
+            pusherChannel.disconnect()
+        }
+        if(pusherPresenceChannel.isConnected()){
+            pusherPresenceChannel.disconnect()
         }
     }
 
@@ -107,6 +133,7 @@ class ChannelService(
     companion object {
         private const val eventNewUserAdded = "pusher:member_added"
         private const val eventNewMessage = "new_message"
+        private const val eventDeletedMessage = "message_deleted"
     }
 
 }
