@@ -6,8 +6,8 @@ import com.andrei.carrental.helpers.ConsumeLiveData
 import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.ChatRepository
-import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,15 +52,18 @@ class ViewModelChat @Inject constructor(
         }
     }
 
-   private  val _messageToUnsend:MutableLiveData<Message> by lazy {
-        MutableLiveData()
-    }
-    fun setMessageToUnsend(message:Message){
 
-        _messageToUnsend.value = message
+
+    fun unsendMessage(message:Message){
+       viewModelScope.launch(Dispatchers.IO) {
+           chatRepository.unsendMessage(message)
+       }
     }
 
-    val messagesToUnsendState:LiveData<State<Message>> = Transformations.switchMap(_messageToUnsend){
-         chatRepository.unsendMessage(it)
-    }
+    private val _messageToUnsendState:ConsumeLiveData<State<Message>> by lazy {
+         chatRepository.messageToUnsendState
+     }
+     val messageToUnsendState:ConsumeLiveData<State<Message>>
+     get() = _messageToUnsendState
+
 }

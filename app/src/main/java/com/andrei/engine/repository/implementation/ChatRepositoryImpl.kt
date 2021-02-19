@@ -5,6 +5,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.liveData
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.MessageType
+import com.andrei.carrental.helpers.ConsumeLiveData
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.CallRunner
 import com.andrei.engine.DTOEntities.ChatDTO
@@ -28,6 +29,9 @@ class ChatRepositoryImpl @Inject constructor(
         fetchUserChats(it.id)
     }
 
+    override val messageToUnsendState:ConsumeLiveData<State<Message>> by lazy {
+        ConsumeLiveData()
+    }
 
     override suspend fun getInitialChatMessages(chatID:Long):List<Message>{
        return  messageDao.findLastChatMessages(chatID)
@@ -47,8 +51,10 @@ class ChatRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun unsendMessage(messages: Message): LiveData<State<Message>> {
-        TODO("Not yet implemented")
+    override suspend fun unsendMessage(message: Message) {
+        callRunner.makeApiCall(chatAPI.deleteMessage(message.messageID)){
+            messageToUnsendState.postValue(it)
+        }
     }
 
 

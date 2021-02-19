@@ -1,12 +1,12 @@
 package com.andrei.UI.fragments
 
+import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.bottomSheets.OptionsMessageBottomSheet
 import com.andrei.carrental.R
@@ -14,7 +14,7 @@ import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.databinding.FragmentMessagesBinding
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.viewmodels.ViewModelChat
-import com.andrei.engine.helpers.UserManager
+import com.andrei.engine.State
 import com.andrei.services.MessengerService
 import com.andrei.utils.loadFromURl
 import com.andrei.utils.reObserve
@@ -23,7 +23,6 @@ import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.logging.Handler
 import javax.inject.Inject
 
 
@@ -39,14 +38,18 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     lateinit var messengerService: MessengerService
 
     private val bottomSheet:OptionsMessageBottomSheet by lazy {
-        OptionsMessageBottomSheet(this::unsendMessage).apply {
+        OptionsMessageBottomSheet(this::unsendMessage,this::sheetClosed).apply {
             isCancelable = false
         }
     }
 
-     private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.loadFromURl(it) } }
+    private fun sheetClosed() {
+          Handler(Looper.getMainLooper()).postDelayed({
+              skipScroll = false
+          },200)
+    }
 
-
+    private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.loadFromURl(it) } }
 
 
     private val messagesAdapter:MessagesListAdapter<Message> by lazy {
@@ -80,20 +83,15 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     }
 
     private fun unsendMessage(){
-        dismissBottomSheet()
         val messages =   messagesAdapter.selectedMessages.first()
         messagesAdapter.unselectAllItems()
-        viewModelChat.setMessageToUnsend(messages)
+        viewModelChat.unsendMessage(messages)
     }
+
+
     private fun showBottomSheet() {
         skipScroll = true
         bottomSheet.show(requireActivity().supportFragmentManager, "bottomSheetMessage")
-    }
-    private fun dismissBottomSheet(){
-        bottomSheet.dismiss()
-        android.os.Handler(Looper.getMainLooper()).postDelayed({
-            skipScroll = false
-        },200)
     }
 
 
@@ -108,14 +106,13 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     }
 
     private fun attachObservers() {
-         messengerService.getUserOnlineObservable(navArgs.chatID).reObserve(viewLifecycleOwner){
-             if(it){
-                 binding.toolbar.subtitle = "Online"
-             }else{
-                 binding.toolbar.subtitle = "Offline"
-             }
-
-         }
+        messengerService.getUserOnlineObservable(navArgs.chatID).reObserve(viewLifecycleOwner) {
+            if (it) {
+                binding.toolbar.subtitle = "Online"
+            } else {
+                binding.toolbar.subtitle = "Offline"
+            }
+        }
     }
 
     private fun configureToolbar() {
@@ -145,10 +142,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) {
     }
 
     private fun shouldScroll(bottom:Int, oldBottom:Int):Boolean{
-        if(skipScroll){
-            return false
-        }
-        return bottom < oldBottom && messagesAdapter.selectedMessages.isEmpty()
+        return bottom < oldBottom && messagesAdapter.selectedMessages.isEmpty() && !skipScroll
     }
 
 

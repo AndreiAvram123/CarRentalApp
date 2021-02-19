@@ -1,8 +1,7 @@
 package com.andrei.carrental.helpers
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
+
 /**
   Live data that clears it's value once it's fired the event
  */
@@ -13,6 +12,7 @@ class  ConsumeLiveData<T> : MutableLiveData<T>() {
           observer.onChanged(it)
            value = null
         }
+
     }
  }
 }
