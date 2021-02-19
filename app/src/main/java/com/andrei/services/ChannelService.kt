@@ -2,9 +2,11 @@ package com.andrei.services
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.User
 import com.andrei.carrental.factories.PusherFactory
+import com.andrei.carrental.helpers.ConsumeLiveData
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.DTOEntities.MessageDTO
 import com.andrei.engine.DTOEntities.toMessage
@@ -37,22 +39,36 @@ class ChannelService(
     val isUserOnline:LiveData<Boolean>
     get() = _isUserOnline
 
-
-    val lastChatMessage:LiveData<Message> by lazy {
-        messageDao.findLastChatMessage(chatID)
+    private val _newChatMessage:MutableLiveData<Message> by lazy {
+        MutableLiveData<Message>()
     }
+
+    val newChatMessage:LiveData<Message>
+    get() = _newChatMessage
+
+    private val _unsentMessage:ConsumeLiveData<Message> by lazy {
+        ConsumeLiveData()
+    }
+    val unsentMessage:LiveData<Message>
+    get() = _unsentMessage
+
+
 
     private val eventNewMessageListener = SubscriptionEventListener{
         val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
         GlobalScope.launch (Dispatchers.IO){
-            messageDao.insertMessage(messageDTO.toMessage())
+            val message = messageDTO.toMessage()
+            messageDao.insertMessage(message)
+           _newChatMessage.postValue(message)
         }
     }
 
     private val eventDeleteMessageListener = SubscriptionEventListener {
         val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
         GlobalScope.launch (Dispatchers.IO){
-            messageDao.insertMessage(messageDTO.toMessage())
+            val message = messageDTO.toMessage()
+             messageDao.updateMessage(message)
+            _unsentMessage.postValue(message)
         }
     }
 

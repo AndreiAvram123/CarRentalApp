@@ -12,6 +12,6 @@ interface ChatAPI {
     @POST("/messages")
     fun postMessage(@Body requestBody: CreateMessageRequest): CallWrapper<Nothing>
 
-    @DELETE("/messages/{messageID}")
-    fun deleteMessage(@Path("messageID") messageID:Long):CallWrapper<Nothing>
+    @PUT("/messages/{messageID}")
+    fun modifyMessage(@Path("messageID") messageID:Long):CallWrapper<Nothing>
 }

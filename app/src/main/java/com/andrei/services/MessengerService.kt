@@ -43,7 +43,7 @@ class MessengerService @Inject constructor (
                     id = it.value.chatID,
                     friend = it.value.friend,
                     isUserOnline = it.value.isUserOnline,
-                    lastMessageDTO = it.value.lastChatMessage
+                    lastMessageDTO = it.value.newChatMessage
             )
             chats.add(chat)
         }
@@ -52,7 +52,7 @@ class MessengerService @Inject constructor (
 
     fun getObservableLastMessage(chatID:Long):LiveData<Message>{
         val channelService = channels[chatID]
-        channelService?.let { return channelService.lastChatMessage }
+        channelService?.let { return channelService.newChatMessage }
         return MutableLiveData()
     }
 
@@ -63,6 +63,11 @@ class MessengerService @Inject constructor (
     }
     fun getUserOnlineObservable(chatID: Long):LiveData<Boolean>{
         channels[chatID]?.let { return it.isUserOnline }
+        return MutableLiveData()
+    }
+
+    fun getObservableUnsentMessage(chatID:Long):LiveData<Message>{
+        channels[chatID]?.let { return it.unsentMessage }
         return MutableLiveData()
     }
 

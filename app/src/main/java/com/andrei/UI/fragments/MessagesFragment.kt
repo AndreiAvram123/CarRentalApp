@@ -180,14 +180,23 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) , MessageHolder
             data.forEach {
                 messagesAdapter.addToStart(it, true)
             }
-            startObservingNewMessage()
+            observeNewMessages()
+            observerUnsentMessages()
         }
     }
 
-    private fun startObservingNewMessage() {
+    private fun observerUnsentMessages() {
+        messengerService.getObservableUnsentMessage(navArgs.chatID).reObserve(viewLifecycleOwner){
+            if(it!=null){
+              messagesAdapter.update(it)
+            }
+        }
+    }
+
+    private fun observeNewMessages() {
         messengerService.getObservableLastMessage(navArgs.chatID).reObserve(viewLifecycleOwner){
             if(it != null){
-                messagesAdapter.addToStart(it, true)
+                messagesAdapter.addToStart(it,true)
             }
         }
     }

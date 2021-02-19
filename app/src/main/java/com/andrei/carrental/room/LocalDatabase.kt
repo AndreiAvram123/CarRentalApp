@@ -10,7 +10,7 @@ import com.andrei.carrental.room.dao.MessageDao
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
-@Database(entities = [Message::class], version = 2, exportSchema = false)
+@Database(entities = [Message::class], version = 3, exportSchema = false)
 @TypeConverters(RoomConverters::class)
 abstract class LocalDatabase : RoomDatabase() {
 

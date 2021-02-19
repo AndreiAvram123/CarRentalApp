@@ -23,8 +23,7 @@ fun MessageDTO.toMessage(): Message = Message(messageID = this.id,
            content = this.content,
            date = this.date ,
             sender =  this.sender.toUser(),
-           chatID = this.chatID,
-           messageType = this.messageType)
+           chatID = this.chatID,messageType = this.messageType)
 
 
 

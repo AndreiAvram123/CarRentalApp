@@ -22,6 +22,7 @@ class RoomDaoModule {
 
 
   @Provides
+  @Singleton
   fun provideMessageDao(database: LocalDatabase):MessageDao = database.messageDao()
 
 }

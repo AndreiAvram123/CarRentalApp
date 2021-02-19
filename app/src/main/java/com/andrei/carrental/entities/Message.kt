@@ -20,7 +20,7 @@ data class Message(
     @ColumnInfo(name = "chatID")
     val chatID:Long,
     @ColumnInfo(name = "type")
-    val messageType:MessageType
+    var messageType:MessageType
 ):IMessage, MessageContentType{
 
     @Ignore

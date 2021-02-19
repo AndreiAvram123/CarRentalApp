@@ -1,6 +1,5 @@
 package com.andrei.engine.repository.implementation
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.liveData
@@ -52,7 +51,7 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun unsendMessage(message: Message) {
-        callRunner.makeApiCall(chatAPI.deleteMessage(message.messageID)){
+        callRunner.makeApiCall(chatAPI.modifyMessage(message.messageID)){
             messageToUnsendState.postValue(it)
         }
     }
