@@ -8,6 +8,9 @@ import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.repositoryInterfaces.LoginAPI
 import com.andrei.engine.requestModels.LoginRequest
 import com.andrei.engine.states.LoginFlowState
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LoginRepositoryImpl @Inject constructor(
@@ -17,16 +20,27 @@ class LoginRepositoryImpl @Inject constructor(
 ): LoginRepository{
 
 
-    override val loginFlowState: MediatorLiveData<LoginFlowState> by lazy {
-        MediatorLiveData<LoginFlowState>().apply {
-            addSource(userManager.isUserLoggedIn){
-                value = if (it){
-                    LoginFlowState.LoggedIn
-                }else{
-                    LoginFlowState.NotLoggedIn
-                }
-            }
-        }
+    override val loginFlowState: MutableStateFlow<LoginFlowState>  = MutableStateFlow(
+       if(userManager.isUserLoggedIn){
+           LoginFlowState.LoggedIn
+       }else{
+           LoginFlowState.NotLoggedIn
+       }
+    )
+
+    override val emailError:MutableStateFlow<String?> = MutableStateFlow(null)
+    override val passwordError:MutableStateFlow<String?> = MutableStateFlow(null)
+
+    init {
+//        GlobalScope.launch {
+//        userManager.userLogedInObserver.asFlow().filterNotNull() .collect {
+//            if(it){
+//                loginFlowState.tryEmit(LoginFlowState.LoggedIn)
+//            }else{
+//                loginFlowState.tryEmit(LoginFlowState.NotLoggedIn)
+//            }
+//        }
+//        }
     }
 
 
@@ -41,17 +55,17 @@ class LoginRepositoryImpl @Inject constructor(
                is State.Success -> {
                    if (it.data != null) {
                        userManager.saveNewUser(it.data)
-                       loginFlowState.postValue(LoginFlowState.LoggedIn)
+                       loginFlowState.tryEmit(LoginFlowState.LoggedIn)
                    }
                }
                is State.Loading -> {
-                   loginFlowState.postValue(LoginFlowState.Loading)
+                   loginFlowState.tryEmit(LoginFlowState.Loading)
                }
                is State.Error->{
                    when(it.error){
-                        LoginFlowState.LoginError.errorInvalidEmail -> loginFlowState.postValue(LoginFlowState.LoginError.IncorrectEmail)
-                        LoginFlowState.LoginError.errorInvalidPassword -> loginFlowState.postValue(LoginFlowState.LoginError.IncorrectPassword)
-                        else -> loginFlowState.postValue(LoginFlowState.LoginError.ConnectionError)
+                        LoginFlowState.LoginError.errorInvalidEmail -> loginFlowState.tryEmit(LoginFlowState.LoginError.IncorrectEmail)
+                        LoginFlowState.LoginError.errorInvalidPassword -> loginFlowState.tryEmit(LoginFlowState.LoginError.IncorrectPassword)
+                        else -> loginFlowState.tryEmit(LoginFlowState.LoginError.ConnectionError)
                    }
                }
            }

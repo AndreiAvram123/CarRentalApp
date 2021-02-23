@@ -33,8 +33,10 @@ class UserManager @Inject constructor(
         }
     }
 
+    val isUserLoggedIn:Boolean
+    get() = areUserDetailsValid()
 
-    val isUserLoggedIn :MediatorLiveData<Boolean> by lazy {
+    val userLogedInObserver :MediatorLiveData<Boolean> by lazy {
         MediatorLiveData<Boolean>().apply {
             addSource(_userLoginData){
                 if(it == null){
@@ -57,6 +59,14 @@ class UserManager @Inject constructor(
         }
     }
 
+
+    private fun areUserDetailsValid():Boolean{
+        val email = sharedPreferences.getStringOrNull(context.getString(R.string.key_user_email))
+        val id = sharedPreferences.getLongOrZero(context.getString(R.string.key_user_id))
+        if (email != null && id != 0L) {
+            return true}
+        return false
+    }
 
     val userLoginData:LiveData<BasicUserLoginData>
     get() = _userLoginData

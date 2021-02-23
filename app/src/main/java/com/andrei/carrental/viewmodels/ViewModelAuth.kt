@@ -5,6 +5,7 @@ import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.states.LoginFlowState
 import com.andrei.utils.isEmailValid
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,19 +15,15 @@ class ViewModelAuth  @Inject constructor(
 ):   ViewModel() {
 
 
-    private val _emailEntered : MutableLiveData<String> by lazy {
-        MutableLiveData()
-    }
-    private val _passwordEntered : MutableLiveData<String> by lazy {
-        MutableLiveData()
-    }
+    private val _emailEntered : MutableStateFlow<String?> = MutableStateFlow(null)
+    private val _passwordEntered : MutableStateFlow<String?>  = MutableStateFlow(null)
 
 
 
 
 
 
-    val authenticationState:LiveData<AuthenticationState> = Transformations.map(loginRepository.loginFlowState){
+    val authenticationState:LiveData<AuthenticationState> = Transformations.map(loginRepository.loginFlowState.asLiveData(viewModelScope.coroutineContext)){
         when(it){
               is  LoginFlowState.Loading -> AuthenticationState.AUTHENTICATING
               is  LoginFlowState.LoginError -> AuthenticationState.NOT_AUTHENTICATED
@@ -38,84 +35,51 @@ class ViewModelAuth  @Inject constructor(
 
 
 
-    val errorEmail : MediatorLiveData<String?> by lazy {
-        MediatorLiveData<String?>().apply {
-            addSource(_emailEntered){
-                value = null
-                 if(!it.isEmailValid()){
-                   value =   errorInvalidEmailFormat
+    private val _errorEmail : Flow<String?>  = combine(_emailEntered.filterNotNull(),loginRepository.emailError ) {
+        email, emailError ->
+        when{
+            !email.isEmailValid() -> errorInvalidEmailFormat
+            !emailError.isNullOrBlank() -> emailError
+            else -> null
+        }
+    }
+
+    private val _errorPassword :Flow<String?> = combine(_passwordEntered.filterNotNull() ,loginRepository.passwordError){
+        password,loginState ->
+         when{
+             password.isBlank() -> errorPasswordBlank
+             !loginState.isNullOrBlank() ->loginState
+             else-> null
+         }
+
+    }
+
+    val errorEmail:LiveData<String?>
+    get() = _errorEmail.asLiveData(viewModelScope.coroutineContext)
+
+    val errorPassword:LiveData<String?>
+    get() = _errorPassword.asLiveData(viewModelScope.coroutineContext)
+
+    private val _startLoginFlow :Flow<Boolean> = combine(
+            _errorEmail,_errorPassword
+    ){
+        errorE,errorP -> errorE == null && errorP == null
+    }
+
+
+    init {
+        viewModelScope.launch {
+           _startLoginFlow.collect {
+                if (it) {
+                    val email = _emailEntered.value
+                    val password = _passwordEntered.value
+                    check(email != null) { "Login flow should not be started with null email, the email might have been changed in another thread" }
+                    check(password != null) { "Login flow should not be started with null password, the passwod might have been changed in another thread" }
+                    loginRepository.startLoginFlow(email, password)
                 }
             }
-            addSource(loginRepository.loginFlowState){
-                value = null
-                if(it is LoginFlowState.LoginError.IncorrectEmail){
-                    value = it.error
-                }
-            }
         }
     }
-
-    val errorPassword :MediatorLiveData<String?> by lazy {
-        MediatorLiveData<String?>().apply {
-            addSource(_passwordEntered){
-                value = null
-                if(it.isBlank()){
-                    value = errorPasswordBlank
-                }
-            }
-            addSource(loginRepository.loginFlowState){
-                value = null
-                if(it is LoginFlowState.LoginError.IncorrectPassword){
-                    value = it.error
-                }
-            }
-        }
-    }
-
-    private val observerEmail = Observer<String> {
-        if(canStartUserFlow()){
-            startLoginFlow()
-        }
-    }
-    private val observerPassword = Observer<String>{
-        if(canStartUserFlow()){
-            startLoginFlow()
-        }
-    }
-
- init {
-     _emailEntered.observeForever(observerEmail)
-     _passwordEntered.observeForever(observerPassword)
- }
-
-
-    private fun canStartUserFlow():Boolean{
-        val email = _emailEntered.value
-        val password = _passwordEntered.value
-        val errorEmail = errorEmail.value
-        val errorPassword = errorPassword.value
-       return  email != null && password != null && errorEmail == null && errorPassword == null
-    }
-
-    private fun startLoginFlow(){
-         val email = _emailEntered.value
-        val password = _passwordEntered.value
-        if(canStartUserFlow()) {
-            check(email != null) { "Login flow should not be started with null email, the email might have been changed in another thread" }
-            check(password != null) { "Login flow should not be started with null password, the passwod might have been changed in another thread" }
-                viewModelScope.launch {
-                    loginRepository.startLoginFlow(email = email, password = password)
-            }
-        }
-    }
-
-
-    override fun onCleared() {
-        super.onCleared()
-        _emailEntered.removeObserver(observerEmail)
-        _passwordEntered.removeObserver(observerPassword)
-    }
-
 
 
     fun signOut(){
@@ -123,11 +87,13 @@ class ViewModelAuth  @Inject constructor(
     }
 
     fun setEmail(email:String){
-        _emailEntered.value = email
+        viewModelScope.launch {
+            _emailEntered.emit(email)
+        }
     }
 
     fun setPassword(password:String){
-        _passwordEntered.value = (password)
+        _passwordEntered.tryEmit(password)
     }
 
 

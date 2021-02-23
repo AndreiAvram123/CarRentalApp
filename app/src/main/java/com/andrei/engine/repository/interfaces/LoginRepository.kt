@@ -5,14 +5,19 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.andrei.engine.DTOEntities.BasicUserLoginData
 import com.andrei.engine.states.LoginFlowState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+
 
 interface LoginRepository
 {
 
-    val loginFlowState : MutableLiveData<LoginFlowState>
+    val loginFlowState : Flow<LoginFlowState>
 
     suspend fun startLoginFlow(email:String,password:String)
     fun signOut()
 
+    val emailError: MutableStateFlow<String?>
+    val passwordError: MutableStateFlow<String?>
 }
 
