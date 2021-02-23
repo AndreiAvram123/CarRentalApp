@@ -12,15 +12,15 @@ import com.andrei.engine.DTOEntities.toMessage
 import com.andrei.engine.State
 import com.andrei.engine.helpers.UserManager
 import com.andrei.engine.repository.interfaces.ChatRepository
-import com.andrei.engine.repositoryInterfaces.ChatAPI
+import com.andrei.engine.repositoryInterfaces.ChatService
 import com.andreia.carrental.requestModels.CreateMessageRequest
 import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
-        private val userManager: UserManager,
-        private val callRunner: CallRunner,
-        private val chatAPI: ChatAPI,
-        private val messageDao: MessageDao
+    private val userManager: UserManager,
+    private val callRunner: CallRunner,
+    private val chatService: ChatService,
+    private val messageDao: MessageDao
 
 ): ChatRepository {
 
@@ -45,13 +45,13 @@ class ChatRepositoryImpl @Inject constructor(
             senderID = userID,
             chatID = currentChatID
         )
-        callRunner.makeApiCall(chatAPI.postMessage(requestModel)){
+        callRunner.makeApiCall(chatService.postMessage(requestModel)){
           print(it)
         }
     }
 
     override suspend fun unsendMessage(message: Message) {
-        callRunner.makeApiCall(chatAPI.modifyMessage(message.messageID)){
+        callRunner.makeApiCall(chatService.modifyMessage(message.messageID)){
             messageToUnsendState.postValue(it)
         }
     }
@@ -59,7 +59,7 @@ class ChatRepositoryImpl @Inject constructor(
 
 
     private fun fetchUserChats(userID: Long): LiveData<State<List<ChatDTO>>> = liveData {
-        callRunner.makeApiCall(chatAPI.getAllUserChats(userID)) {
+        callRunner.makeApiCall(chatService.getAllUserChats(userID)) {
             if (it is State.Success) {
                 //insert into room
                 if (it.data != null) {

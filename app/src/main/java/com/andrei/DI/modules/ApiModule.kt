@@ -1,14 +1,22 @@
-package com.andrei.DI
+package com.andrei.DI.modules
 
 import com.andrei.DI.annotations.RetrofitInterceptorNoToken
 import com.andrei.DI.annotations.RetrofitInterceptorWithToken
+import com.andrei.engine.configuration.APIImpl
+import com.andrei.engine.configuration.ApiConfig
 import com.andrei.engine.repositoryInterfaces.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ViewModelComponent
+import org.koin.dsl.module
 import retrofit2.Retrofit
+
+
+val apiModule = module {
+    single { ApiConfig() }
+    single { APIImpl(get(),get(),get()) }
+}
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -46,6 +54,6 @@ class ApiModule {
     ):BookingRepoInterface = retrofit.create(BookingRepoInterface::class.java)
 
     @Provides
-    fun provideChatAPI(@RetrofitInterceptorWithToken retrofit: Retrofit):ChatAPI = retrofit.create(ChatAPI::class.java)
+    fun provideChatAPI(@RetrofitInterceptorWithToken retrofit: Retrofit):ChatService = retrofit.create(ChatService::class.java)
 
 }

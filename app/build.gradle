@@ -49,6 +49,13 @@ android {
 
 dependencies {
 
+    def koin_version = '2.1.6'
+    /* Dependency Injection */
+    implementation "org.koin:koin-androidx-scope:$koin_version"
+    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
+    implementation "org.koin:koin-androidx-fragment:$koin_version"
+    implementation "org.koin:koin-androidx-ext:$koin_version"
+
     //chat
     implementation "de.hdodenhof:circleimageview:2.2.0"
     implementation 'com.github.stfalcon-studio:Chatkit:0.4.1'

@@ -5,7 +5,7 @@ import com.andrei.engine.configuration.CallWrapper
 import com.andreia.carrental.requestModels.CreateMessageRequest
 import retrofit2.http.*
 
-interface ChatAPI {
+interface ChatService {
     @GET("/users/{userID}/chats")
     fun getAllUserChats(@Path("userID") userID:Long):CallWrapper<List<ChatDTO>>
 
