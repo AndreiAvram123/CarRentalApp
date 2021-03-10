@@ -6,7 +6,7 @@ data class APIResponse<out T>(
         @SerializedName("isSuccessful")
         val isSuccessful : Boolean,
         @SerializedName("data")
-        val data : T )
+        val data : T)
 
 
 

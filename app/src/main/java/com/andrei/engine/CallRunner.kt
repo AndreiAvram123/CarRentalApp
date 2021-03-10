@@ -30,11 +30,14 @@ class CallRunner @Inject constructor(
         }
 
         emit(State.Loading)
-
-        try {
+         try {
              val response = call()
                 if(response.isSuccessful){
-                    response.body()?.let{emit(ResponseHandler.handleSuccess(it.data))}
+                    val body = response.body()
+                    body?.let {
+                        val result  = ResponseHandler.handleSuccess(it.data)
+                        emit(result)
+                    }
 
                 }else{
                     response.errorBody()?.let {

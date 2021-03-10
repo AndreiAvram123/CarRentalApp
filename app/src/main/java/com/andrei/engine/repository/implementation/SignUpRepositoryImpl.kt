@@ -59,7 +59,7 @@ class SignUpRepositoryImpl @Inject constructor(
             return result
         }
         callRunner.makeApiCall{signUpAPI.checkIfEmailIsAvailable(email)}.collect{
-            if(it is State.Success && it.data != null){
+            if(it is State.Success){
                 result = when{
                     it.data.valid -> EmailValidationState.Valid
                     it.data.reason == RegistrationFlowState.RegistrationError.emailAlreadyTaken -> EmailValidationState.AlreadyTaken
