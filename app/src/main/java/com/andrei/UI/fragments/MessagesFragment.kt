@@ -40,6 +40,9 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) , MessageHolder
     @Inject
     lateinit var messengerService: MessengerService
 
+    @Inject
+    lateinit var userDataManager: UserDataManager
+
     private val bottomSheet:OptionsMessageBottomSheet by lazy {
         OptionsMessageBottomSheet(this::unsendMessage, this::sheetClosed).apply {
             isCancelable = false
@@ -56,7 +59,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) , MessageHolder
 
 
     private val messagesAdapter:MessagesListAdapter<Message> by lazy {
-        MessagesListAdapter<Message>(UserDataManager.getUserID(requireContext()).toString(),
+        MessagesListAdapter<Message>(userDataManager.getUserID().toString(),
                 getAdapterHolders(),imageLoader)
     }
 
@@ -89,7 +92,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) , MessageHolder
 
     private fun configureMessageAdapter() {
             messagesAdapter.apply {
-                enableSelectionMode(CustomSelectionListener(UserDataManager.getUserID(requireContext()).toString()))
+                enableSelectionMode(CustomSelectionListener(userDataManager.getUserID().toString()))
             }
     }
 

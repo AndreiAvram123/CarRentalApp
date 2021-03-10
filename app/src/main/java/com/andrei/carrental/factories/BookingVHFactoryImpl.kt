@@ -3,8 +3,9 @@ package com.andrei.carrental.factories
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.andrei.UI.adapters.bookings.ViewHolderPreviousBooking
-import com.andrei.UI.fragments.BookingsFragment.BookingType
+
 import com.andrei.carrental.databinding.PreviousBookingLayoutBinding
+import com.andrei.carrental.entities.BookingType
 
 
 interface BookingsVHFactory {

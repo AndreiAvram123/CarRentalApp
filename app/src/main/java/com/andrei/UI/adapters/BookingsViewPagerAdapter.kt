@@ -4,11 +4,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.andrei.UI.fragments.BookingsFragment
+import com.andrei.carrental.entities.BookingType
 
 class BookingsViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment){
-    val fragments:List<Fragment> = listOf(BookingsFragment(BookingsFragment.BookingType.UPCOMING),
-            BookingsFragment(BookingsFragment.BookingType.CURRENT),
-            BookingsFragment(BookingsFragment.BookingType.PREVIOUS))
+    val fragments:List<Fragment> = listOf(BookingsFragment(BookingType.UPCOMING),
+            BookingsFragment(BookingType.CURRENT),
+            BookingsFragment(BookingType.PREVIOUS))
 
     override fun getItemCount(): Int {
         return fragments.size

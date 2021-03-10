@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
@@ -30,6 +31,8 @@ import com.braintreepayments.api.dropin.DropInRequest
 import com.braintreepayments.api.dropin.DropInResult
 import com.braintreepayments.api.exceptions.InvalidArgumentException
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
@@ -82,29 +85,32 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
 
 
     private fun startPaymentFlow() {
-        viewModelPayment.clientToken.reObserve(viewLifecycleOwner){
-            when (it) {
-                is State.Success -> {
-                    try {
-                        if(it.data!=null){
-                            showDropInPaymentWindow(it.data)
+        viewModelPayment.getClientToken()
+
+        lifecycleScope.launch {
+            viewModelPayment.clientToken.collect { state->
+                when (state) {
+                    is State.Success -> {
+                        try {
+                            state.data?.let { showDropInPaymentWindow(it) }
+
+
+                        } catch (e: InvalidArgumentException) {
+                            // There was an issue with your authorization string.
                         }
-                    } catch (e: InvalidArgumentException) {
-                        // There was an issue with your authorization string.
+
                     }
-
+                    is State.Loading -> {}
+                    is State.Error -> {}
                 }
-                is State.Loading -> {}
-                is State.Error -> {}
             }
-
         }
     }
 
-    private fun showDropInPaymentWindow(data: TokenResponse) {
+    private fun showDropInPaymentWindow(token:String) {
         val dropInRequest: DropInRequest = DropInRequest()
             .collectDeviceData(true)
-            .clientToken(data.token)
+            .clientToken(token)
         startActivityForResult(dropInRequest.getIntent(requireContext()), 1)
     }
 

@@ -10,3 +10,9 @@ data class ApiResult<out T>(
         @SerializedName("error")
          val error :String?)
 
+
+
+data class ApiError(
+        @SerializedName("error")
+        val message:String
+)
