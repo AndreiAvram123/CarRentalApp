@@ -6,9 +6,7 @@ data class APIResponse<out T>(
         @SerializedName("isSuccessful")
         val isSuccessful : Boolean,
         @SerializedName("data")
-        val data : T? ,
-        @SerializedName("error")
-         val error :String?)
+        val data : T )
 
 
 

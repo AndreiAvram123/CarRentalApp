@@ -22,21 +22,29 @@ class ViewModelBookings @Inject constructor(
         private val bookingsRepository: BookingsRepository
 ) : ViewModel() {
 
-    private val _bookings: MutableStateFlow<State<List<Booking>>> = MutableStateFlow(State.Loading)
+    private val _bookings: MutableStateFlow<State<List<Booking>>> by lazy {
+        MutableStateFlow<State<List<Booking>>>(State.Loading).also {
+            getBookings()
+        }
+    }
+
     val bookings: StateFlow<State<List<Booking>>>
         get() = _bookings
 
 
-    init {
+    private fun getBookings(){
         viewModelScope.launch {
-                bookingsRepository.fetchBookings().collect { state ->
-                        when (state) {
-                            is State.Error -> _bookings.emit(state)
-                            is State.Loading -> _bookings.emit(state)
-                            is State.Success -> State.Success(state.data?.map { it.toBooking() })
-                        }
+            bookingsRepository.fetchBookings().collect { state ->
+                when (state) {
+                    is State.Error -> _bookings.emit(state)
+                    is State.Loading -> _bookings.emit(state)
+                    is State.Success -> _bookings.emit(State.Success(state.data.map { it.toBooking() }))
                 }
+            }
         }
 
     }
+
+
+
 }

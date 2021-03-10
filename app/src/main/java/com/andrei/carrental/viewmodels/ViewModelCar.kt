@@ -42,9 +42,7 @@ class ViewModelCar @Inject constructor(
            addSource(currentSelectedDays){rentalPeriod ->
 
                val carState = currentSelectedCar.value
-               if(carState is State.Success
-                       && carState.data != null
-                       && rentalPeriod != null
+               if(carState is State.Success && rentalPeriod != null
                ){
                   value = calculateTotalAmount(rentalPeriod,carState.data.pricePerDay)
                    val list = mutableListOf<String>()
@@ -56,7 +54,7 @@ class ViewModelCar @Inject constructor(
                    val currentSelectedDaysValue = currentSelectedDays.value
                    if (currentSelectedDaysValue!= null &&
                            car is State.Success
-                           && car.data != null) {
+                   ) {
                                value = calculateTotalAmount(currentSelectedDaysValue, car.data.pricePerDay)
                    }
                }

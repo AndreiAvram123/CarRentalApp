@@ -34,7 +34,7 @@ class ViewModelPayment @Inject constructor(
         viewModelScope.launch {
             paymentRepository.fetchClientToken().collect { state->
                 when(state){
-                    is State.Success -> _clientToken.emit(State.Success(state.data?.token))
+                    is State.Success -> _clientToken.emit(State.Success(state.data.token))
                     is State.Error -> _clientToken.emit(State.Error(state.error))
                     else -> _clientToken.emit(State.Loading)
                 }

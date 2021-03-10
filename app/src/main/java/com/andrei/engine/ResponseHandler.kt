@@ -7,7 +7,7 @@ object ResponseHandler {
     private val TAG = ResponseHandler::class.java.simpleName
 
 
-    fun <T : Any> handleSuccess(data: T?): State<T> {
+    fun <T > handleSuccess(data: T): State<T> {
         return State.Success(data)
     }
 
