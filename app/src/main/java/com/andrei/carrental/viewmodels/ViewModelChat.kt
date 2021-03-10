@@ -79,15 +79,4 @@ class ViewModelChat @Inject constructor(
      get() = _messageToUnsendState
 
 
-    fun clearUnsendMessageState() {
-        viewModelScope.launch {
-            chatRepository.messageToUnsendState.emit(State.Default)
-        }
-    }
-    fun clearSendMessageState() {
-        viewModelScope.launch {
-            chatRepository.messageToUnsendState.emit(State.Default)
-        }
-    }
-
 }

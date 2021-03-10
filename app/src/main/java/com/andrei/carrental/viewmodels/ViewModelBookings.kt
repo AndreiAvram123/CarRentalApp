@@ -33,7 +33,6 @@ class ViewModelBookings @Inject constructor(
                         when (state) {
                             is State.Error -> _bookings.emit(state)
                             is State.Loading -> _bookings.emit(state)
-                            is State.Default -> _bookings.emit(state)
                             is State.Success -> State.Success(state.data?.map { it.toBooking() })
                         }
                 }

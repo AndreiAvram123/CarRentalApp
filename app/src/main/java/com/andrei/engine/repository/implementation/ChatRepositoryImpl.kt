@@ -28,10 +28,13 @@ class ChatRepositoryImpl @Inject constructor(
 ): ChatRepository {
 
 
-    override val messageToUnsendState:MutableSharedFlow<State<Message>>  =
-            MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST, extraBufferCapacity = 1)
+    override val messageToUnsendState:MutableSharedFlow<State<Message>>  = MutableSharedFlow(replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST )
 
-    override val messageToSendState: MutableStateFlow<State<Message>> = MutableStateFlow(State.Default)
+    override val messageToSendState: MutableSharedFlow<State<Message>> =  MutableSharedFlow(replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST )
 
 
     override suspend fun getInitialChatMessages(chatID:Long):List<Message>{
@@ -54,7 +57,6 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun unsendMessage(message: Message){
         callRunner.makeApiCall{ chatAPI.modifyMessage(message.messageID)}.collectLatest{ state->
             messageToUnsendState.emit(state)
-            messageToUnsendState.emit(State.Default)
         }
     }
 

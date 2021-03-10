@@ -12,7 +12,9 @@ import com.andrei.carrental.R
 import com.andrei.carrental.databinding.BottomSheetOptionsBinding
 import com.andrei.carrental.viewmodels.ViewModelChat
 import com.andrei.engine.State
+import com.andrei.utils.hide
 import com.andrei.utils.reObserve
+import com.andrei.utils.show
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -42,10 +44,7 @@ class OptionsMessageBottomSheet(
                 when(it){
                     is State.Loading ->
                         showLoading()
-                    is State.Success -> {
-                        closeSheet()
-                    }
-                    is State.Error ->{
+                    else -> {
                         closeSheet()
                     }
                 }
@@ -66,8 +65,8 @@ class OptionsMessageBottomSheet(
     }
      private fun showLoading(){
          binding.apply {
-             progressBar.visibility = View.VISIBLE
-             unsendBt.visibility = View.INVISIBLE
+             progressBar.show()
+             unsendBt.hide()
          }
     }
 
