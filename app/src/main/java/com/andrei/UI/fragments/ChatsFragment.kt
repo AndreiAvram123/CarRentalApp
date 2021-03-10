@@ -3,6 +3,7 @@ package com.andrei.UI.fragments
 import android.view.ViewTreeObserver
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -15,6 +16,8 @@ import com.andrei.engine.State
 import com.andrei.services.MessengerService
 import com.andrei.utils.reObserve
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -32,19 +35,27 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
     override fun initializeUI() {
 
          initializeRecyclerView()
+         initializeObservers()
+         viewModelChat.getUserChats()
 
-         viewModelChat.userChats.reObserve(viewLifecycleOwner){
-             when(it){
-                 is State.Success -> {
-                     if(it.data !=null){
-                         messengerService.configureChannels(it.data)
-                         messengerService.connect()
-                         chatsAdapter?.setData(messengerService.getObservableChats())
-                     }
-                 }
-             }
-         }
     }
+
+    private fun initializeObservers() {
+        lifecycleScope.launch {
+           viewModelChat.userChats.collect {
+               when(it){
+                   is State.Success -> {
+                       if(it.data !=null){
+                           messengerService.configureChannels(it.data)
+                           messengerService.connect()
+                           chatsAdapter?.setData(messengerService.getObservableChats())
+                       }
+                   }
+               }
+           }
+           }
+
+        }
 
 
     private fun goToMessagesFragment(chatID:Long){

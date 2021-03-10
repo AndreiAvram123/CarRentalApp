@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.dialogViewBinding
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
@@ -13,6 +14,9 @@ import com.andrei.carrental.viewmodels.ViewModelChat
 import com.andrei.engine.State
 import com.andrei.utils.reObserve
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class OptionsMessageBottomSheet(
         private val unsend: () -> Unit,
@@ -33,18 +37,21 @@ class OptionsMessageBottomSheet(
     }
 
     private fun attachObserver() {
-        viewModelChat.messageToUnsendState.reObserve(viewLifecycleOwner){
-            when(it){
-                is State.Loading ->
-                    showLoading()
-                is State.Success -> {
-                   closeSheet()
-                }
-                is State.Error ->{
-                   closeSheet()
+        lifecycleScope.launch {
+            viewModelChat.messageToUnsendState.collect {
+                when(it){
+                    is State.Loading ->
+                        showLoading()
+                    is State.Success -> {
+                        closeSheet()
+                    }
+                    is State.Error ->{
+                        closeSheet()
+                    }
                 }
             }
         }
+
     }
 
     private fun closeSheet(){

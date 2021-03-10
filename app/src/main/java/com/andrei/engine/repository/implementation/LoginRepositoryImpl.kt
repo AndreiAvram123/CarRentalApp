@@ -31,18 +31,6 @@ class LoginRepositoryImpl @Inject constructor(
     override val emailError:MutableStateFlow<String?> = MutableStateFlow(null)
     override val passwordError:MutableStateFlow<String?> = MutableStateFlow(null)
 
-    init {
-//        GlobalScope.launch {
-//        userManager.userLogedInObserver.asFlow().filterNotNull() .collect {
-//            if(it){
-//                loginFlowState.tryEmit(LoginFlowState.LoggedIn)
-//            }else{
-//                loginFlowState.tryEmit(LoginFlowState.NotLoggedIn)
-//            }
-//        }
-//        }
-    }
-
 
     override suspend fun startLoginFlow(email: String, password: String) {
 
@@ -50,7 +38,7 @@ class LoginRepositoryImpl @Inject constructor(
                 email = email,
                 password = password
         )
-       callRunner.makeApiCall(loginAPI.attemptLogin(loginRequest)){
+       callRunner.makeApiCall{loginAPI.attemptLogin(loginRequest)}.collect{
            when(it){
                is State.Success -> {
                    if (it.data != null) {

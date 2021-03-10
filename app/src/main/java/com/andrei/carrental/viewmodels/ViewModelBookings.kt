@@ -29,19 +29,14 @@ class ViewModelBookings @Inject constructor(
 
     init {
         viewModelScope.launch {
-            try {
                 bookingsRepository.fetchBookings().collect { state ->
-                    _bookings.emit(
                         when (state) {
-                            is State.Error -> state
-                            is State.Loading -> state
+                            is State.Error -> _bookings.emit(state)
+                            is State.Loading -> _bookings.emit(state)
+                            is State.Default -> _bookings.emit(state)
                             is State.Success -> State.Success(state.data?.map { it.toBooking() })
                         }
-                    )
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
         }
 
     }

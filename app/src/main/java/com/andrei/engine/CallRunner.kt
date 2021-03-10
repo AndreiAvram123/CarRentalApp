@@ -2,7 +2,7 @@ package com.andrei.engine
 
 import android.net.ConnectivityManager
 import com.andrei.engine.configuration.ApiError
-import com.andrei.engine.configuration.ApiResult
+import com.andrei.engine.configuration.APIResponse
 import com.andrei.utils.isNotConnected
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +12,7 @@ import retrofit2.Response
 import javax.inject.Inject
 
 
-typealias ServiceCall<DataType> = suspend () -> Response<ApiResult<DataType>>
+typealias ServiceCall<DataType> = suspend () -> Response<APIResponse<DataType>>
 
 
 

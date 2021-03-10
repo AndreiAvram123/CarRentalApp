@@ -8,6 +8,7 @@ import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.ChatRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,14 +20,27 @@ class ViewModelChat @Inject constructor(
 ) {
 
 
-   val userChats:LiveData<State<List<ChatDTO>>> by lazy {
-       chatRepository.userChats
-   }
+    private val _userChats:MutableStateFlow<State<List<ChatDTO>>>  = MutableStateFlow(State.Loading)
+
+    val userChats:StateFlow<State<List<ChatDTO>>>
+    get() = _userChats
 
    private val currentOpenedChat:MutableLiveData<Long> by lazy {
        MutableLiveData()
    }
 
+
+    fun getUserChats(){
+        viewModelScope.launch {
+            chatRepository.fetchUserChats().collect { state->
+                when(state){
+                    is State.Success -> _userChats.emit(State.Success(state.data))
+                    is State.Loading -> _userChats.emit(State.Loading)
+                    is State.Error -> _userChats.emit(State.Error(state.error))
+                }
+            }
+        }
+    }
 
 
     suspend fun getInitialChatMessages():List<Message>{
@@ -60,10 +74,20 @@ class ViewModelChat @Inject constructor(
        }
     }
 
-    private val _messageToUnsendState:ConsumeLiveData<State<Message>> by lazy {
-         chatRepository.messageToUnsendState
-     }
-     val messageToUnsendState:ConsumeLiveData<State<Message>>
+    private val _messageToUnsendState = chatRepository.messageToUnsendState
+     val messageToUnsendState:SharedFlow<State<Message>>
      get() = _messageToUnsendState
+
+
+    fun clearUnsendMessageState() {
+        viewModelScope.launch {
+            chatRepository.messageToUnsendState.emit(State.Default)
+        }
+    }
+    fun clearSendMessageState() {
+        viewModelScope.launch {
+            chatRepository.messageToUnsendState.emit(State.Default)
+        }
+    }
 
 }

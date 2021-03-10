@@ -57,7 +57,6 @@ class CarRepositoryImpl @Inject constructor(
         }.collect {
             searchSuggestions.postValue(it)
         }
-
         }
 
     private fun fetchCarById(id:Long) =

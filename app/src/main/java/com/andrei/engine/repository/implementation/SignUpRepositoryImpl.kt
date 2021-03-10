@@ -13,6 +13,7 @@ import com.andrei.engine.states.RegistrationFlowState
 import com.andrei.utils.isEmailValid
 import com.andrei.utils.isPasswordTooWeak
 import com.andrei.utils.isUsernameInvalid
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
@@ -35,7 +36,7 @@ class SignUpRepositoryImpl @Inject constructor(
             return result
         }
 
-        callRunner.makeApiCall(signUpAPI.checkIfUsernameIsAvailable(username)) {
+        callRunner.makeApiCall{signUpAPI.checkIfUsernameIsAvailable(username)}.collect {
             if (it is State.Success) {
                 if (it.data != null) {
                     result = when {
@@ -57,7 +58,7 @@ class SignUpRepositoryImpl @Inject constructor(
         if(!email.isEmailValid()) {
             return result
         }
-        callRunner.makeApiCall(signUpAPI.checkIfEmailIsAvailable(email)){
+        callRunner.makeApiCall{signUpAPI.checkIfEmailIsAvailable(email)}.collect{
             if(it is State.Success && it.data != null){
                 result = when{
                     it.data.valid -> EmailValidationState.Valid
@@ -84,7 +85,7 @@ class SignUpRepositoryImpl @Inject constructor(
                 email = email,
                 password = password
         )
-         callRunner.makeApiCall(signUpAPI.register(registerRequest)){
+         callRunner.makeApiCall{signUpAPI.register(registerRequest)}.collect{
              when(it){
                  is State.Success -> registrationState.postValue(RegistrationFlowState.Finished)
                  is State.Loading -> registrationState.postValue(RegistrationFlowState.Loading)

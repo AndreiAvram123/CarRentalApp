@@ -5,11 +5,15 @@ import com.andrei.carrental.entities.Message
 import com.andrei.carrental.helpers.ConsumeLiveData
 import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.State
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 interface ChatRepository {
-    val userChats: LiveData<State<List<ChatDTO>>>
-    val messageToUnsendState: ConsumeLiveData<State<Message>>
+    val messageToUnsendState: MutableSharedFlow<State<Message>>
     suspend fun getInitialChatMessages(chatID: Long): List<Message>
     suspend fun sendMessage(text: String, currentChatID: Long)
     suspend fun unsendMessage(message:Message)
+    suspend fun fetchUserChats(): Flow<State<List<ChatDTO>>>
+    val messageToSendState: MutableStateFlow<State<Message>>
 }
