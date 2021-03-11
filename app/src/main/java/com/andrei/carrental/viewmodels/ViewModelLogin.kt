@@ -1,24 +1,23 @@
 package com.andrei.carrental.viewmodels
 
 import androidx.lifecycle.*
+import com.andrei.UI.FieldValidation
 import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.states.LoginFlowState
-import com.andrei.utils.isEmailValid
+import com.andrei.utils.isEmailInvalid
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ViewModelAuth  @Inject constructor(
+class ViewModelLogin  @Inject constructor(
         private val loginRepository: LoginRepository
 ):   ViewModel() {
 
 
     private val _emailEntered : MutableStateFlow<String?> = MutableStateFlow(null)
     private val _passwordEntered : MutableStateFlow<String?>  = MutableStateFlow(null)
-
-
 
 
 
@@ -34,66 +33,71 @@ class ViewModelAuth  @Inject constructor(
     }
 
 
+    private val _validationEmail:MutableStateFlow<FieldValidation> = MutableStateFlow(FieldValidation.Unvalidated)
 
-    private val _errorEmail : Flow<String?>  = combine(_emailEntered.filterNotNull(),loginRepository.emailError ) {
-        email, emailError ->
+    val errorEmail:StateFlow<FieldValidation>
+    get() = _validationEmail
+
+
+    private val _validationPassword:MutableStateFlow<FieldValidation> = MutableStateFlow(FieldValidation.Unvalidated)
+
+    val errorPassword:StateFlow<FieldValidation>
+    get() = _validationPassword
+
+
+    private val passwordValidationFlow :Flow<FieldValidation> = combine(_passwordEntered.filterNotNull() ,loginRepository.loginFlowState){
+            password,loginState ->
         when{
-            !email.isEmailValid() -> errorInvalidEmailFormat
-            !emailError.isNullOrBlank() -> emailError
-            else -> null
+            password.isBlank() -> FieldValidation.Invalid(errorPasswordBlank)
+            loginState is LoginFlowState.LoginError.IncorrectPassword ->FieldValidation.Invalid(loginState.error)
+            else-> FieldValidation.Valid
+        }
+    }
+    private val emailValidationFlow :Flow<FieldValidation> = combine(_emailEntered.filterNotNull(),loginRepository.loginFlowState ) {
+            email, loginState ->
+        when{
+            email.isEmailInvalid() -> FieldValidation.Invalid(errorInvalidEmailFormat)
+            loginState is LoginFlowState.LoginError.IncorrectEmail -> FieldValidation.Invalid(loginState.error)
+            else -> FieldValidation.Valid
         }
     }
 
-    private val _errorPassword :Flow<String?> = combine(_passwordEntered.filterNotNull() ,loginRepository.passwordError){
-        password,loginState ->
-         when{
-             password.isBlank() -> errorPasswordBlank
-             !loginState.isNullOrBlank() ->loginState
-             else-> null
-         }
-
-    }
-
-    val errorEmail:LiveData<String?>
-    get() = _errorEmail.asLiveData(viewModelScope.coroutineContext)
-
-    val errorPassword:LiveData<String?>
-    get() = _errorPassword.asLiveData(viewModelScope.coroutineContext)
-
-    private val _startLoginFlow :Flow<Boolean> = combine(
-            _errorEmail,_errorPassword
-    ){
-        errorE,errorP -> errorE == null && errorP == null
-    }
 
 
-    init {
-        viewModelScope.launch {
-           _startLoginFlow.collect {
-                if (it) {
-                    val email = _emailEntered.value
-                    val password = _passwordEntered.value
-                    check(email != null) { "Login flow should not be started with null email, the email might have been changed in another thread" }
-                    check(password != null) { "Login flow should not be started with null password, the passwod might have been changed in another thread" }
-                    loginRepository.startLoginFlow(email, password)
-                }
-            }
-        }
-    }
 
 
     fun signOut(){
         loginRepository.signOut()
     }
 
-    fun setEmail(email:String){
+    init {
         viewModelScope.launch {
-            _emailEntered.emit(email)
+            emailValidationFlow.collect {
+                _validationEmail.emit(it)
+            }
+        }
+        viewModelScope.launch {
+            passwordValidationFlow.collect {
+                _validationPassword.emit(it)
+            }
         }
     }
 
-    fun setPassword(password:String){
-        _passwordEntered.tryEmit(password)
+    fun login(email:String,password: String){
+        viewModelScope.launch {
+            _emailEntered.emit(email)
+            _passwordEntered.emit(password)
+
+            combine(
+                emailValidationFlow, passwordValidationFlow
+            ){
+                    validationE,validationP-> validationE is FieldValidation.Valid && validationP is FieldValidation.Valid
+            }.collectLatest {
+                if (it) {
+                    loginRepository.startLoginFlow(email, password)
+                }
+            }
+        }
     }
 
 
