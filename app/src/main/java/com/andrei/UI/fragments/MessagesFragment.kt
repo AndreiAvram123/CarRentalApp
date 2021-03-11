@@ -99,6 +99,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
          easyImage.handleActivityResult(requestCode,resultCode,data,requireActivity(), object : DefaultCallback() {
              override fun onMediaFilesPicked(imageFiles: Array<MediaFile>, source: MediaSource) {
                  imagesToSend.addAll(imageFiles)
+                 pushFromImageQueue()
              }
          })
     }
@@ -175,11 +176,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
         }
     }
 
-
-    override fun onResume() {
-        super.onResume()
-        pushFromImageQueue()
-    }
 
     private fun configureRV() {
         binding.messagesList.setAdapter(messagesAdapter)
