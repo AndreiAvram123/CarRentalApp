@@ -16,6 +16,5 @@ interface ChatRepository {
     suspend fun sendMessage(createMessageRequest: CreateMessageRequest)
     suspend fun unsendMessage(message:Message)
     suspend fun fetchUserChats(): Flow<State<List<ChatDTO>>>
-    val textMessageToSendMessage: MutableSharedFlow<State<Message>>
-    val imageMessageToSendMessage: MutableSharedFlow<State<Message>>
+    val messageToSendState: MutableSharedFlow<State<Message>>
 }

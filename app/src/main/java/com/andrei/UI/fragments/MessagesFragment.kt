@@ -46,6 +46,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
     private val binding:FragmentMessagesBinding by viewBinding ()
     private val viewModelChat:ViewModelChat by activityViewModels()
+
     private val navArgs:MessagesFragmentArgs by navArgs()
     private var skipScroll: Boolean = false
 
@@ -58,7 +59,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     @Inject
     lateinit var userDataManager: UserDataManager
 
-    private val imagesToSend = LinkedList<MediaFile>()
 
     private val bottomSheet:OptionsMessageBottomSheet by lazy {
         OptionsMessageBottomSheet(this::unsendMessage, this::sheetClosed).apply {
@@ -98,11 +98,11 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
          easyImage.handleActivityResult(requestCode,resultCode,data,requireActivity(), object : DefaultCallback() {
              override fun onMediaFilesPicked(imageFiles: Array<MediaFile>, source: MediaSource) {
-                 imagesToSend.addAll(imageFiles)
-                 pushFromImageQueue()
+                 viewModelChat.sendImages(imageFiles.asList(),navArgs.chatID,userDataManager.getUserID())
              }
          })
     }
+
 
     private fun getAdapterHolders():MessageHolders{
         val messageHolders = MessageHolders()
@@ -117,11 +117,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
         return messageHolders
     }
 
-    private fun pushFromImageQueue() {
-        imagesToSend.poll()?.let {
-            sendImageMessage(it)
-        }
-    }
     private fun unsendMessage(){
         val messages =   messagesAdapter.selectedMessages.first()
         messagesAdapter.unselectAllItems()
@@ -151,13 +146,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
                 binding.toolbar.subtitle = "Online"
             } else {
                 binding.toolbar.subtitle = "Offline"
-            }
-        }
-        lifecycleScope.launchWhenResumed {
-            viewModelChat.imageMessageToSendState.collect {
-                 if(it is State.Success){
-                      pushFromImageQueue()
-                 }
             }
         }
     }
@@ -205,17 +193,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
         viewModelChat.sendMessage(createMessageModel)
     }
 
-    private fun sendImageMessage(imageFile:MediaFile) = lifecycleScope.launchWhenResumed {
-            val drawable = imageFile.file.toUri().toDrawable(requireContext())
-            val base64Image = drawable.toBase64()
-           val createMessageModel = CreateMessageRequest(
-                senderID = userDataManager.getUserID(),
-                chatID = navArgs.chatID,
-                messageType = MessageType.MESSAGE_IMAGE,
-                mediaData = base64Image
-        )
-        viewModelChat.sendMessage(createMessageModel)
-    }
 
 
     private fun attachListeners() {

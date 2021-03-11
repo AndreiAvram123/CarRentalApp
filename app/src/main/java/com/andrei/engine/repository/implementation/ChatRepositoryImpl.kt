@@ -28,12 +28,7 @@ class ChatRepositoryImpl @Inject constructor(
             extraBufferCapacity = 1,
             onBufferOverflow = BufferOverflow.DROP_OLDEST )
 
-    override val textMessageToSendMessage: MutableSharedFlow<State<Message>> =  MutableSharedFlow(replay = 0,
-            extraBufferCapacity = 1,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST )
-
-    override val imageMessageToSendMessage: MutableSharedFlow<State<Message>> =  MutableStateFlow(State.Default)
-
+    override val messageToSendState: MutableStateFlow<State<Message>> = MutableStateFlow(State.Default)
 
     override suspend fun getInitialChatMessages(chatID:Long):List<Message>{
        return  messageDao.findLastChatMessages(chatID)
@@ -43,10 +38,7 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun sendMessage(createMessageRequest: CreateMessageRequest){
 
          callRunner.makeApiCall { chatAPI.postMessage(createMessageRequest) }.collect {
-            when(createMessageRequest.messageType){
-                 MessageType.MESSAGE_IMAGE -> imageMessageToSendMessage.emit(it)
-                  MessageType.MESSAGE_TEXT -> textMessageToSendMessage.emit(it)
-            }
+              messageToSendState.emit(it)
         }
     }
 
