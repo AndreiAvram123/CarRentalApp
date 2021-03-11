@@ -5,11 +5,12 @@ import android.view.View
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import com.andrei.UI.helpers.PermissionHandlerFragment
-import dagger.hilt.android.AndroidEntryPoint
 
 abstract class BaseFragment (layoutID:Int) : Fragment(layoutID) {
 
     protected lateinit var permissionHandlerFragment : PermissionHandlerFragment
+
+
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

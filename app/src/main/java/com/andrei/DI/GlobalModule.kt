@@ -18,6 +18,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import pl.aprilapps.easyphotopicker.ChooserType
 import pl.aprilapps.easyphotopicker.EasyImage
 import javax.inject.Singleton
 
@@ -36,7 +37,8 @@ class GlobalModule {
 
     @Singleton
     @Provides
-    fun provideEasyImage(@ApplicationContext context: Context):EasyImage = EasyImage.Builder(context).setFolderName("Car Rental").allowMultiple(true).build()
+    fun provideEasyImage(@ApplicationContext context: Context):EasyImage =
+            EasyImage.Builder(context).setFolderName("Car Rental").allowMultiple(true).setChooserType(ChooserType.CAMERA_AND_GALLERY).build()
 
 
     @Provides

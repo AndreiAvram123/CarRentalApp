@@ -1,7 +1,10 @@
 package com.andrei.UI.fragments
 
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +21,7 @@ import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.viewmodels.ViewModelChat
 import com.andrei.services.MessengerService
+import com.andrei.utils.isResultOk
 import com.andrei.utils.loadFromURl
 import com.andrei.utils.reObserve
 import com.stfalcon.chatkit.commons.ImageLoader
@@ -26,9 +30,12 @@ import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
+import pl.aprilapps.easyphotopicker.MediaFile
+import pl.aprilapps.easyphotopicker.MediaSource
+import timber.log.Timber
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
@@ -42,13 +49,12 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     @Inject
     lateinit var easyImage: EasyImage
 
-
-
     @Inject
     lateinit var messengerService: MessengerService
 
     @Inject
     lateinit var userDataManager: UserDataManager
+
 
     private val bottomSheet:OptionsMessageBottomSheet by lazy {
         OptionsMessageBottomSheet(this::unsendMessage, this::sheetClosed).apply {
@@ -66,8 +72,9 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
 
     private val messagesAdapter:MessagesListAdapter<Message> by lazy {
-        MessagesListAdapter<Message>(userDataManager.getUserID().toString(),
-                getAdapterHolders(),imageLoader)
+        MessagesListAdapter<Message>(userDataManager.getUserID().toString(), getAdapterHolders(),imageLoader).apply {
+            enableSelectionMode(CustomSelectionListener(userDataManager.getUserID().toString()))
+        }
     }
 
 
@@ -84,6 +91,14 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+         easyImage.handleActivityResult(requestCode,resultCode,data,requireActivity(), object : DefaultCallback() {
+             override fun onMediaFilesPicked(imageFiles: Array<MediaFile>, source: MediaSource) {
+                Timber.d(imageFiles.toString())
+             }
+         })
+    }
+
     private fun getAdapterHolders():MessageHolders{
         return MessageHolders()
                 .registerContentType(
@@ -94,13 +109,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
                         R.layout.item_custom_outcoming_unsend_message,
                         this@MessagesFragment)
 
-    }
-
-
-    private fun configureMessageAdapter() {
-            messagesAdapter.apply {
-                enableSelectionMode(CustomSelectionListener(userDataManager.getUserID().toString()))
-            }
     }
 
     private fun unsendMessage(){
@@ -121,7 +129,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
         viewModelChat.setCurrentOpenedChatID(navArgs.chatID)
         configureToolbar()
         configureRV()
-        configureMessageAdapter()
         populateRVWithData()
         attachListeners()
         attachObservers()
@@ -175,6 +182,9 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
         binding.inputMessage.setInputListener {
             viewModelChat.sendMessage(it.toString())
             true
+        }
+        binding.inputMessage.setAttachmentsListener {
+            easyImage.openChooser(this)
         }
     }
 
