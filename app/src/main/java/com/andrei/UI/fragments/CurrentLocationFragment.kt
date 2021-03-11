@@ -98,8 +98,8 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
             val tempMap = map
                 if(stateCarsToRent is State.Success && tempMap != null){
                     stateCarsToRent.data?.forEach {
-                        if (it.images.isNotEmpty()) {
-                            fetchBitmap(requireContext(), it.images.first().imagePath) { bitmap ->
+                        if (it.mediaFiles.isNotEmpty()) {
+                            fetchBitmap(requireContext(), it.mediaFiles.first().mediaURL) { bitmap ->
                                 addMarkerToMap(it.location,bitmap,it.id)
 
                             }

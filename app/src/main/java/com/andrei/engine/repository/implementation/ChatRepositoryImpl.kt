@@ -2,6 +2,7 @@ package com.andrei.engine.repository.implementation
 
 import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.entities.Message
+import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.CallRunner
 import com.andrei.engine.DTOEntities.ChatDTO
@@ -27,9 +28,11 @@ class ChatRepositoryImpl @Inject constructor(
             extraBufferCapacity = 1,
             onBufferOverflow = BufferOverflow.DROP_OLDEST )
 
-    override val messageToSendState: MutableSharedFlow<State<Message>> =  MutableSharedFlow(replay = 0,
+    override val textMessageToSendMessage: MutableSharedFlow<State<Message>> =  MutableSharedFlow(replay = 0,
             extraBufferCapacity = 1,
             onBufferOverflow = BufferOverflow.DROP_OLDEST )
+
+    override val imageMessageToSendMessage: MutableSharedFlow<State<Message>> =  MutableStateFlow(State.Default)
 
 
     override suspend fun getInitialChatMessages(chatID:Long):List<Message>{
@@ -37,15 +40,13 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun sendMessage(text: String, currentChatID: Long){
+    override suspend fun sendMessage(createMessageRequest: CreateMessageRequest){
 
-        val requestModel = CreateMessageRequest(
-                content = text,
-                senderID = userDataManager.getUserID(),
-                chatID = currentChatID
-        )
-         callRunner.makeApiCall { chatAPI.postMessage(requestModel) }.collect {
-            messageToSendState.emit(it)
+         callRunner.makeApiCall { chatAPI.postMessage(createMessageRequest) }.collect {
+            when(createMessageRequest.messageType){
+                 MessageType.MESSAGE_IMAGE -> imageMessageToSendMessage.emit(it)
+                  MessageType.MESSAGE_TEXT -> textMessageToSendMessage.emit(it)
+            }
         }
     }
 
@@ -61,14 +62,12 @@ class ChatRepositoryImpl @Inject constructor(
         flow.collect {
             if (it is State.Success) {
                 //insert into room
-                if (it.data != null) {
-                    messageDao.clean()
-                    it.data.forEach { chatDTO ->
-                        val messages = chatDTO.lastMessages.map { messageDTO ->
-                            messageDTO.toMessage()
-                        }
-                        messageDao.insertMessages(messages)
+                messageDao.clean()
+                it.data.forEach { chatDTO ->
+                    val messages = chatDTO.lastMessages.map { messageDTO ->
+                        messageDTO.toMessage()
                     }
+                    messageDao.insertMessages(messages)
                 }
             }
         }

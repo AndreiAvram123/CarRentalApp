@@ -1,6 +1,6 @@
 package com.andrei.engine.DTOEntities
 
-import com.andrei.carrental.entities.Image
+import com.andrei.carrental.entities.MediaFile
 import com.andrei.carrental.entities.User
 import com.google.gson.annotations.SerializedName
 
@@ -12,7 +12,7 @@ data class UserDTO(
         @SerializedName("email")
         val email:String,
         @SerializedName("profilePicture")
-        val profilePicture:Image?
+        val profilePicture:MediaFile?
 )
 
 fun UserDTO.toUser():User{

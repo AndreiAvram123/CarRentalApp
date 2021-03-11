@@ -3,9 +3,8 @@ package com.andrei.UI.fragments
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -20,21 +19,25 @@ import com.andrei.carrental.databinding.FragmentMessagesBinding
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.viewmodels.ViewModelChat
+import com.andrei.engine.State
 import com.andrei.services.MessengerService
-import com.andrei.utils.isResultOk
 import com.andrei.utils.loadFromURl
 import com.andrei.utils.reObserve
+import com.andrei.utils.toBase64
+import com.andrei.utils.toDrawable
+import com.andreia.carrental.requestModels.CreateMessageRequest
 import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessageHolders
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
 import pl.aprilapps.easyphotopicker.MediaFile
 import pl.aprilapps.easyphotopicker.MediaSource
-import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -55,6 +58,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     @Inject
     lateinit var userDataManager: UserDataManager
 
+    private val imagesToSend = LinkedList<MediaFile>()
 
     private val bottomSheet:OptionsMessageBottomSheet by lazy {
         OptionsMessageBottomSheet(this::unsendMessage, this::sheetClosed).apply {
@@ -94,23 +98,29 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
          easyImage.handleActivityResult(requestCode,resultCode,data,requireActivity(), object : DefaultCallback() {
              override fun onMediaFilesPicked(imageFiles: Array<MediaFile>, source: MediaSource) {
-                Timber.d(imageFiles.toString())
+                 imagesToSend.addAll(imageFiles)
              }
          })
     }
 
     private fun getAdapterHolders():MessageHolders{
-        return MessageHolders()
-                .registerContentType(
-                        MessageType.MESSAGE_UNSENT.id.toByte(),
-                        IncomingUnsendMessageViewHolder::class.java,
-                        R.layout.item_custom_incoming_unsend_message,
-                        OutgoingMessageViewHolder::class.java,
-                        R.layout.item_custom_outcoming_unsend_message,
-                        this@MessagesFragment)
+        val messageHolders = MessageHolders()
+        messageHolders.registerContentType(
+                MessageType.MESSAGE_UNSENT.id.toByte(),
+                IncomingUnsendMessageViewHolder::class.java,
+                R.layout.item_custom_incoming_unsend_message,
+                OutgoingMessageViewHolder::class.java,
+                R.layout.item_custom_outcoming_unsend_message,
+                this@MessagesFragment)
 
+        return messageHolders
     }
 
+    private fun pushFromImageQueue() {
+        imagesToSend.poll()?.let {
+            sendImageMessage(it)
+        }
+    }
     private fun unsendMessage(){
         val messages =   messagesAdapter.selectedMessages.first()
         messagesAdapter.unselectAllItems()
@@ -142,6 +152,13 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
                 binding.toolbar.subtitle = "Offline"
             }
         }
+        lifecycleScope.launchWhenResumed {
+            viewModelChat.imageMessageToSendState.collect {
+                 if(it is State.Success){
+                      pushFromImageQueue()
+                 }
+            }
+        }
     }
 
     private fun configureToolbar() {
@@ -159,6 +176,10 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     }
 
 
+    override fun onResume() {
+        super.onResume()
+        pushFromImageQueue()
+    }
 
     private fun configureRV() {
         binding.messagesList.setAdapter(messagesAdapter)
@@ -178,9 +199,32 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
 
 
+    private fun sendTextMessage(messageText:String){
+        val createMessageModel = CreateMessageRequest(
+                senderID = userDataManager.getUserID(),
+                chatID = navArgs.chatID,
+                messageType = MessageType.MESSAGE_TEXT,
+                textContent = messageText
+        )
+        viewModelChat.sendMessage(createMessageModel)
+    }
+
+    private fun sendImageMessage(imageFile:MediaFile) = lifecycleScope.launchWhenResumed {
+            val drawable = imageFile.file.toUri().toDrawable(requireContext())
+            val base64Image = drawable.toBase64()
+           val createMessageModel = CreateMessageRequest(
+                senderID = userDataManager.getUserID(),
+                chatID = navArgs.chatID,
+                messageType = MessageType.MESSAGE_IMAGE,
+                mediaData = base64Image
+        )
+        viewModelChat.sendMessage(createMessageModel)
+    }
+
+
     private fun attachListeners() {
         binding.inputMessage.setInputListener {
-            viewModelChat.sendMessage(it.toString())
+            sendTextMessage(it.toString())
             true
         }
         binding.inputMessage.setAttachmentsListener {
@@ -227,6 +271,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
          }
         return false
     }
+
 }
 
 

@@ -8,29 +8,41 @@ import java.util.*
 
 @Entity
 data class Message(
-    @PrimaryKey
+        @PrimaryKey
     @ColumnInfo(name = "messageID")
     val messageID:Long,
-    @ColumnInfo(name = "content")
-    val content:String,
-    @ColumnInfo(name = "date")
+        @ColumnInfo(name = "content")
+    val textContent:String?,
+        @ColumnInfo(name = "date")
     val date:Long,
-    @Embedded
+        @Embedded
     val sender:User,
-    @ColumnInfo(name = "chatID")
+        @ColumnInfo(name = "chatID")
     val chatID:Long,
-    @ColumnInfo(name = "type")
-    var messageType:MessageType
-):IMessage, MessageContentType{
+        @ColumnInfo(name=  "mediaURL")
+    val mediaURL:String?,
+        @ColumnInfo(name = "type")
+        var messageType:MessageType,
+
+):IMessage, MessageContentType,MessageContentType.Image{
 
     @Ignore
-    override fun getText(): String  = content
+    override fun getText(): String  = textContent ?: ""
     @Ignore
     override fun getCreatedAt(): Date = Date(date)
     @Ignore
     override fun getId(): String  = messageID.toString()
     @Ignore
     override fun getUser(): IUser = sender
+
+    @Ignore
+    override fun getImageUrl(): String? {
+        return if(messageType == MessageType.MESSAGE_IMAGE){
+            mediaURL
+        }
+        else null
+    }
+
 
 }
 

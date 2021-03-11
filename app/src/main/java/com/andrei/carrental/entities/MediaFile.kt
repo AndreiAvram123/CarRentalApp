@@ -2,7 +2,7 @@ package com.andrei.carrental.entities
 
 import com.google.gson.annotations.SerializedName
 
-data class Image(
-        @SerializedName("imagePath")
-        val imagePath :String
+data class MediaFile(
+        @SerializedName("mediaURL")
+        val mediaURL :String
 )

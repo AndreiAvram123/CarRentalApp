@@ -1,7 +1,7 @@
 package com.andrei.carrental.room
 
 import androidx.room.TypeConverter
-import com.andrei.carrental.entities.Image
+import com.andrei.carrental.entities.MediaFile
 import com.andrei.carrental.entities.MessageType
 
 class RoomConverters {
@@ -25,12 +25,12 @@ class RoomConverters {
     }
 
     @TypeConverter
-    fun fromImagePathToImage(imagePath:String?):Image?{
-        return imagePath?.let {  Image(it) }
+    fun fromImagePathToImage(imagePath:String?):MediaFile?{
+        return imagePath?.let {  MediaFile(it) }
     }
 
     @TypeConverter
-    fun fromImageFromPath(image: Image?):String?{
-        return image?.imagePath
+    fun fromImageFromPath(mediaFile: MediaFile?):String?{
+        return mediaFile?.mediaURL
     }
 }

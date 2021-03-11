@@ -11,7 +11,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentExpandedCarBinding
 import com.andrei.carrental.entities.Car
-import com.andrei.carrental.entities.Image
+import com.andrei.carrental.entities.MediaFile
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.engine.DTOEntities.toLatLng
 import com.andrei.engine.State
@@ -95,7 +95,7 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
                 state.data?.let {
                     binding.car = it
                     initializeMap()
-                    updateCarouselVies(it.images)
+                    updateCarouselVies(it.mediaFiles)
                     binding.isLoading = false
                 }
             }
@@ -108,11 +108,11 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
         }
     }
 
-   private  fun updateCarouselVies(images:List<Image>){
+   private  fun updateCarouselVies(mediaFiles:List<MediaFile>){
         binding.carouselCarExpanded.apply {
-            size = images.size
+            size = mediaFiles.size
             setCarouselViewListener { view, position ->
-                view.findViewById<ImageView>(R.id.image_item_carousel).loadFromURl(images[position].imagePath)
+                view.findViewById<ImageView>(R.id.image_item_carousel).loadFromURl(mediaFiles[position].mediaURL)
             }
             show()
         }

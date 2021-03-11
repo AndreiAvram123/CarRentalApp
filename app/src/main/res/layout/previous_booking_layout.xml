@@ -45,7 +45,7 @@
             android:id="@+id/iv_car_booking"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            app:imageFromURL="@{booking.car.images[0]}"
+            app:imageFromURL="@{booking.car.mediaFiles[0]}"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="24dp"

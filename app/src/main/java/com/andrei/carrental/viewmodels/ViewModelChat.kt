@@ -2,10 +2,10 @@ package com.andrei.carrental.viewmodels
 
 import androidx.lifecycle.*
 import com.andrei.carrental.entities.Message
-import com.andrei.carrental.helpers.ConsumeLiveData
 import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.ChatRepository
+import com.andreia.carrental.requestModels.CreateMessageRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -28,6 +28,19 @@ class ViewModelChat @Inject constructor(
    private val currentOpenedChat:MutableLiveData<Long> by lazy {
        MutableLiveData()
    }
+
+    private val _messageToUnsendState = chatRepository.messageToUnsendState
+    val messageToUnsendState:SharedFlow<State<Message>>
+        get() = _messageToUnsendState
+
+
+    private val _textMessageToSendState = chatRepository.textMessageToSendMessage
+    val messageToSendState:SharedFlow<State<Message>>
+        get() = _textMessageToSendState
+
+    private val _imageMessageToSendState = chatRepository.imageMessageToSendMessage
+    val imageMessageToSendState:SharedFlow<State<Message>>
+        get() = _imageMessageToSendState
 
 
     fun getUserChats(){
@@ -57,15 +70,13 @@ class ViewModelChat @Inject constructor(
     }
 
 
-    fun sendMessage(text:String){
-        val currentChatID = currentOpenedChat.value
-        if( currentChatID !=null){
+
+
+    fun sendMessage(createMessageRequest: CreateMessageRequest){
              viewModelScope.launch {
-                 chatRepository.sendMessage(text,currentChatID)
-             }
+                 chatRepository.sendMessage(createMessageRequest)
         }
     }
-
 
 
     fun unsendMessage(message:Message){
@@ -74,9 +85,6 @@ class ViewModelChat @Inject constructor(
        }
     }
 
-    private val _messageToUnsendState = chatRepository.messageToUnsendState
-     val messageToUnsendState:SharedFlow<State<Message>>
-     get() = _messageToUnsendState
 
 
 }

@@ -8,7 +8,7 @@ data class Car(
         @SerializedName("id")
         val id:Long,
         @SerializedName("images")
-        val images:List<Image>,
+        val mediaFiles:List<MediaFile>,
         @SerializedName("pricePerDay")
         val pricePerDay:Double,
         @SerializedName("basicUser")
