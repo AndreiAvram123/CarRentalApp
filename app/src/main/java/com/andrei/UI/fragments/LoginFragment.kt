@@ -31,7 +31,7 @@ class LoginFragment :Fragment(R.layout.fragment_login_layout) {
     }
 
     private fun attachObservers() {
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenResumed {
             viewModelLogin.errorEmail.collect {
                 when (it) {
                     is FieldValidation.Invalid -> binding.errorEmail = it.error
