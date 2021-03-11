@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -13,9 +14,11 @@ import com.andrei.UI.helpers.InternetConnectionHandler
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
 import com.andrei.carrental.viewmodels.ViewModelLogin
+import com.andrei.engine.helpers.SessionManager
 import com.andrei.services.MessengerService
 import com.andrei.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,15 +27,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private  val binding:ActivityMainBinding by viewBinding()
     private lateinit var navController:NavController
-    private val  viewModelLogin:ViewModelLogin by viewModels()
     private var internetConnectionHandler:InternetConnectionHandler? = null
 
-
-    private val observerUserLoggedIn = Observer<ViewModelLogin.AuthenticationState>{
-        if(it ==  ViewModelLogin.AuthenticationState.NOT_AUTHENTICATED){
-            startNewActivity<LoginFlowActivity>()
-        }
-    }
 
    @Inject
    lateinit var locationSettingsHandler: LocationSettingsHandler
@@ -40,13 +36,29 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
    @Inject
    lateinit var messengerService: MessengerService
 
+   @Inject
+   lateinit var sessionManager: SessionManager
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
          setUpNavigation()
         attachLocationObserver()
-        viewModelLogin.authenticationState.reObserve(this,observerUserLoggedIn)
+        attachObservers()
     }
+
+    private fun attachObservers() {
+      attachLocationObserver()
+       lifecycleScope.launchWhenResumed {
+           sessionManager.authenticationState.collect {
+               if(it ==  SessionManager.AuthenticationState.NOT_AUTHENTICATED){
+                   startNewActivity<LoginFlowActivity>()
+               }
+           }
+       }
+    }
+
+
 
     private fun startInternetConnectionHandler() {
         internetConnectionHandler = InternetConnectionHandler(navController, this.getConnectivityManager())

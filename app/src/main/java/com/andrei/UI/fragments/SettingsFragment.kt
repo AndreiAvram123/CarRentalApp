@@ -6,19 +6,21 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.andrei.carrental.R
 import com.andrei.carrental.viewmodels.ViewModelLogin
+import com.andrei.engine.helpers.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
 
-
-    private val viewModelLogin:ViewModelLogin by activityViewModels()
+    @Inject
+    lateinit var sessionManager: SessionManager
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         val logoutPreference: Preference? = findPreference("sign_out")
          logoutPreference?.setOnPreferenceClickListener {
-             viewModelLogin.signOut()
+             sessionManager.signOut()
              true
        }
     }

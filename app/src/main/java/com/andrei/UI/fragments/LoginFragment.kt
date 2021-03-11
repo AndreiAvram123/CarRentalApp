@@ -12,6 +12,8 @@ import com.andrei.UI.FieldValidation
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentLoginLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelLogin
+import com.andrei.engine.helpers.SessionManager
+import com.andrei.engine.states.LoginFlowState
 import com.andrei.utils.reObserve
 import com.andrei.utils.text
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,7 +41,7 @@ class LoginFragment :Fragment(R.layout.fragment_login_layout) {
                 }
             }
         }
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenResumed {
             viewModelLogin.errorPassword.collect {
                 when (it) {
                     is FieldValidation.Invalid -> binding.errorPassword = it.error
@@ -48,8 +50,10 @@ class LoginFragment :Fragment(R.layout.fragment_login_layout) {
             }
         }
 
-        viewModelLogin.authenticationState.reObserve(viewLifecycleOwner) {
-            binding.isAuthenticationInProgress = it == ViewModelLogin.AuthenticationState.AUTHENTICATING
+        lifecycleScope.launchWhenResumed {
+            viewModelLogin.loginFlowState.collect {
+                binding.isAuthenticationInProgress = it == LoginFlowState.Loading
+            }
         }
     }
 

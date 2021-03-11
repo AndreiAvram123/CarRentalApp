@@ -7,21 +7,29 @@ import com.andrei.utils.startNewActivity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
+import com.andrei.engine.helpers.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplashScreenActivity : AppCompatActivity() {
-    private val viewModelLogin:ViewModelLogin by viewModels()
+
+    @Inject
+     lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
-        viewModelLogin.authenticationState.reObserve(this){
-            if(it == ViewModelLogin.AuthenticationState.NOT_AUTHENTICATED){
-                startNewActivity<LoginFlowActivity>()
-            }
-            if(it == ViewModelLogin.AuthenticationState.AUTHENTICATED){
-                startNewActivity<MainActivity>()
+        lifecycleScope.launchWhenResumed {
+            sessionManager.authenticationState.collect {
+                if (it == SessionManager.AuthenticationState.NOT_AUTHENTICATED) {
+                    startNewActivity<LoginFlowActivity>()
+                }
+                if (it == SessionManager.AuthenticationState.AUTHENTICATED) {
+                    startNewActivity<MainActivity>()
+                }
             }
         }
     }

@@ -13,15 +13,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
+import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.databinding.FragmentConfirmSelectionBinding
 import com.andrei.carrental.entities.BookingDate
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelPayment
 import com.andrei.engine.State
-import com.andrei.engine.helpers.UserManager
+import com.andrei.engine.helpers.SessionManager
 import com.andrei.engine.requestModels.NewBookingRequestModel
 import com.andrei.engine.requestModels.PaymentRequest
-import com.andrei.engine.responseModels.TokenResponse
 import com.andrei.utils.formatWithPattern
 import com.andrei.utils.observeRequest
 import com.andrei.utils.reObserve
@@ -40,8 +40,10 @@ import javax.inject.Inject
 class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
 
     @Inject
-    lateinit var userManager:UserManager
+    lateinit var sessionManager:SessionManager
 
+    @Inject
+    lateinit var userDataManager: UserDataManager
 
     private  val  binding: FragmentConfirmSelectionBinding by viewBinding()
     private val viewModelPayment:ViewModelPayment by viewModels()
@@ -135,9 +137,9 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
         val amountToPay = viewModelCar.totalAmountToPay.value
         val currentCarID = viewModelCar.currentCarID.value
         val bookingDate = viewModelCar.currentSelectedDays.value
-        val userLoginData = userManager.userLoginData.value
+        val userLoginData = userDataManager.getUserID()
 
-        if (amountToPay != null && currentCarID != null && bookingDate != null && userLoginData != null) {
+        if (amountToPay != null && currentCarID != null && bookingDate != null) {
 
             val paymentRequest = PaymentRequest(nonce = result.paymentMethodNonce?.nonce,
                     deviceData = result.deviceData, amount = amountToPay)
@@ -145,7 +147,7 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
             val checkoutRequest = NewBookingRequestModel(paymentRequest = paymentRequest,
                     startDate = bookingDate.startDate.toUnix(),
                     endDate = bookingDate.endDate.toUnix(),
-                    userID = userLoginData.id,
+                    userID = userLoginData,
                     carID = currentCarID
             )
 

@@ -11,11 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 interface LoginRepository
 {
-
-    val loginFlowState : Flow<LoginFlowState>
-
+    val loginFlowState : MutableStateFlow<LoginFlowState>
     suspend fun startLoginFlow(email:String,password:String)
-    fun signOut()
-
 }
 

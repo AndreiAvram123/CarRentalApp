@@ -16,16 +16,10 @@ class ViewModelLogin  @Inject constructor(
 ):   ViewModel() {
 
 
-    val authenticationState:LiveData<AuthenticationState> = Transformations.map(loginRepository.loginFlowState.asLiveData(viewModelScope.coroutineContext)){
-        when(it){
-              is  LoginFlowState.Loading -> AuthenticationState.AUTHENTICATING
-              is  LoginFlowState.LoginError -> AuthenticationState.NOT_AUTHENTICATED
-               is LoginFlowState.LoggedIn -> AuthenticationState.AUTHENTICATED
-               is LoginFlowState.NotLoggedIn -> AuthenticationState.NOT_AUTHENTICATED
+    private val _loginFlowState:MutableStateFlow<LoginFlowState> = loginRepository.loginFlowState
 
-        }
-    }
-
+    val loginFlowState:StateFlow<LoginFlowState>
+    get() = _loginFlowState
 
     private val _validationEmail:MutableStateFlow<FieldValidation> = MutableStateFlow(FieldValidation.Unvalidated)
 
@@ -39,11 +33,6 @@ class ViewModelLogin  @Inject constructor(
     get() = _validationPassword
 
 
-
-    fun signOut(){
-        loginRepository.signOut()
-    }
-
     init {
         viewModelScope.launch {
             loginRepository.loginFlowState.collect {
@@ -53,17 +42,17 @@ class ViewModelLogin  @Inject constructor(
                 }
             }
         }
-
     }
 
     fun login(email:String,password: String){
         viewModelScope.launch {
             _validationEmail.emit(FieldValidation.Valid)
             _validationPassword.emit(FieldValidation.Valid)
+
             when {
                 email.isEmailInvalid() ->
                     _validationEmail.emit(FieldValidation.Invalid(errorInvalidEmailFormat))
-                password.isBlank() -> FieldValidation.Invalid(errorPasswordBlank)
+                password.isBlank() -> _validationPassword.emit(FieldValidation.Invalid(errorPasswordBlank))
                 else -> {
                     loginRepository.startLoginFlow(email = email ,password = password)
                 }
@@ -80,9 +69,6 @@ class ViewModelLogin  @Inject constructor(
 
 
   }
-      enum class AuthenticationState{
-     AUTHENTICATED,AUTHENTICATING,NOT_AUTHENTICATED
-    }
 
 
 }

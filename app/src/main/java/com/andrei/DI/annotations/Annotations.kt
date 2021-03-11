@@ -10,3 +10,6 @@ annotation class RetrofitInterceptorNoToken
 @Retention(AnnotationRetention.BINARY)
 annotation class RetrofitInterceptorWithToken
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DefaultGlobalScope
