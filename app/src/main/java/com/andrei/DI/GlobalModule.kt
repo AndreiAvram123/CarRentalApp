@@ -15,6 +15,7 @@ import dagger.hilt.DefineComponent
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import pl.aprilapps.easyphotopicker.EasyImage
 import javax.inject.Singleton
 
 @Module
@@ -30,5 +31,8 @@ class GlobalModule {
     @Provides
     fun provideNetworkManager(@ApplicationContext context:Context) : ConnectivityManager = context.getConnectivityManager()
 
+    @Singleton
+    @Provides
+    fun provideEasyImage(@ApplicationContext context: Context):EasyImage = EasyImage.Builder(context).setFolderName("Car Rental").allowMultiple(true).build()
 
 }

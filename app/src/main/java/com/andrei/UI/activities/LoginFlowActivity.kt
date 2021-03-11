@@ -4,23 +4,21 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.andrei.carrental.R
-import com.andrei.carrental.viewmodels.ViewModelAuth
-import com.andrei.engine.helpers.UserManager
+import com.andrei.carrental.viewmodels.ViewModelLogin
 import com.andrei.utils.reObserve
 import com.andrei.utils.startNewActivity
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginFlowActivity : AppCompatActivity() {
 
-    private val viewModelAuth:ViewModelAuth by viewModels()
+    private val viewModelLogin:ViewModelLogin by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing)
-        viewModelAuth.authenticationState.reObserve(this){
-            if(it == ViewModelAuth.AuthenticationState.AUTHENTICATED){
+        viewModelLogin.authenticationState.reObserve(this){
+            if(it == ViewModelLogin.AuthenticationState.AUTHENTICATED){
                 startNewActivity<MainActivity>()
             }
         }

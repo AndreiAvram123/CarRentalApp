@@ -28,10 +28,6 @@ class LoginRepositoryImpl @Inject constructor(
        }
     )
 
-    override val emailError:MutableStateFlow<String?> = MutableStateFlow(null)
-    override val passwordError:MutableStateFlow<String?> = MutableStateFlow(null)
-
-
     override suspend fun startLoginFlow(email: String, password: String) {
 
         val loginRequest = LoginRequest(
@@ -41,19 +37,17 @@ class LoginRepositoryImpl @Inject constructor(
        callRunner.makeApiCall{loginAPI.attemptLogin(loginRequest)}.collect{
            when(it){
                is State.Success -> {
-                   if (it.data != null) {
-                       userManager.saveNewUser(it.data)
-                       loginFlowState.tryEmit(LoginFlowState.LoggedIn)
-                   }
+                   userManager.saveNewUser(it.data)
+                   loginFlowState.emit(LoginFlowState.LoggedIn)
                }
                is State.Loading -> {
-                   loginFlowState.tryEmit(LoginFlowState.Loading)
+                   loginFlowState.emit(LoginFlowState.Loading)
                }
                is State.Error->{
                    when(it.error){
-                        LoginFlowState.LoginError.errorInvalidEmail -> loginFlowState.tryEmit(LoginFlowState.LoginError.IncorrectEmail)
-                        LoginFlowState.LoginError.errorInvalidPassword -> loginFlowState.tryEmit(LoginFlowState.LoginError.IncorrectPassword)
-                        else -> loginFlowState.tryEmit(LoginFlowState.LoginError.ConnectionError)
+                        LoginFlowState.LoginError.errorInvalidEmail -> loginFlowState.emit(LoginFlowState.LoginError.IncorrectEmail)
+                        LoginFlowState.LoginError.errorInvalidPassword -> loginFlowState.emit(LoginFlowState.LoginError.IncorrectPassword)
+                        else -> loginFlowState.emit(LoginFlowState.LoginError.ConnectionError)
                    }
                }
            }

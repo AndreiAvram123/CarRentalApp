@@ -48,6 +48,11 @@ android {
 }
 
 dependencies {
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+
+    //galery
+    implementation 'com.github.jkwiecien:EasyImage:3.0.4'
 
     //chat
     implementation "de.hdodenhof:circleimageview:2.2.0"

@@ -17,7 +17,5 @@ interface LoginRepository
     suspend fun startLoginFlow(email:String,password:String)
     fun signOut()
 
-    val emailError: MutableStateFlow<String?>
-    val passwordError: MutableStateFlow<String?>
 }
 

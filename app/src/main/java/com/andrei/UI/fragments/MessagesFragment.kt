@@ -26,16 +26,23 @@ import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import pl.aprilapps.easyphotopicker.EasyImage
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MessagesFragment :BaseFragment(R.layout.fragment_messages) , MessageHolders.ContentChecker<Message> {
+class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
+    MessageHolders.ContentChecker<Message> {
 
     private val binding:FragmentMessagesBinding by viewBinding ()
     private val viewModelChat:ViewModelChat by activityViewModels()
     private val navArgs:MessagesFragmentArgs by navArgs()
     private var skipScroll: Boolean = false
+
+    @Inject
+    lateinit var easyImage: EasyImage
+
+
 
     @Inject
     lateinit var messengerService: MessengerService

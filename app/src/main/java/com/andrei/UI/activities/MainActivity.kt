@@ -12,7 +12,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.helpers.InternetConnectionHandler
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
-import com.andrei.carrental.viewmodels.ViewModelAuth
+import com.andrei.carrental.viewmodels.ViewModelLogin
 import com.andrei.services.MessengerService
 import com.andrei.utils.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,12 +24,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private  val binding:ActivityMainBinding by viewBinding()
     private lateinit var navController:NavController
-    private val  viewModelAuth:ViewModelAuth by viewModels()
+    private val  viewModelLogin:ViewModelLogin by viewModels()
     private var internetConnectionHandler:InternetConnectionHandler? = null
 
 
-    private val observerUserLoggedIn = Observer<ViewModelAuth.AuthenticationState>{
-        if(it ==  ViewModelAuth.AuthenticationState.NOT_AUTHENTICATED){
+    private val observerUserLoggedIn = Observer<ViewModelLogin.AuthenticationState>{
+        if(it ==  ViewModelLogin.AuthenticationState.NOT_AUTHENTICATED){
             startNewActivity<LoginFlowActivity>()
         }
     }
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         super.onCreate(savedInstanceState)
          setUpNavigation()
         attachLocationObserver()
-        viewModelAuth.authenticationState.reObserve(this,observerUserLoggedIn)
+        viewModelLogin.authenticationState.reObserve(this,observerUserLoggedIn)
     }
 
     private fun startInternetConnectionHandler() {
