@@ -80,7 +80,7 @@ class ViewModelChat @Inject constructor(
         viewModelScope.launch {
             _messageToSendState.collect {
                 if(it is State.Success){
-                    dequeueMessageToSend()
+                    dequeueMessage()
                 }
             }
         }
@@ -91,20 +91,20 @@ class ViewModelChat @Inject constructor(
         }
     }
 
-    private fun dequeueMessageToSend(){
-        if(currentMessageToSend.value == null){
+    private fun dequeueMessage(){
             val message = messagesToSend.peek()
             viewModelScope.launch(Dispatchers.IO) {   currentMessageToSend.emit(message)}
             if(message != null){
                 messagesToSend.pop()
             }
         }
-    }
 
 
     fun sendMessage(createMessageRequest: CreateMessageRequest){
-        messagesToSend.add(createMessageRequest)
-        dequeueMessageToSend()
+        messagesToSend.add(createMessageRequest)#
+        if(currentMessageToSend.value == null) {
+            dequeueMessage()
+        }
     }
 
 
