@@ -16,17 +16,21 @@ import com.pusher.client.PusherOptions
 import com.pusher.client.channel.Channel
 import com.pusher.client.channel.SubscriptionEventListener
 import com.pusher.client.connection.ConnectionState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
 class ChannelService(
      val chatID:Long,
-    private val pusherOptions: PusherOptions,
-    private val pusherKey:String,
-    private val messageDao: MessageDao,
-    val friend:User,
+     private val pusherOptions: PusherOptions,
+     private val pusherKey:String,
+     private val messageDao: MessageDao,
+     val friend:User,
+     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     ) {
 
     private val pusherPresenceChannel = PusherFactory.createPusher(pusherOptions,pusherKey)
@@ -39,12 +43,6 @@ class ChannelService(
     val isUserOnline:LiveData<Boolean>
     get() = _isUserOnline
 
-    private val _newChatMessage:MutableLiveData<Message> by lazy {
-        MutableLiveData<Message>()
-    }
-
-    val newChatMessage:LiveData<Message>
-    get() = _newChatMessage
 
     private val _unsentMessage:ConsumeLiveData<Message> by lazy {
         ConsumeLiveData()
@@ -56,10 +54,9 @@ class ChannelService(
 
     private val eventNewMessageListener = SubscriptionEventListener{
         val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
-        GlobalScope.launch (Dispatchers.IO){
+        coroutineScope.launch{
             val message = messageDTO.toMessage()
             messageDao.insertMessage(message)
-           _newChatMessage.postValue(message)
         }
     }
 

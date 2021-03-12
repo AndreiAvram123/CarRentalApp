@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -19,12 +18,9 @@ import com.andrei.carrental.databinding.FragmentMessagesBinding
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.viewmodels.ViewModelChat
-import com.andrei.engine.State
 import com.andrei.services.MessengerService
 import com.andrei.utils.loadFromURl
 import com.andrei.utils.reObserve
-import com.andrei.utils.toBase64
-import com.andrei.utils.toDrawable
 import com.andreia.carrental.requestModels.CreateMessageRequest
 import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessageHolders
@@ -32,6 +28,8 @@ import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
@@ -75,8 +73,8 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.loadFromURl(it) } }
 
 
-    private val messagesAdapter:MessagesListAdapter<Message> by lazy {
-        MessagesListAdapter<Message>(userDataManager.getUserID().toString(), getAdapterHolders(),imageLoader).apply {
+    private val messagesAdapter:CustomMessagesListAdapter by lazy {
+        CustomMessagesListAdapter(userDataManager.getUserID().toString(), getAdapterHolders(),imageLoader).apply {
             enableSelectionMode(CustomSelectionListener(userDataManager.getUserID().toString()))
         }
     }
@@ -206,20 +204,20 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     }
 
     private fun populateRVWithData(){
-        lifecycleScope.launch(Dispatchers.IO) {
-            val data = viewModelChat.getInitialChatMessages()
-            addAdapterData(data)
+        lifecycleScope.launchWhenResumed {
+            viewModelChat.getChatMessages()
+            viewModelChat.currentOpenedChatMessages.collect {
+                addDataToAdapter(it.reversed())
+            }
         }
     }
 
-    private fun addAdapterData(data: List<Message>){
-        lifecycleScope.launch(Dispatchers.Main) {
+    private fun addDataToAdapter(data: List<Message>){
             data.forEach {
-                messagesAdapter.addToStart(it, true)
+                messagesAdapter.tryAddMessageToStart(it)
             }
             observeNewMessages()
             observerUnsentMessages()
-        }
     }
 
     private fun observerUnsentMessages() {
@@ -231,12 +229,31 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     }
 
     private fun observeNewMessages() {
-        messengerService.getObservableLastMessage(navArgs.chatID).reObserve(viewLifecycleOwner){
-            if(it != null){
-                messagesAdapter.addToStart(it,true)
+        lifecycleScope.launchWhenResumed {
+            messengerService.getFlowLastMessage(navArgs.chatID).filterNotNull().collect {
+                messagesAdapter.tryAddMessageToStart(it)
             }
         }
     }
+
+    inner class CustomMessagesListAdapter(senderId:String, holders:MessageHolders,
+                                                   imageLoader: ImageLoader): MessagesListAdapter<Message>(senderId,holders,imageLoader){
+
+      fun tryAddMessageToStart(message:Message){
+          var containsItem = false
+          items.forEach {
+              val item = it.item
+              if(item is Message && item.id == message.id){
+                  containsItem = true
+              }
+          }
+          if(!containsItem){
+              addToStart(message,true)
+          }
+      }
+
+                                                   }
+
 
     override fun hasContentFor(message: Message, type: Byte): Boolean {
          if(type == message.messageType.id.toByte()){

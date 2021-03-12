@@ -12,6 +12,7 @@ import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.DTOEntities.toUser
 import com.pusher.client.PusherOptions
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class MessengerService @Inject constructor (
@@ -43,18 +44,14 @@ class MessengerService @Inject constructor (
                     id = it.value.chatID,
                     friend = it.value.friend,
                     isUserOnline = it.value.isUserOnline,
-                    lastMessageDTO = it.value.newChatMessage
+                    lastMessage = messagesDao.findLastChatMessage(it.value.chatID)
             )
             chats.add(chat)
         }
         return chats
     }
 
-    fun getObservableLastMessage(chatID:Long):LiveData<Message>{
-        val channelService = channels[chatID]
-        channelService?.let { return channelService.newChatMessage }
-        return MutableLiveData()
-    }
+    fun getFlowLastMessage(chatID:Long): Flow<Message> = messagesDao.findLastChatMessage(chatID)
 
     fun getChatFriend(chatID: Long):User?{
         val channelService = channels[chatID]

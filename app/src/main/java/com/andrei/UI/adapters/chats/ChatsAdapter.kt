@@ -44,11 +44,11 @@ class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner,
             observableChat.isUserOnline.reObserve(_lifecycleOwner){
               binding.isUserOnline = it
             }
-            observableChat.lastMessageDTO.reObserve(_lifecycleOwner){
-                if(it !=null){
-                       binding.lastMessage = it.textContent
-                }
-            }
+//            observableChat.lastMessage.reObserve(_lifecycleOwner){
+//                if(it !=null){
+//                       binding.lastMessage = it.textContent
+//                }
+//            }
             binding.root.setOnClickListener {
                 navigateToMessagesCallback(observableChat.id)
             }

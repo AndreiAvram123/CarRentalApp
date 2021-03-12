@@ -31,9 +31,7 @@ class ViewModelChat @Inject constructor(
     val userChats:StateFlow<State<List<ChatDTO>>>
         get() = _userChats
 
-    private val currentOpenedChat:MutableLiveData<Long> by lazy {
-        MutableLiveData()
-    }
+    private val _currentOpenedChat:MutableStateFlow<Long> = MutableStateFlow(0)
 
     private val _messageToUnsendState = chatRepository.messageToUnsendState
     val messageToUnsendState:SharedFlow<State<Message>>
@@ -57,18 +55,24 @@ class ViewModelChat @Inject constructor(
         }
     }
 
+   private val _currentOpenedChatMessages:MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())
+   val currentOpenedChatMessages:StateFlow<List<Message>>
+   get() = _currentOpenedChatMessages
 
-    suspend fun getInitialChatMessages():List<Message>{
-        val chatID = currentOpenedChat.value
-        if(chatID != null){
-            return chatRepository.getInitialChatMessages(chatID)
+
+      fun getChatMessages(){
+        val chatID = _currentOpenedChat.value
+        if(chatID != 0L){
+            viewModelScope.launch {
+                val messages = chatRepository.getInitialChatMessages(chatID)
+                _currentOpenedChatMessages.emit(messages)
+            }
         }
-        return emptyList()
 
     }
 
     fun setCurrentOpenedChatID(chatID:Long){
-        currentOpenedChat.value = chatID
+        viewModelScope.launch { _currentOpenedChat.emit(chatID)}
     }
 
     private val messagesToSend = LinkedList<CreateMessageRequest>()
@@ -101,7 +105,7 @@ class ViewModelChat @Inject constructor(
 
 
     fun sendMessage(createMessageRequest: CreateMessageRequest){
-        messagesToSend.add(createMessageRequest)#
+        messagesToSend.add(createMessageRequest)
         if(currentMessageToSend.value == null) {
             dequeueMessage()
         }
