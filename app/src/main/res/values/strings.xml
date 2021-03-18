@@ -52,5 +52,7 @@
     <string name="navigation_chats">Chats</string>
     <string name="hint_enter_a_message">Enter a message</string>
     <string name="unsend">Unsend</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
 
 </resources>

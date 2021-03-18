@@ -1,8 +1,6 @@
 package com.andrei.UI.fragments
 
-import android.view.ViewTreeObserver
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,8 +11,7 @@ import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentChatsBinding
 import com.andrei.carrental.viewmodels.ViewModelChat
 import com.andrei.engine.State
-import com.andrei.services.MessengerService
-import com.andrei.utils.reObserve
+import com.andrei.messenger.MessengerService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -45,11 +42,9 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
            viewModelChat.userChats.collect {
                when(it){
                    is State.Success -> {
-                       if(it.data !=null){
-                           messengerService.configureChannels(it.data)
-                           messengerService.connect()
-                           chatsAdapter?.setData(messengerService.getObservableChats())
-                       }
+                       messengerService.configureChannels(it.data)
+                       messengerService.connect()
+                       chatsAdapter?.setData(messengerService.getObservableChats())
                    }
                }
            }
@@ -62,7 +57,6 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
         val action = ChatsFragmentDirections.actionChatsFragmentToMessagesFragment(chatID)
         findNavController().navigate(action)
     }
-
 
     private fun initializeRecyclerView() {
         chatsAdapter = ChatsAdapter(viewLifecycleOwner,this::goToMessagesFragment)

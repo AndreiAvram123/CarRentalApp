@@ -18,7 +18,7 @@ import com.andrei.carrental.databinding.FragmentMessagesBinding
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.viewmodels.ViewModelChat
-import com.andrei.services.MessengerService
+import com.andrei.messenger.MessengerService
 import com.andrei.utils.loadFromURl
 import com.andrei.utils.reObserve
 import com.andreia.carrental.requestModels.CreateMessageRequest
@@ -26,11 +26,8 @@ import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessageHolders
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
 import pl.aprilapps.easyphotopicker.MediaFile
@@ -139,18 +136,27 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     }
 
     private fun attachObservers() {
-        messengerService.getUserOnlineObservable(navArgs.chatID).reObserve(viewLifecycleOwner) {
-            if (it) {
-                binding.toolbar.subtitle = "Online"
-            } else {
-                binding.toolbar.subtitle = "Offline"
+        lifecycleScope.launchWhenResumed {
+            messengerService.getUserOnlineFlow(navArgs.chatID).collect {
+                binding.toolbar.subtitle = if(it) getString(R.string.online) else getString(R.string.offline)
+            }
+        }
+        lifecycleScope.launchWhenResumed {
+            messengerService.getUnsentMessageFlow(navArgs.chatID).collect {
+                messagesAdapter.update(it)
+            }
+        }
+
+
+        lifecycleScope.launchWhenResumed {
+            messengerService.getLastMessageFlow(navArgs.chatID).collect {
+                messagesAdapter.tryAddMessageToStart(it)
             }
         }
     }
 
     private fun configureToolbar() {
-            val activity =  (requireActivity() as AppCompatActivity)
-            activity.apply {
+             (requireActivity() as AppCompatActivity).apply {
                 setSupportActionBar(binding.toolbar)
                 supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -216,51 +222,33 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
             data.forEach {
                 messagesAdapter.tryAddMessageToStart(it)
             }
-            observeNewMessages()
-            observerUnsentMessages()
+
     }
 
-    private fun observerUnsentMessages() {
-        messengerService.getObservableUnsentMessage(navArgs.chatID).reObserve(viewLifecycleOwner){
-            if(it!=null){
-              messagesAdapter.update(it)
-            }
-        }
-    }
-
-    private fun observeNewMessages() {
-        lifecycleScope.launchWhenResumed {
-            messengerService.getFlowLastMessage(navArgs.chatID).filterNotNull().collect {
-                messagesAdapter.tryAddMessageToStart(it)
-            }
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModelChat.resetOpenedChat()
     }
 
     inner class CustomMessagesListAdapter(senderId:String, holders:MessageHolders,
-                                                   imageLoader: ImageLoader): MessagesListAdapter<Message>(senderId,holders,imageLoader){
+                                          imageLoader: ImageLoader): MessagesListAdapter<Message>(senderId,holders,imageLoader){
 
       fun tryAddMessageToStart(message:Message){
-          var containsItem = false
-          items.forEach {
+          val containsItem = items.find {
               val item = it.item
-              if(item is Message && item.id == message.id){
-                  containsItem = true
-              }
-          }
+              item is Message && item.id == message.id
+          } != null
+
           if(!containsItem){
               addToStart(message,true)
           }
       }
 
+
                                                    }
 
 
-    override fun hasContentFor(message: Message, type: Byte): Boolean {
-         if(type == message.messageType.id.toByte()){
-             return true
-         }
-        return false
-    }
+    override fun hasContentFor(message: Message, type: Byte): Boolean =  type == message.messageType.id.toByte()
 
 }
 

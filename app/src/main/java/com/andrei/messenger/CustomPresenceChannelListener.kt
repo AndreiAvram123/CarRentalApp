@@ -1,6 +1,5 @@
-package com.andrei.services
+package com.andrei.messenger
 
-import android.util.Log
 import com.pusher.client.channel.PresenceChannelEventListener
 import com.pusher.client.channel.PusherEvent
 import com.pusher.client.channel.User

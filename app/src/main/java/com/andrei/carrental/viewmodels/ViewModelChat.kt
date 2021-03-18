@@ -55,9 +55,9 @@ class ViewModelChat @Inject constructor(
         }
     }
 
-   private val _currentOpenedChatMessages:MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())
+   private val _currentChatMessages:MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())
    val currentOpenedChatMessages:StateFlow<List<Message>>
-   get() = _currentOpenedChatMessages
+   get() = _currentChatMessages
 
 
       fun getChatMessages(){
@@ -65,7 +65,7 @@ class ViewModelChat @Inject constructor(
         if(chatID != 0L){
             viewModelScope.launch {
                 val messages = chatRepository.getInitialChatMessages(chatID)
-                _currentOpenedChatMessages.emit(messages)
+                _currentChatMessages.emit(messages)
             }
         }
 
@@ -73,6 +73,12 @@ class ViewModelChat @Inject constructor(
 
     fun setCurrentOpenedChatID(chatID:Long){
         viewModelScope.launch { _currentOpenedChat.emit(chatID)}
+    }
+    fun resetOpenedChat(){
+        viewModelScope.launch {
+            _currentOpenedChat.emit(0L)
+            _currentChatMessages.emit(emptyList())
+        }
     }
 
     private val messagesToSend = LinkedList<CreateMessageRequest>()
@@ -132,7 +138,7 @@ class ViewModelChat @Inject constructor(
 
 
     fun unsendMessage(message:Message){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             chatRepository.unsendMessage(message)
         }
     }

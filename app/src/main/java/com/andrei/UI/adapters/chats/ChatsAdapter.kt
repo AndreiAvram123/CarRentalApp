@@ -3,11 +3,13 @@ package com.andrei.UI.adapters.chats
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.andrei.UI.adapters.bookings.ViewHolderChat
 import com.andrei.carrental.databinding.ItemChatBinding
 import com.andrei.carrental.entities.ObservableChat
 import com.andrei.utils.reObserve
+import kotlinx.coroutines.flow.collect
 
 
 class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner,
@@ -41,14 +43,11 @@ class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner,
     inner class ViewHolderChatImpl(private val binding: ItemChatBinding) : ViewHolderChat(binding.root) {
         override fun bind(observableChat: ObservableChat) {
            binding.chat = observableChat
-            observableChat.isUserOnline.reObserve(_lifecycleOwner){
-              binding.isUserOnline = it
+            _lifecycleOwner.lifecycleScope.launchWhenResumed {
+                observableChat.isUserOnline.collect {
+                    binding.isUserOnline = it
+                }
             }
-//            observableChat.lastMessage.reObserve(_lifecycleOwner){
-//                if(it !=null){
-//                       binding.lastMessage = it.textContent
-//                }
-//            }
             binding.root.setOnClickListener {
                 navigateToMessagesCallback(observableChat.id)
             }

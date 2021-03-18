@@ -4,21 +4,17 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.andrei.carrental.R
 import com.andrei.carrental.room.dao.MessageDao
-import com.andrei.services.MessengerService
-import com.andrei.utils.LocationSettingsHandler
+import com.andrei.messenger.MessengerService
+import com.andrei.messenger.PusherConfig
 import com.andrei.utils.getStringOrNull
-import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.util.HttpAuthorizer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @InstallIn(ActivityComponent::class)
 @Module
@@ -50,9 +46,8 @@ class PusherModule {
 
     @Provides
     @ActivityScoped
-    fun provideMessengerService(@ApplicationContext context: Context, pusherOptions: PusherOptions, messageDao: MessageDao):MessengerService{
-        return MessengerService(context = context,
-                                pusherOptions = pusherOptions,
-                                messagesDao = messageDao)
+    fun providePusherConfig(@ApplicationContext context: Context, pusherOptions: PusherOptions): PusherConfig {
+        return PusherConfig(pusherOptions = pusherOptions, pusherKey = context.getString(R.string.pusher_key))
     }
+
 }

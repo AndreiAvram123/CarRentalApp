@@ -1,8 +1,6 @@
-package com.andrei.services
+package com.andrei.messenger
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.User
 import com.andrei.carrental.factories.PusherFactory
@@ -17,30 +15,25 @@ import com.pusher.client.channel.Channel
 import com.pusher.client.channel.SubscriptionEventListener
 import com.pusher.client.connection.ConnectionState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
 class ChannelService(
      val chatID:Long,
-     private val pusherOptions: PusherOptions,
-     private val pusherKey:String,
+     private val pusherConfig: PusherConfig,
      private val messageDao: MessageDao,
      val friend:User,
-     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+     private val coroutineScope: CoroutineScope
     ) {
 
-    private val pusherPresenceChannel = PusherFactory.createPusher(pusherOptions,pusherKey)
-    private val pusherChannel = PusherFactory.createPusher(pusherOptions,pusherKey)
+    private val pusherPresenceChannel = PusherFactory.createPusher(pusherConfig)
+    private val pusherChannel = PusherFactory.createPusher(pusherConfig)
 
-    private val _isUserOnline:MutableLiveData<Boolean> by lazy {
-        MutableLiveData(false)
-    }
+    private val _isUserOnline:MutableStateFlow<Boolean> =  MutableStateFlow(false)
 
-    val isUserOnline:LiveData<Boolean>
+
+    val isUserOnline:MutableStateFlow<Boolean>
     get() = _isUserOnline
 
 
@@ -62,7 +55,7 @@ class ChannelService(
 
     private val eventDeleteMessageListener = SubscriptionEventListener {
         val messageDTO = Gson().fromJson(it.data, MessageDTO::class.java)
-        GlobalScope.launch (Dispatchers.IO){
+        coroutineScope.launch {
             val message = messageDTO.toMessage()
              messageDao.updateMessage(message)
             _unsentMessage.postValue(message)
@@ -96,13 +89,13 @@ class ChannelService(
         pusherPresenceChannel.subscribePresence("presence-chats-$chatID",listener, eventNewUserAdded)
 
         listener.onUserSubscribed = { _,_ ->
-            _isUserOnline.postValue(true)
+            coroutineScope.launch { _isUserOnline.emit(true) }
         }
         listener.onUserUnsubscribed = {_,_ ->
-           _isUserOnline.postValue(false)
+            coroutineScope.launch { _isUserOnline.emit(false) }
         }
         listener.onUsersInformationRetrieved = { _,users ->
-            _isUserOnline.postValue(users != null && users.size > 1)
+            coroutineScope.launch {   _isUserOnline.emit(users != null && users.size > 1) }
         }
 
     }

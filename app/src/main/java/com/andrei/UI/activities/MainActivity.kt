@@ -2,9 +2,7 @@ package com.andrei.UI.activities
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -13,9 +11,8 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.helpers.InternetConnectionHandler
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
-import com.andrei.carrental.viewmodels.ViewModelLogin
 import com.andrei.engine.helpers.SessionManager
-import com.andrei.services.MessengerService
+import com.andrei.messenger.MessengerService
 import com.andrei.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
