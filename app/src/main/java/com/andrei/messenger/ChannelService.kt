@@ -37,12 +37,6 @@ class ChannelService(
     get() = _isUserOnline
 
 
-    private val _unsentMessage:ConsumeLiveData<Message> by lazy {
-        ConsumeLiveData()
-    }
-    val unsentMessage:LiveData<Message>
-    get() = _unsentMessage
-
 
 
     private val eventNewMessageListener = SubscriptionEventListener{
@@ -58,7 +52,6 @@ class ChannelService(
         coroutineScope.launch {
             val message = messageDTO.toMessage()
              messageDao.updateMessage(message)
-            _unsentMessage.postValue(message)
         }
     }
 
