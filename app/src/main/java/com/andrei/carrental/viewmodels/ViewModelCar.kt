@@ -19,9 +19,9 @@ class ViewModelCar @Inject constructor(
         private val carRepositoryImpl: CarRepositoryImpl
 ) : ViewModel (){
 
-    val searchSuggestions :MutableLiveData<State<List<Car>>> by lazy {
-        carRepositoryImpl.searchSuggestions
-    }
+    private val _searchSuggestions :MutableStateFlow<State<List<Car>>> = MutableStateFlow(State.Default)
+    val searchSuggestions:StateFlow<State<List<Car>>>
+    get() = _searchSuggestions.asStateFlow()
 
 
     private val _currentSelectedCar: MutableStateFlow<State<Car>> = MutableStateFlow(State.Loading)

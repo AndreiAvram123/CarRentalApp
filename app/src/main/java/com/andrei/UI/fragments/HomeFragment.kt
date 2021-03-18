@@ -2,6 +2,7 @@ package com.andrei.UI.fragments
 
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.adapters.CustomDivider
@@ -19,6 +20,7 @@ import com.andrei.utils.reObserve
 import com.andrei.utils.show
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.flow.collect
 
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
@@ -30,17 +32,6 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
   private val viewModelCar:ViewModelCar by activityViewModels()
     private val viewModelLocation:ViewModelLocation by activityViewModels()
 
-    private val currentLocationObserver = Observer<LatLng>{
-        if(it != null){
-            currentLocation = it
-        }
-    }
-
-    private val nearbyCarsObserver = Observer<State<List<Car>>>{
-        when(it){
-            is State.Success -> bottomSheetRVAdapter.setData(it.data)
-        }
-    }
 
   private val searchRVAdapter:CarsRVSearchAdapter by lazy {
       CarsRVSearchAdapter()
@@ -54,8 +45,18 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     override fun initializeUI() {
         configureSearchView()
         configureBottomSheet()
-        viewModelLocation.currentLocation.reObserve(viewLifecycleOwner,currentLocationObserver)
-        viewModelLocation.nearbyCars.reObserve(viewLifecycleOwner,nearbyCarsObserver)
+        lifecycleScope.launchWhenResumed {
+            viewModelLocation.currentLocation.collect {
+                currentLocation = it
+            }
+        }
+        lifecycleScope.launchWhenResumed {
+            viewModelLocation.nearbyCars.collect {
+                when(it){
+                    is State.Success -> bottomSheetRVAdapter.setData(it.data)
+                }
+            }
+        }
     }
 
     private fun configureBottomSheet() {
@@ -92,15 +93,17 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             addItemDecoration(CustomDivider(10))
             layoutManager = LinearLayoutManager(requireContext())
         }
-        viewModelCar.searchSuggestions.reObserve(viewLifecycleOwner){
-            when(it){
-                is State.Success -> {
-                    searchRVAdapter.setData(it.data)
-                       binding.pbSearch.hide()
-                }
-                is State.Loading -> binding.pbSearch.show()
-                is State.Error ->{
-                    binding.pbSearch.hide()
+        lifecycleScope.launchWhenResumed {
+            viewModelCar.searchSuggestions.collect {
+                when(it){
+                    is State.Success -> {
+                        searchRVAdapter.setData(it.data)
+                        binding.pbSearch.hide()
+                    }
+                    is State.Loading -> binding.pbSearch.show()
+                    else ->{
+                        binding.pbSearch.hide()
+                    }
                 }
             }
         }

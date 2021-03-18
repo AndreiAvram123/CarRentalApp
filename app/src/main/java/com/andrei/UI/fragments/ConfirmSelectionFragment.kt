@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -14,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.UserDataManager
+import com.andrei.carrental.custom.PaymentUIContract
 import com.andrei.carrental.databinding.FragmentConfirmSelectionBinding
 import com.andrei.carrental.entities.BookingDate
 import com.andrei.carrental.viewmodels.ViewModelCar
@@ -50,6 +52,11 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
     private val viewModelPayment:ViewModelPayment by viewModels()
     private val viewModelCar:ViewModelCar by activityViewModels()
 
+    private val dropInUIIntent = registerForActivityResult(PaymentUIContract()){
+        if(it!= null){
+
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initializeUI()
@@ -96,11 +103,11 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
         viewModelPayment.getClientToken()
 
         lifecycleScope.launch {
-            viewModelPayment.clientToken.collect { state->
-                when (state) {
+            viewModelPayment.clientToken.collect {
+                when (it) {
                     is State.Success -> {
                         try {
-                            showDropInPaymentWindow(state.data)
+                           dropInUIIntent.launch(it.data)
 
                         } catch (e: InvalidArgumentException) {
                             // There was an issue with your authorization string.
@@ -114,29 +121,9 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
         }
     }
 
-    private fun showDropInPaymentWindow(token:String) {
-        val dropInRequest: DropInRequest = DropInRequest()
-            .collectDeviceData(true)
-            .clientToken(token)
-        startActivityForResult(dropInRequest.getIntent(requireContext()), 1)
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                val result: DropInResult? = data?.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)
-                if(result!=null) {
-                    //startCheckout(result)
-                }
-                // use the result to update your UI and send the payment method nonce to your server
-            } else if (resultCode == RESULT_CANCELED) {
-                // the user canceled
-            } else {
-                // handle errors here, an exception may be available in
-                val error = data?.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception
-            }
-        }
-    }
+
+
 
 //    private fun startCheckout(result: DropInResult) {
 //        val amountToPay = viewModelCar.totalAmountToPay.value

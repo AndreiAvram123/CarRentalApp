@@ -40,9 +40,7 @@ class BookingsFragment(
             viewModelBookings.bookings.collect { state ->
                 when (state) {
                     is State.Success -> {
-                        state.data?.let {
-                            setAdapterData(it)
-                        }
+                            setAdapterData(state.data)
                     }
                 }
 
@@ -60,15 +58,6 @@ class BookingsFragment(
         binding.pbBookings.hide()
     }
 
-
-
-    private fun updateRecyclerView(bookings:List<Booking>?){
-        if(bookings.isNullOrEmpty()){
-
-        }else{
-            bookingsAdapter.setNewBookings(bookings)
-        }
-    }
 
     private fun initializeRecyclerView() {
         binding.rvBookings.apply {

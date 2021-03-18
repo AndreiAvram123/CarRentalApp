@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
 import com.andrei.carrental.viewmodels.ViewModelLocation
@@ -27,6 +28,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import timber.log.Timber
 import javax.inject.Inject
 
 @SuppressLint("MissingPermission")
@@ -92,22 +95,28 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
     }
 
      override fun initializeUI() {
-        viewModelLocation.nearbyCars.reObserve(viewLifecycleOwner) { stateCarsToRent ->
-            map?.clear()
-            markersOnMap.clear()
-            val tempMap = map
-                if(stateCarsToRent is State.Success && tempMap != null){
-                    stateCarsToRent.data?.forEach {
-                        if (it.mediaFiles.isNotEmpty()) {
-                            fetchBitmap(requireContext(), it.mediaFiles.first().mediaURL) { bitmap ->
-                                addMarkerToMap(it.location,bitmap,it.id)
+         lifecycleScope.launchWhenResumed {
+             viewModelLocation.nearbyCars.collect {
+                 clearMap()
+                 val tempMap = map
+                 if(it is State.Success && tempMap != null){
+                     it.data.forEach {car->
+                         if (car.mediaFiles.isNotEmpty()) {
+                             fetchBitmap(requireContext(), car.mediaFiles.first().mediaURL) { bitmap ->
+                                 addMarkerToMap(car.location,bitmap,car.id)
 
-                            }
-                        }
-                    }
-                }
-        }
+                             }
+                         }
+                     }
+                 }
+             }
+         }
     }
+    private fun clearMap(){
+        map?.clear()
+        markersOnMap.clear()
+    }
+
 
     private fun addMarkerToMap(location:GeoPoint, bitmap:Bitmap, id:Long){
        map?.addMarker(
@@ -151,14 +160,14 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
                        it.latitude,
                        it.longitude
                )
-               viewModelLocation.currentLocation.postValue(currentLocation)
+               viewModelLocation.setNewLocation(currentLocation)
               moveCameraToLocation(currentLocation)
            }else{
                startLocationUpdates()
            }
            }
         } catch (e: SecurityException) {
-            Log.e("Exception: %s", e.message, e)
+            Timber.e(e)
         }
     }
 
