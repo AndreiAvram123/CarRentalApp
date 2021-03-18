@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -20,6 +21,7 @@ import com.andrei.utils.reObserve
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.coroutines.flow.collect
 
 
 class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
@@ -47,8 +49,7 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModelCar.currentCarID.postValue(navArgs.carID)
-
+        viewModelCar.getCar(navArgs.carID)
         initializeUI(savedInstanceState)
 
 
@@ -66,9 +67,12 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
             findNavController().popBackStack()
         }
 
-        viewModelCar.currentSelectedCar.reObserve(viewLifecycleOwner){
-           updateUI(it)
+        lifecycleScope.launchWhenResumed {
+            viewModelCar.currentSelectedCar.collect {
+                updateUI(it)
+            }
         }
+
         binding.selectDatesButton.setOnClickListener {
          val action = ExpandedCarFragmentDirections.actionExpandedToChooseDatesFragment()
             findNavController().navigate(action)

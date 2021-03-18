@@ -44,7 +44,7 @@ class ViewModelChat @Inject constructor(
 
 
     fun getUserChats(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             chatRepository.fetchUserChats().collect { state->
                 when(state){
                     is State.Success -> _userChats.emit(State.Success(state.data))
@@ -94,7 +94,7 @@ class ViewModelChat @Inject constructor(
                 }
             }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             currentMessageToSend.filterNotNull().collect {
                 chatRepository.sendMessage(it)
             }

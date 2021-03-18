@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.collect
 
 class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner,
                    private val navigateToMessagesCallback: (chatID:Long)->Unit) : RecyclerView.Adapter<ViewHolderChat>() {
+
+    
     private var observableChats:MutableList<ObservableChat> = mutableListOf()
 
     fun setData(data: List<ObservableChat>) {
@@ -35,9 +37,8 @@ class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner,
         holder.setIsRecyclable(false)
     }
 
-    override fun getItemCount(): Int {
-        return observableChats.size
-    }
+    override fun getItemCount(): Int  = observableChats.size
+
 
 
     inner class ViewHolderChatImpl(private val binding: ItemChatBinding) : ViewHolderChat(binding.root) {

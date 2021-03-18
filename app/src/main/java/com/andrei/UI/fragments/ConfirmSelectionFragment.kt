@@ -32,6 +32,7 @@ import com.braintreepayments.api.dropin.DropInResult
 import com.braintreepayments.api.exceptions.InvalidArgumentException
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -55,16 +56,21 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
     }
 
     private fun initializeUI() {
+
+        viewModelCar.calculateTotalAmountToPay()
+
+
         viewModelCar.currentSelectedDays.reObserve(viewLifecycleOwner) { rentalPeriod ->
             if (rentalPeriod != null) {
              updateUIWithRentalPeriod(rentalPeriod)
             }
         }
-        viewModelCar.totalAmountToPay.reObserve(viewLifecycleOwner){
-            if(it !=null){
+        lifecycleScope.launchWhenResumed {
+            viewModelCar.totalAmountToPay.filterNotNull().collect {
                 binding.tvTotalConfirmation.text = "£$it"
             }
         }
+
         binding.backButtonConfirmFragment.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -94,8 +100,7 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
                 when (state) {
                     is State.Success -> {
                         try {
-                            state.data?.let { showDropInPaymentWindow(it) }
-
+                            showDropInPaymentWindow(state.data)
 
                         } catch (e: InvalidArgumentException) {
                             // There was an issue with your authorization string.
@@ -121,7 +126,7 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
             if (resultCode == RESULT_OK) {
                 val result: DropInResult? = data?.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)
                 if(result!=null) {
-                    startCheckout(result)
+                    //startCheckout(result)
                 }
                 // use the result to update your UI and send the payment method nonce to your server
             } else if (resultCode == RESULT_CANCELED) {
@@ -133,38 +138,38 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
         }
     }
 
-    private fun startCheckout(result: DropInResult) {
-        val amountToPay = viewModelCar.totalAmountToPay.value
-        val currentCarID = viewModelCar.currentCarID.value
-        val bookingDate = viewModelCar.currentSelectedDays.value
-        val userLoginData = userDataManager.getUserID()
-
-        if (amountToPay != null && currentCarID != null && bookingDate != null) {
-
-            val paymentRequest = PaymentRequest(nonce = result.paymentMethodNonce?.nonce,
-                    deviceData = result.deviceData, amount = amountToPay)
-
-            val checkoutRequest = NewBookingRequestModel(paymentRequest = paymentRequest,
-                    startDate = bookingDate.startDate.toUnix(),
-                    endDate = bookingDate.endDate.toUnix(),
-                    userID = userLoginData,
-                    carID = currentCarID
-            )
-
-            viewModelPayment.checkout(checkoutRequest).observeRequest(viewLifecycleOwner) {
-                when(it){
-                    is State.Success -> {
-                        val action = ConfirmSelectionFragmentDirections.actionConfirmSelectionFragmentToSuccessfulPaymentFragment()
-                        findNavController().navigate(action)
-                    }
-                    is State.Loading ->{
-                    
-                    }
-                    is State.Error ->{
-                        Toast.makeText(requireContext(), it.error, Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        }
-    }
+//    private fun startCheckout(result: DropInResult) {
+//        val amountToPay = viewModelCar.totalAmountToPay.value
+//        val currentCarID = viewModelCar.currentCarID.value
+//        val bookingDate = viewModelCar.currentSelectedDays.value
+//        val userLoginData = userDataManager.getUserID()
+//
+//        if (amountToPay != null && currentCarID != null && bookingDate != null) {
+//
+//            val paymentRequest = PaymentRequest(nonce = result.paymentMethodNonce?.nonce,
+//                    deviceData = result.deviceData, amount = amountToPay)
+//
+//            val checkoutRequest = NewBookingRequestModel(paymentRequest = paymentRequest,
+//                    startDate = bookingDate.startDate.toUnix(),
+//                    endDate = bookingDate.endDate.toUnix(),
+//                    userID = userLoginData,
+//                    carID = currentCarID
+//            )
+//
+//            viewModelPayment.checkout(checkoutRequest).observeRequest(viewLifecycleOwner) {
+//                when(it){
+//                    is State.Success -> {
+//                        val action = ConfirmSelectionFragmentDirections.actionConfirmSelectionFragmentToSuccessfulPaymentFragment()
+//                        findNavController().navigate(action)
+//                    }
+//                    is State.Loading ->{
+//
+//                    }
+//                    is State.Error ->{
+//                        Toast.makeText(requireContext(), it.error, Toast.LENGTH_LONG).show()
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

@@ -6,7 +6,9 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorRes
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import com.andrei.carrental.custom.QueryTextChangedListener
 import java.time.DayOfWeek
 import java.time.temporal.WeekFields
 import java.util.*

@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
@@ -27,6 +28,8 @@ import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.kizitonwose.calendarview.utils.yearMonth
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -101,12 +104,14 @@ class ChooseDateFragment : BaseFragment (R.layout.example_4_fragment){
     }
 
     private fun fetchUnavailableDates() {
-        viewModelCar.unavailableCarDates.reObserve(viewLifecycleOwner){
+        lifecycleScope.launchWhenResumed {
+            viewModelCar.unavailableDates.collect {
                 if(it is State.Success) {
                     unavailableDates = it.data
                     binding.progressBar.hide()
                     binding.exFourCalendar.notifyCalendarChanged()
                 }
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.adapters.CustomDivider
 import com.andrei.UI.adapters.CarsRVSearchAdapter
 import com.andrei.carrental.R
+import com.andrei.carrental.custom.QueryTextChangedListener
 
 import com.andrei.carrental.databinding.FragmentHomeBinding
 import com.andrei.carrental.entities.Car
@@ -37,9 +38,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
     private val nearbyCarsObserver = Observer<State<List<Car>>>{
         when(it){
-            is State.Success ->  if(it.data != null){
-                bottomSheetRVAdapter.setData(it.data)
-            }
+            is State.Success -> bottomSheetRVAdapter.setData(it.data)
         }
     }
 
@@ -73,10 +72,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
         configureRecyclerView()
         binding.searchViewCars.setOnClickListener {  binding.searchViewCars.isIconified = false }
 
-        binding.searchViewCars.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return true
-            }
+        binding.searchViewCars.setOnQueryTextListener(object : QueryTextChangedListener {
 
             override fun onQueryTextChange(query: String): Boolean {
                 if(query.isNotEmpty()){
@@ -99,9 +95,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
         viewModelCar.searchSuggestions.reObserve(viewLifecycleOwner){
             when(it){
                 is State.Success -> {
-                      if(it.data !=null){
-                          searchRVAdapter.setData(it.data)
-                      }
+                    searchRVAdapter.setData(it.data)
                        binding.pbSearch.hide()
                 }
                 is State.Loading -> binding.pbSearch.show()

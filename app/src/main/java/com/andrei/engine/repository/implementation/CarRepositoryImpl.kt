@@ -12,10 +12,7 @@ import com.andrei.engine.State
 import com.andrei.engine.repositoryInterfaces.CarAPI
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 class CarRepositoryImpl @Inject constructor(
@@ -28,18 +25,6 @@ class CarRepositoryImpl @Inject constructor(
         MutableLiveData<State<List<Car>>>()
     }
 
-    val currentCarID: MutableLiveData<Long> = MutableLiveData()
-
-    val currentSelectedCar: LiveData<State<Car>> =
-        Transformations.switchMap(currentCarID) { carID ->
-            return@switchMap fetchCarById(carID).asLiveData()
-        }
-
-
-    val unavailableDates: LiveData<State<List<BookingDate>>> =
-        Transformations.switchMap(currentCarID) { carId ->
-            return@switchMap fetchUnavailableDates(carId).asLiveData()
-        }
 
 
     fun fetchNearbyCars(position: LatLng) =
@@ -59,14 +44,14 @@ class CarRepositoryImpl @Inject constructor(
         }
         }
 
-    private fun fetchCarById(id:Long) =
+      fun fetchCarById(id:Long):Flow<State<Car>> =
         callRunner.makeApiCall{carAPI.getCarByID(id)}
 
 
-   private  fun fetchUnavailableDates(carID:Long)  =
+    fun fetchUnavailableDates(carID:Long)  =
         callRunner.makeApiCall{carAPI.getUnavailableDates(carID)}.transform{
             when(it){
-                is State.Success-> emit(State.Success(it.data?.map { date -> date.toBookingDate() }))
+                is State.Success-> emit(State.Success(it.data.map { date -> date.toBookingDate() }))
                 is State.Loading -> emit(State.Loading)
                 is State.Error -> emit(State.Error(it.error))
         }
