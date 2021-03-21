@@ -159,8 +159,8 @@ class ChooseDateFragment : BaseFragment (R.layout.example_4_fragment){
             val startDate = startDate
 
             if(startDate != null){
-                viewModelCar.currentSelectedDays.value = BookingDate(startDate = startDate,
-                        endDate = (endDate ?: startDate ))
+                viewModelCar.setCurrentSelectedDays( BookingDate(startDate = startDate,
+                        endDate = (endDate ?: startDate )))
                val action = ChooseDateFragmentDirections.actionChooseDatesFragmentToConfirmSelectionFragment()
                 findNavController().navigate(action)
 
