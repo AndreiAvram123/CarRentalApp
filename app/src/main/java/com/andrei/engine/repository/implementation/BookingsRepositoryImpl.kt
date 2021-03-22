@@ -18,7 +18,7 @@ class BookingsRepositoryImpl @Inject constructor(
 
     override fun fetchBookings() : Flow<State<List<BookingDTO>>> =
               callRunner.makeApiCall{
-                  bookingRepo.getBookings(userDataManager.getUserID())
+                  bookingRepo.getBookings(userDataManager.userID!!)
               }
 
 }

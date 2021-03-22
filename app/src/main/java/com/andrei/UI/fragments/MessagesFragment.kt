@@ -20,14 +20,12 @@ import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.viewmodels.ViewModelChat
 import com.andrei.messenger.MessengerService
 import com.andrei.utils.loadFromURl
-import com.andrei.utils.reObserve
 import com.andreia.carrental.requestModels.CreateMessageRequest
 import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessageHolders
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
 import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
 import pl.aprilapps.easyphotopicker.MediaFile
@@ -55,6 +53,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     lateinit var userDataManager: UserDataManager
 
 
+
     private val bottomSheet:OptionsMessageBottomSheet by lazy {
         OptionsMessageBottomSheet(this::unsendMessage, this::sheetClosed).apply {
             isCancelable = false
@@ -71,8 +70,8 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
 
     private val messagesAdapter:CustomMessagesListAdapter by lazy {
-        CustomMessagesListAdapter(userDataManager.getUserID().toString(), getAdapterHolders(),imageLoader).apply {
-            enableSelectionMode(CustomSelectionListener(userDataManager.getUserID().toString()))
+        CustomMessagesListAdapter(userDataManager.userID.toString(), getAdapterHolders(),imageLoader).apply {
+            enableSelectionMode(CustomSelectionListener(userDataManager.userID.toString()))
         }
     }
 
@@ -93,7 +92,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
          easyImage.handleActivityResult(requestCode,resultCode,data,requireActivity(), object : DefaultCallback() {
              override fun onMediaFilesPicked(imageFiles: Array<MediaFile>, source: MediaSource) {
-                 viewModelChat.sendImages(imageFiles.asList(),navArgs.chatID,userDataManager.getUserID())
+                 viewModelChat.sendImages(imageFiles.asList(),navArgs.chatID,userDataManager.userID)
              }
          })
     }
@@ -189,7 +188,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
     private fun sendTextMessage(messageText:String){
         val createMessageModel = CreateMessageRequest(
-                senderID = userDataManager.getUserID(),
+                senderID = userDataManager.userID,
                 chatID = navArgs.chatID,
                 messageType = MessageType.MESSAGE_TEXT,
                 textContent = messageText

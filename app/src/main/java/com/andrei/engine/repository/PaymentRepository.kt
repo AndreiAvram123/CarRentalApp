@@ -10,10 +10,7 @@ import com.andrei.engine.requestModels.PaymentRequest
 import com.andrei.engine.responseModels.TokenResponse
 import com.andrei.utils.toUnix
 import com.braintreepayments.api.dropin.DropInResult
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class PaymentRepository @Inject constructor(
@@ -27,18 +24,21 @@ class PaymentRepository @Inject constructor(
 
 
  fun checkout(checkoutRequest: Pair<CheckoutCarData,DropInResult>):Flow<State<Nothing>> {
+     val userID:Long = userDataManager.userID!!
+
      val dropInResult = checkoutRequest.second
      val carCheckoutData = checkoutRequest.first
      val paymentRequest = PaymentRequest (
              nonce = dropInResult.paymentMethodNonce?.nonce,
              deviceData = dropInResult.deviceData,
              amount = carCheckoutData.amount)
+
      val newBookingRequestModel = NewBookingRequestModel(
          paymentRequest = paymentRequest,
          startDate = carCheckoutData.bookingDate.startDate.toUnix(),
          endDate = carCheckoutData.bookingDate.endDate.toUnix(),
          carID = carCheckoutData.carID,
-         userID = userDataManager.getUserID()
+         userID = userID
      )
      return callRunner.makeApiCall {
          paymentRepoInterface.checkout(newBookingRequestModel)

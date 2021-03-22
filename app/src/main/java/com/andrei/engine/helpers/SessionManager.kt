@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.andrei.DI.annotations.DefaultGlobalScope
 import com.andrei.carrental.R
+import com.andrei.carrental.UserDataManager
 import com.andrei.engine.DTOEntities.BasicUserLoginData
 import com.andrei.engine.responseModels.LoginResponse
 import com.andrei.utils.*
@@ -19,11 +20,9 @@ import javax.inject.Singleton
 
 @Singleton
 class SessionManager @Inject constructor(
-        private val sharedPreferences: SharedPreferences,
-        @ApplicationContext private val  context:Context,
         private val tokenManager: TokenManager,
-        @DefaultGlobalScope  private val coroutineScope: CoroutineScope
-
+        @DefaultGlobalScope  private val coroutineScope: CoroutineScope,
+        private val userDataManager: UserDataManager
 ) {
 
     private val _authenticationState:MutableStateFlow<AuthenticationState> = MutableStateFlow(if(isUserLoggedIn){
@@ -57,8 +56,8 @@ class SessionManager @Inject constructor(
     }
 
     private fun areUserDetailsValid():Boolean{
-        val email = sharedPreferences.getStringOrNull(context.getString(R.string.key_user_email))
-        val id = sharedPreferences.getLongOrZero(context.getString(R.string.key_user_id))
+        val email = userDataManager.email
+        val id = userDataManager.userID
         return email != null && id != 0L
     }
 
@@ -71,15 +70,17 @@ class SessionManager @Inject constructor(
    }
 
     private fun saveUserInStorage(userLoginData:BasicUserLoginData){
-        sharedPreferences.edit {
-            putLong(context.getString(R.string.key_user_id),userLoginData.id)
-            putString(context.getString(R.string.key_user_email),userLoginData.email)
+        userDataManager.apply {
+            email = userLoginData.email
+            userID = userLoginData.id
         }
     }
 
     private fun removeUserFromPersistence(){
-        sharedPreferences.removeValue(context.getString(R.string.key_user_id))
-        sharedPreferences.removeValue(context.getString(R.string.key_user_email))
+        userDataManager.apply {
+            email = null
+            userID = 0
+        }
     }
 
     enum class AuthenticationState{

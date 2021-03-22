@@ -1,17 +1,64 @@
 package com.andrei.carrental
 
 import android.content.Context
-import com.andrei.utils.getLongOrZero
+import android.content.SharedPreferences
+import androidx.annotation.StringRes
+import androidx.core.content.edit
+import com.andrei.utils.edit
+import com.andrei.utils.getLongOrNull
+import com.andrei.utils.getStringOrNull
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.properties.ReadOnlyProperty
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
+@Singleton
 class UserDataManager @Inject constructor(
-    @ApplicationContext private val context:Context
+    private val sharedPreferences: SharedPreferences
 ) {
 
-    fun getUserID():Long{
-        val id = context.getSharedPreferences(context.getString(R.string.key_preferences), Context.MODE_PRIVATE).getLongOrZero(context.getString(R.string.key_user_id))
-        check(id != 0L){"The user ID should not be 0 when this method is called"}
-        return id
+    var userID:Long  by PrefsDelegateLong(sharedPreferences)
+    var email:String? by PrefsDelegateString(sharedPreferences)
+
+
+    fun signOut(){
+        userID = 0
+        email = null
     }
+
+}
+
+class PrefsDelegateLong(
+     private val  sharedPreferences: SharedPreferences
+
+) : ReadWriteProperty<Any?,Long>{
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Long {
+       return sharedPreferences.getLong(property.name,0)
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: Long) {
+        sharedPreferences.edit {
+            putLong(property.name,value)
+        }
+    }
+
+}
+
+class PrefsDelegateString(
+        private val sharedPreferences: SharedPreferences
+):ReadWriteProperty<Any?,String?>{
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: String?) {
+       sharedPreferences.edit {
+           putString(property.name,value)
+       }
+    }
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): String? {
+        return sharedPreferences.getStringOrNull(property.name)
+    }
+
 }

@@ -2,7 +2,6 @@ package com.andrei.engine.repository.implementation
 
 import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.entities.Message
-import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.CallRunner
 import com.andrei.engine.DTOEntities.ChatDTO
@@ -50,7 +49,7 @@ class ChatRepositoryImpl @Inject constructor(
 
 
     override suspend fun fetchUserChats(): Flow<State<List<ChatDTO>>> {
-        val flow = callRunner.makeApiCall { chatAPI.getAllUserChats(userDataManager.getUserID()) }
+        val flow = callRunner.makeApiCall { chatAPI.getAllUserChats(userDataManager.userID) }
         flow.collect {
             if (it is State.Success) {
                 //insert into room

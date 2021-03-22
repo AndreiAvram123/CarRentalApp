@@ -21,7 +21,7 @@ class CarRepositoryImpl @Inject constructor(
 ) {
 
 
-    val searchSuggestions by lazy {
+    private val searchSuggestions by lazy {
         MutableLiveData<State<List<Car>>>()
     }
 

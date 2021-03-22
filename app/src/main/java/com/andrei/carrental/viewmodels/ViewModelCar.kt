@@ -43,12 +43,22 @@ class ViewModelCar @Inject constructor(
    get() = _currentSelectedDays
 
     fun getCar(carID:Long){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
              carRepositoryImpl.fetchCarById(carID).collect {
                  _currentSelectedCar.emit(it)
              }
         }
+        getUnavailableDates(carID)
     }
+
+    private fun getUnavailableDates(carID:Long){
+        viewModelScope.launch {
+            carRepositoryImpl.fetchUnavailableDates(carID).collect {
+                _unavailableDates.emit(it)
+            }
+        }
+    }
+
 
     private val _totalAmountToPay:MutableStateFlow<Double?> = MutableStateFlow(null)
 

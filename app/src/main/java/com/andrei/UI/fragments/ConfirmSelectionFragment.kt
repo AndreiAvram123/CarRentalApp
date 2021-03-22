@@ -13,15 +13,11 @@ import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.custom.PaymentUIContract
 import com.andrei.carrental.databinding.FragmentConfirmSelectionBinding
 import com.andrei.carrental.entities.BookingDate
-import com.andrei.carrental.entities.CheckoutCarData
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelPayment
 import com.andrei.engine.State
 import com.andrei.engine.helpers.SessionManager
-import com.andrei.engine.requestModels.PaymentRequest
 import com.andrei.utils.formatWithPattern
-import com.andrei.utils.reObserve
-import com.braintreepayments.api.dropin.DropInResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
@@ -55,6 +51,7 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
     private fun initializeUI() {
 
         viewModelCar.calculateTotalAmountToPay()
+
 
         lifecycleScope.launchWhenResumed {
             viewModelCar.currentSelectedDays.filterNotNull().collect {
