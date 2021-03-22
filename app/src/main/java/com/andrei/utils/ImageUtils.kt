@@ -18,17 +18,19 @@ suspend fun fetchBitmap(context: Context, url: String, maxWidth: Int = 400):Bitm
     val imageLoader = context.imageLoader
     val imageRequest = ImageRequest.Builder(context).data(url).allowHardware(false).build()
 
-    val result  = imageLoader.execute(imageRequest)
-
-    result.drawable?.let {
-        val aspectRatio = getHeightWidthAspectRation(
-            width = it.intrinsicWidth,
-            height = it.intrinsicHeight
-        )
-        val newHeight = (maxWidth * aspectRatio).toInt()
-        return it.toBitmap(width = maxWidth, height = newHeight)
+    try {
+        val result = imageLoader.execute(imageRequest)
+        result.drawable?.let {
+            val aspectRatio = getHeightWidthAspectRation(
+                    width = it.intrinsicWidth,
+                    height = it.intrinsicHeight
+            )
+            val newHeight = (maxWidth * aspectRatio).toInt()
+            return it.toBitmap(width = maxWidth, height = newHeight)
+        }
+    }catch (e:Exception){
+        return null
     }
-    return null
 }
 
 
