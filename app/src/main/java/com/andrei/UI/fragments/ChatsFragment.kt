@@ -28,7 +28,9 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
     private val binding:FragmentChatsBinding by viewBinding()
     private val viewModelChat:ViewModelChat by activityViewModels()
 
-    private val chatsAdapter = ChatsAdapter(viewLifecycleOwner,this::goToMessagesFragment)
+    private val chatsAdapter by lazy {
+        ChatsAdapter(viewLifecycleOwner,this::goToMessagesFragment)
+    } 
 
 
     override fun initializeUI() {
