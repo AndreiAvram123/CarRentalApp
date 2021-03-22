@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
+import coil.load
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentExpandedCarBinding
 import com.andrei.carrental.entities.Car
@@ -16,7 +17,6 @@ import com.andrei.carrental.entities.MediaFile
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.engine.DTOEntities.toLatLng
 import com.andrei.engine.State
-import com.andrei.utils.loadFromURl
 import com.andrei.utils.reObserve
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -116,7 +116,7 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
         binding.carouselCarExpanded.apply {
             size = mediaFiles.size
             setCarouselViewListener { view, position ->
-                view.findViewById<ImageView>(R.id.image_item_carousel).loadFromURl(mediaFiles[position].mediaURL)
+                view.findViewById<ImageView>(R.id.image_item_carousel).load(mediaFiles[position].mediaURL)
             }
             show()
         }

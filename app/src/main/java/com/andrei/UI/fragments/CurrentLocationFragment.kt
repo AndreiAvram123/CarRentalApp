@@ -89,10 +89,10 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
                  if(it is State.Success && tempMap != null){
                      it.data.forEach {car->
                          if (car.mediaFiles.isNotEmpty()) {
-                             fetchBitmap(requireContext(), car.mediaFiles.first().mediaURL) { bitmap ->
+                             fetchBitmap(requireContext(), car.mediaFiles.first().mediaURL)?.also {bitmap->
                                  addMarkerToMap(car.location,bitmap,car.id)
-
                              }
+
                          }
                      }
                  }
@@ -106,17 +106,15 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
 
 
     private fun addMarkerToMap(location:GeoPoint, bitmap:Bitmap, id:Long){
-       map?.addMarker(
-                MarkerOptions().position(
-                        LatLng(
-                                location.latitude,
-                                location.longitude
-                        )
-                ))?.apply {
-                  setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                }?.also {
-                    markersOnMap[it] = id
-       }
+       map?.let {
+            val marker = it.addMarker( MarkerOptions().position(
+                LatLng(
+                    location.latitude,
+                    location.longitude
+                )))
+            marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+           markersOnMap[marker] = id
+        }
 
     }
 

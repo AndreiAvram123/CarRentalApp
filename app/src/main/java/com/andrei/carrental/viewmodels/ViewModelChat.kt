@@ -103,9 +103,7 @@ class ViewModelChat @Inject constructor(
     private fun dequeueMessage(){
             val message = messagesToSend.peek()
             viewModelScope.launch(Dispatchers.IO) {   currentMessageToSend.emit(message)}
-            if(message != null){
-                messagesToSend.pop()
-            }
+            message?.let { messagesToSend.pop() }
         }
 
 

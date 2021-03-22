@@ -1,7 +1,6 @@
 package com.andrei.carrental.viewmodels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.andrei.carrental.entities.CheckoutCarData
 import com.andrei.engine.State

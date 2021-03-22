@@ -7,38 +7,29 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Base64
 import android.widget.ImageView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
+import androidx.core.graphics.drawable.toBitmap
+import coil.imageLoader
+import coil.load
+import coil.request.ImageRequest
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-fun fetchBitmap(context: Context, url: String, maxWidth: Int = 400, completion: (bitmap: Bitmap) -> Unit){
-    Glide.with(context)
-            .asBitmap()
-            .load(url)
-            .into(object : CustomTarget<Bitmap>(){
-                override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
-                ) {
-                    val aspectRatio = getHeightWidthAspectRation(width = resource.width, height = resource.height)
-                    val newHeight  = (maxWidth * aspectRatio).toInt()
+suspend fun fetchBitmap(context: Context, url: String, maxWidth: Int = 400):Bitmap?{
+    val imageLoader = context.imageLoader
+    val imageRequest = ImageRequest.Builder(context).data(url).build()
 
-                     completion(Bitmap.createScaledBitmap(resource,maxWidth,newHeight,true))
-                }
-                override fun onLoadCleared(placeholder: Drawable?) {
-
-                }
-
-            })
-
+    val drawable  = imageLoader.execute(imageRequest).drawable
+    drawable?.let {
+        val aspectRatio = getHeightWidthAspectRation(
+            width = it.intrinsicWidth,
+            height = it.intrinsicHeight
+        )
+        val newHeight = (maxWidth * aspectRatio).toInt()
+        return it.toBitmap(width = maxWidth, height = newHeight)
+    }
+    return null
 }
 
-fun ImageView.loadFromURl(url:String){
-    Glide.with(this)
-            .load(url).override(SIZE_ORIGINAL).into(this)
-}
 
 fun Uri.toDrawable(context: Context): Drawable {
     val inputStream: InputStream? = context.contentResolver.openInputStream(this)
@@ -53,4 +44,4 @@ fun Drawable.toBase64(): String {
     return Base64.encodeToString(byteArray, Base64.DEFAULT).replace("\\s".toRegex(), "");
 }
 
-fun getHeightWidthAspectRation(width:Int,height:Int): Double = height/width.toDouble()
+private fun getHeightWidthAspectRation(width:Int,height:Int): Double = height/width.toDouble()

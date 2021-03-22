@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
+import coil.load
 import com.andrei.UI.adapters.messages.IncomingUnsendMessageViewHolder
 import com.andrei.UI.adapters.messages.OutgoingMessageViewHolder
 import com.andrei.UI.bottomSheets.OptionsMessageBottomSheet
@@ -20,7 +21,6 @@ import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.viewmodels.ViewModelChat
 import com.andrei.engine.State
 import com.andrei.messenger.MessengerService
-import com.andrei.utils.loadFromURl
 import com.andreia.carrental.requestModels.CreateMessageRequest
 import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessageHolders
@@ -63,7 +63,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
 
 
-    private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.loadFromURl(it) } }
+    private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.load(it) } }
 
 
     private val messagesAdapter:CustomMessagesListAdapter by lazy {
