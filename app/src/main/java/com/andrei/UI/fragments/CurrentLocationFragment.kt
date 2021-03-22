@@ -111,9 +111,10 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
                 LatLng(
                     location.latitude,
                     location.longitude
-                )))
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
-           markersOnMap[marker] = id
+                ))).apply {
+                setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+            }
+            markersOnMap[marker] = id
         }
 
     }

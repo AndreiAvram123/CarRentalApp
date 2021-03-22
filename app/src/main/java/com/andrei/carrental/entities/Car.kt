@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 data class Car(
         @SerializedName("id")
         val id:Long,
-        @SerializedName("images")
+        @SerializedName("mediaFiles")
         val mediaFiles:List<MediaFile>,
         @SerializedName("pricePerDay")
         val pricePerDay:Double,

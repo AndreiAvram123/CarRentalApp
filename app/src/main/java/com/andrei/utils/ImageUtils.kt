@@ -16,10 +16,11 @@ import java.io.InputStream
 
 suspend fun fetchBitmap(context: Context, url: String, maxWidth: Int = 400):Bitmap?{
     val imageLoader = context.imageLoader
-    val imageRequest = ImageRequest.Builder(context).data(url).build()
+    val imageRequest = ImageRequest.Builder(context).data(url).allowHardware(false).build()
 
-    val drawable  = imageLoader.execute(imageRequest).drawable
-    drawable?.let {
+    val result  = imageLoader.execute(imageRequest)
+
+    result.drawable?.let {
         val aspectRatio = getHeightWidthAspectRation(
             width = it.intrinsicWidth,
             height = it.intrinsicHeight
