@@ -10,59 +10,37 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlin.Exception
 
 class LocationSettingsHandler {
-
-
 
     companion object{
         const  val REQUEST_CHECK_SETTINGS: Int = 3
     }
 
 
-    val currentLocationNeedsSatisfied:MutableLiveData<Boolean> by lazy {
-        MutableLiveData()
-    }
-
-     var locationRequest:LocationRequest? = null
-       private var registeredActivity:Activity ? = null
-
-
-    fun registerActivityForResult(activity: Activity){
-       this.registeredActivity = activity
-    }
+    val currentLocationNeedsSatisfied:MutableStateFlow<Boolean> = MutableStateFlow(false)
 
 
 
-      fun startLocationRequest() {
+      suspend fun startLocationRequest(activity: Activity, locationRequest: LocationRequest) {
+            val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
 
-        val tempRegisteredActivity = registeredActivity
-        val tempLocationSettingsRequest = locationRequest
-
-        if (tempRegisteredActivity != null && tempLocationSettingsRequest != null) {
-            val builder = LocationSettingsRequest.Builder().addLocationRequest(tempLocationSettingsRequest)
-
-            val client = LocationServices.getSettingsClient(tempRegisteredActivity)
+            val client = LocationServices.getSettingsClient(activity)
             val task = client.checkLocationSettings(builder.build())
-//todo
-            //use await
-            task.addOnSuccessListener {
-                currentLocationNeedsSatisfied.postValue(true)
-            }
 
-            task.addOnFailureListener {
-                if (it is ResolvableApiException) {
-                    try {
-                        it.startResolutionForResult(tempRegisteredActivity, REQUEST_CHECK_SETTINGS)
-                    } catch (sendEx: IntentSender.SendIntentException) {
-                        currentLocationNeedsSatisfied.postValue(false)
-                    }
+            try {
+                task.await()
+                currentLocationNeedsSatisfied.emit(true)
+            } catch (e: Exception) {
+                if (e is ResolvableApiException) {
+                    e.startResolutionForResult(activity, REQUEST_CHECK_SETTINGS)
                 } else {
-                    currentLocationNeedsSatisfied.postValue(false)
+                    currentLocationNeedsSatisfied.emit(false)
                 }
             }
-
         }
-    }
 }

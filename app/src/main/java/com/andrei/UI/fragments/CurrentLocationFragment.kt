@@ -5,10 +5,8 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.andrei.carrental.R
@@ -17,7 +15,6 @@ import com.andrei.engine.DTOEntities.GeoPoint
 import com.andrei.engine.State
 import com.andrei.utils.LocationSettingsHandler
 import com.andrei.utils.fetchBitmap
-import com.andrei.utils.reObserve
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -29,6 +26,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -53,15 +52,6 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
     private val locationRequest = LocationRequest.create().apply {
         interval = 10000
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
-
-    private val observerLocationSettings = Observer<Boolean>{
-        if(it){
-            mapFragment.getMapAsync(callback)
-            // Construct a PlaceDetectionClient.
-            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-        }
-
     }
 
 
@@ -138,37 +128,41 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
         super.onViewCreated(view, savedInstanceState)
         initializeUI()
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-
-        locationSettingsHandler.locationRequest = locationRequest
-        locationSettingsHandler.startLocationRequest()
-
-        locationSettingsHandler.currentLocationNeedsSatisfied.reObserve(viewLifecycleOwner,observerLocationSettings)
+        requireAdequateLocationSettings()
     }
+
+    private fun requireAdequateLocationSettings(){
+        lifecycleScope.launchWhenResumed {
+            locationSettingsHandler.startLocationRequest(requireActivity(),locationRequest)
+            locationSettingsHandler.currentLocationNeedsSatisfied.collect {
+                if(it){
+                    mapFragment.getMapAsync(callback)
+                    // Construct a PlaceDetectionClient.
+                    mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+                }
+            }
+        }
+    }
+
     /**
      * Gets the current location of the device, and positions the map's camera.
      */
 
     private fun getDeviceLocation() {
-        /*
-         * Get the best and most recent location of the device, which may be null in rare
-         * cases when a location is not available.
-         */
-        try {
-           mFusedLocationProviderClient.lastLocation.addOnSuccessListener {
-               if (it != null){
-               val currentLocation = LatLng(
-                       it.latitude,
-                       it.longitude
-               )
-               viewModelLocation.setNewLocation(currentLocation)
-              moveCameraToLocation(currentLocation)
-           }else{
-               startLocationUpdates()
-           }
-           }
-        } catch (e: SecurityException) {
-            Timber.e(e)
-        }
+            lifecycleScope.launchWhenResumed {
+                try {
+                    val lastLocation = mFusedLocationProviderClient.lastLocation.await()
+                    val currentLocation = LatLng(
+                        lastLocation.latitude,
+                        lastLocation.longitude
+                    )
+                    viewModelLocation.setNewLocation(currentLocation)
+                    moveCameraToLocation(currentLocation)
+                    startLocationUpdates()
+                } catch (e: Exception) {
+                    Timber.e(e)
+                }
+            }
     }
 
     private fun moveCameraToLocation(location :LatLng){

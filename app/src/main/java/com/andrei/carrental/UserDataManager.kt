@@ -1,8 +1,6 @@
 package com.andrei.carrental
 
-import android.content.Context
 import android.content.SharedPreferences
-import androidx.annotation.StringRes
 import androidx.core.content.edit
 import com.andrei.utils.edit
 import com.andrei.utils.getLongOrNull
@@ -16,19 +14,14 @@ import kotlin.reflect.KProperty
 
 @Singleton
 class UserDataManager @Inject constructor(
-    private val sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences
 ) {
 
     var userID:Long  by PrefsDelegateLong(sharedPreferences)
     var email:String? by PrefsDelegateString(sharedPreferences)
 
-
-    fun signOut(){
-        userID = 0
-        email = null
-    }
-
 }
+
 
 class PrefsDelegateLong(
      private val  sharedPreferences: SharedPreferences

@@ -2,6 +2,8 @@ package com.andrei.carrental.entities
 
 import androidx.lifecycle.LiveData
 import com.andrei.engine.DTOEntities.MessageDTO
+import com.stfalcon.chatkit.commons.models.IDialog
+import com.stfalcon.chatkit.commons.models.IUser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
