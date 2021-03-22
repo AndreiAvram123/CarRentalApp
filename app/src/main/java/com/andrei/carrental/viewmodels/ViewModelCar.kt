@@ -107,7 +107,11 @@ class ViewModelCar @Inject constructor(
     }
 
     fun fetchSuggestions(query:String, location:LatLng) {
-        viewModelScope.launch { carRepositoryImpl.fetchSuggestions(query,location) }
+        viewModelScope.launch {
+            carRepositoryImpl.fetchSuggestions(query,location).collect {
+                _searchSuggestions.emit(it)
+            }
+        }
     }
 
 }

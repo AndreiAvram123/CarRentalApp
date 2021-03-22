@@ -20,10 +20,6 @@ class CarRepositoryImpl @Inject constructor(
 ) {
 
 
-    private val searchSuggestions by lazy {
-        MutableLiveData<State<List<Car>>>()
-    }
-
 
 
     fun fetchNearbyCars(position: LatLng) =
@@ -31,16 +27,13 @@ class CarRepositoryImpl @Inject constructor(
             carAPI.getNearbyCars(latitude = position.latitude, longitude = position.longitude)
         }
 
-    suspend fun fetchSuggestions(query: String, position: LatLng) {
+    suspend fun fetchSuggestions(query: String, position: LatLng) =
         callRunner.makeApiCall {
             carAPI.search(
                 latitude = position.latitude,
                 longitude = position.longitude,
                 query = query
             )
-        }.collect {
-            searchSuggestions.postValue(it)
-        }
         }
 
       fun fetchCarById(id:Long):Flow<State<Car>> =
