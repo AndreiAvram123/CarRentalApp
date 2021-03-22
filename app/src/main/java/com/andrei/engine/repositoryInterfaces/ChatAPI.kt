@@ -1,6 +1,7 @@
 package com.andrei.engine.repositoryInterfaces
 
 import com.andrei.engine.DTOEntities.ChatDTO
+import com.andrei.engine.DTOEntities.MessageDTO
 import com.andrei.engine.configuration.APIResponse
 import com.andrei.engine.configuration.CallWrapper
 import com.andreia.carrental.requestModels.CreateMessageRequest
@@ -16,4 +17,9 @@ interface ChatAPI {
 
     @PUT("/messages/{messageID}")
     suspend  fun modifyMessage(@Path("messageID") messageID:Long):Response<APIResponse<Nothing>>
+
+
+    @GET("/chats/{chatID}/messages")
+    suspend fun loadMoreMessages(@Path("chatID") chatID:Long, @Query("offset") offset:Int) :
+            Response<APIResponse<List<MessageDTO>>>
 }

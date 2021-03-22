@@ -18,6 +18,7 @@ import com.andrei.carrental.databinding.FragmentMessagesBinding
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.viewmodels.ViewModelChat
+import com.andrei.engine.State
 import com.andrei.messenger.MessengerService
 import com.andrei.utils.loadFromURl
 import com.andreia.carrental.requestModels.CreateMessageRequest
@@ -30,18 +31,18 @@ import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
 import pl.aprilapps.easyphotopicker.MediaFile
 import pl.aprilapps.easyphotopicker.MediaSource
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
-    MessageHolders.ContentChecker<Message> {
+    MessageHolders.ContentChecker<Message>, MessagesListAdapter.OnLoadMoreListener {
 
     private val binding:FragmentMessagesBinding by viewBinding ()
     private val viewModelChat:ViewModelChat by activityViewModels()
 
     private val navArgs:MessagesFragmentArgs by navArgs()
-    private var skipScroll: Boolean = false
 
     @Inject
     lateinit var easyImage: EasyImage
@@ -55,25 +56,40 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
 
     private val bottomSheet:OptionsMessageBottomSheet by lazy {
-        OptionsMessageBottomSheet(this::unsendMessage, this::sheetClosed).apply {
+        OptionsMessageBottomSheet(this::unsendMessage).apply {
             isCancelable = false
         }
     }
 
-    private fun sheetClosed() {
-          Handler(Looper.getMainLooper()).postDelayed({
-              skipScroll = false
-          }, 200)
-    }
+
 
     private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.loadFromURl(it) } }
 
 
     private val messagesAdapter:CustomMessagesListAdapter by lazy {
-        CustomMessagesListAdapter(userDataManager.userID.toString(), getAdapterHolders(),imageLoader).apply {
+          provideMessageAdapter()
+    }
+
+
+    private fun provideMessageAdapter(): CustomMessagesListAdapter {
+       return CustomMessagesListAdapter(userDataManager.userID.toString(), getAdapterHolders(),imageLoader).apply {
             enableSelectionMode(CustomSelectionListener(userDataManager.userID.toString()))
+            setLoadMoreListener(this@MessagesFragment)
         }
     }
+    override fun onLoadMore(page: Int, totalItemsCount: Int) {
+        lifecycleScope.launchWhenResumed {
+            viewModelChat.loadMoreMessages(navArgs.chatID,totalItemsCount)
+              viewModelChat.oldMessagesLoaded.collect {
+                  if(it is State.Success){
+                     messagesAdapter.addToEnd(it.data,true)
+                  }
+              }
+        }
+
+    }
+
+
 
 
     inner class CustomSelectionListener(private val currentUserID: String):MessagesListAdapter.SelectionListener{
@@ -119,16 +135,14 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
 
     private fun showBottomSheet() {
-        skipScroll = true
         bottomSheet.show(requireActivity().supportFragmentManager, "bottomSheetMessage")
     }
 
 
 
     override fun initializeUI() {
-        viewModelChat.setCurrentOpenedChatID(navArgs.chatID)
         configureToolbar()
-        configureRV()
+        binding.messagesList.setAdapter(messagesAdapter)
         populateRVWithData()
         attachListeners()
         attachObservers()
@@ -168,22 +182,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     }
 
 
-    private fun configureRV() {
-        binding.messagesList.setAdapter(messagesAdapter)
-
-        binding.messagesList.addOnLayoutChangeListener { _, _, _, bottom, _, _, _, _, oldBottom ->
-            if (shouldScroll(bottom, oldBottom)) {
-                binding.messagesList.postDelayed({
-                    binding.messagesList.smoothScrollToPosition(0)
-                }, 50)
-            }
-        }
-    }
-
-    private fun shouldScroll(bottom: Int, oldBottom: Int):Boolean{
-        return bottom < oldBottom && messagesAdapter.selectedMessages.isEmpty() && !skipScroll
-    }
-
 
 
     private fun sendTextMessage(messageText:String){
@@ -210,7 +208,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
     private fun populateRVWithData(){
         lifecycleScope.launchWhenResumed {
-            viewModelChat.getChatMessages()
+            viewModelChat.getChatMessages(navArgs.chatID)
             viewModelChat.currentOpenedChatMessages.collect {
                 addDataToAdapter(it.reversed())
             }
@@ -248,7 +246,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
 
     override fun hasContentFor(message: Message, type: Byte): Boolean =  type == message.messageType.id.toByte()
-
 }
 
 

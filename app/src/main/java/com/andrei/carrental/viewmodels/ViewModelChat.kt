@@ -31,7 +31,6 @@ class ViewModelChat @Inject constructor(
     val userChats:StateFlow<State<List<ChatDTO>>>
         get() = _userChats
 
-    private val _currentOpenedChat:MutableStateFlow<Long> = MutableStateFlow(0)
 
     private val _messageToUnsendState = chatRepository.messageToUnsendState
     val messageToUnsendState:SharedFlow<State<Message>>
@@ -41,11 +40,14 @@ class ViewModelChat @Inject constructor(
     private val _messageToSendState = chatRepository.messageToSendState
 
 
+    private val _oldMessagesLoaded:MutableStateFlow<State<List<Message>>> = MutableStateFlow(State.Default)
+    val oldMessagesLoaded:StateFlow<State<List<Message>>>
+    get() = _oldMessagesLoaded.asStateFlow()
 
 
-    fun getUserChats(){
+    fun getUserChats(userID:Long){
         viewModelScope.launch(Dispatchers.IO) {
-            chatRepository.fetchUserChats().collect { state->
+            chatRepository.fetchUserChats(userID).collect { state->
                 when(state){
                     is State.Success -> _userChats.emit(State.Success(state.data))
                     is State.Loading -> _userChats.emit(State.Loading)
@@ -60,24 +62,21 @@ class ViewModelChat @Inject constructor(
    get() = _currentChatMessages
 
 
-      fun getChatMessages(){
-        val chatID = _currentOpenedChat.value
-        if(chatID != 0L){
+      fun getChatMessages(chatID: Long){
+          //todo
+          //should perform a request to fetch the chat messages
             viewModelScope.launch {
                 val messages = chatRepository.getInitialChatMessages(chatID)
                 _currentChatMessages.emit(messages)
-            }
         }
 
     }
 
-    fun setCurrentOpenedChatID(chatID:Long){
-        viewModelScope.launch { _currentOpenedChat.emit(chatID)}
-    }
+
     fun resetOpenedChat(){
         viewModelScope.launch {
-            _currentOpenedChat.emit(0L)
             _currentChatMessages.emit(emptyList())
+            _oldMessagesLoaded.emit(State.Default)
         }
     }
 
@@ -142,6 +141,16 @@ class ViewModelChat @Inject constructor(
             chatRepository.unsendMessage(message)
         }
     }
+
+    fun loadMoreMessages(chatID:Long, offset: Int) {
+        viewModelScope.launch {
+            chatRepository.loadMoreMessages(chatID,offset).collect {
+             _oldMessagesLoaded.emit(it)
+            }
+        }
+    }
+
+
 
 
 }

@@ -17,6 +17,7 @@
 
     <com.stfalcon.chatkit.messages.MessagesList
         android:id="@+id/messagesList"
+        app:textAutoLink="all"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/input_message"

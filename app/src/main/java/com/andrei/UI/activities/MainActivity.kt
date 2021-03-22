@@ -28,9 +28,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
 
     @Inject
-    lateinit var locationSettingsHandler: LocationSettingsHandler
-
-    @Inject
     lateinit var messengerService: MessengerService
 
     @Inject
@@ -71,7 +68,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         super.onActivityResult(requestCode, resultCode, data)
         if (LocationSettingsHandler.REQUEST_CHECK_SETTINGS == requestCode) {
             if (resultCode.isResultOk()) {
-                locationSettingsHandler.currentLocationNeedsSatisfied.value = true
+                LocationSettingsHandler.currentLocationNeedsSatisfied.value = true
             }
         }
     }

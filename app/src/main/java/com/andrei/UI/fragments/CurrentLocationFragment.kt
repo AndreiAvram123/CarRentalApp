@@ -36,9 +36,6 @@ import javax.inject.Inject
 class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location) {
 
 
-    @Inject
-    lateinit var locationSettingsHandler: LocationSettingsHandler
-
     private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
 
     private val viewModelLocation : ViewModelLocation by activityViewModels()
@@ -133,8 +130,8 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
 
     private fun requireAdequateLocationSettings(){
         lifecycleScope.launchWhenResumed {
-            locationSettingsHandler.startLocationRequest(requireActivity(),locationRequest)
-            locationSettingsHandler.currentLocationNeedsSatisfied.collect {
+            LocationSettingsHandler.startLocationRequest(requireActivity(),locationRequest)
+            LocationSettingsHandler.currentLocationNeedsSatisfied.collect {
                 if(it){
                     mapFragment.getMapAsync(callback)
                     // Construct a PlaceDetectionClient.

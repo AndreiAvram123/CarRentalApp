@@ -15,11 +15,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlin.Exception
 
-class LocationSettingsHandler {
-
-    companion object{
-        const  val REQUEST_CHECK_SETTINGS: Int = 3
-    }
+object LocationSettingsHandler {
+    const val REQUEST_CHECK_SETTINGS: Int = 3
 
 
     val currentLocationNeedsSatisfied:MutableStateFlow<Boolean> = MutableStateFlow(false)

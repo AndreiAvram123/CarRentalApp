@@ -21,8 +21,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class OptionsMessageBottomSheet(
-        private val unsend: () -> Unit,
-        private val sheetClosed:(()->Unit)?
+        private val unsend: () -> Unit
        ): BottomSheetDialogFragment() {
 
     private   val binding:BottomSheetOptionsBinding by viewBinding()
@@ -55,7 +54,6 @@ class OptionsMessageBottomSheet(
 
     private fun closeSheet(){
         dismiss()
-        sheetClosed?.invoke()
     }
 
     private fun attachListener() {
