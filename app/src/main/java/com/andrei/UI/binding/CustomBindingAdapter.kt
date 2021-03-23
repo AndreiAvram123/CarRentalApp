@@ -8,6 +8,7 @@ import coil.load
 import com.andrei.carrental.entities.MediaFile
 import com.andrei.utils.hide
 import com.andrei.utils.show
+import com.facebook.shimmer.ShimmerFrameLayout
 
 import com.google.android.material.textfield.TextInputLayout
 
@@ -36,4 +37,13 @@ fun changeVisibilityBasedOnBoolean(view :View, visible:Boolean){
 @BindingAdapter("endIconVisible")
 fun showEndIcon(field:TextInputLayout,visible: Boolean){
    field.isEndIconVisible = visible
+}
+
+@BindingAdapter("shimmerActive")
+fun toggleShimmerLayout(shimmerFrameLayout: ShimmerFrameLayout, active:Boolean){
+    if(active){
+        shimmerFrameLayout.startShimmer()
+    }else{
+        shimmerFrameLayout.hideShimmer()
+    }
 }

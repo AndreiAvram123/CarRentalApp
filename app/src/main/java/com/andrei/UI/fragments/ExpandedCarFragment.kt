@@ -35,7 +35,7 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
     private val MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey"
 
     private val mapReadyCallback = OnMapReadyCallback{ map ->
-        binding.isMapLoading = false
+        binding.isMapLoaded = true
          binding.car?.let {
            val carLocation = it.location.toLatLng()
            map.addMarker(MarkerOptions().position(carLocation))
@@ -50,8 +50,6 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
         super.onViewCreated(view, savedInstanceState)
         viewModelCar.getCar(navArgs.carID)
         initializeUI(savedInstanceState)
-
-
     }
 
 
@@ -82,8 +80,7 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
     }
 
 
-    private fun initializeMap() {
-        binding.isMapLoading = true
+    private fun getMap() {
         binding.mapCarLocation.getMapAsync(mapReadyCallback)
     }
 
@@ -98,18 +95,13 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
         when (state) {
             is State.Success -> {
                     binding.car = state.data
-                    initializeMap()
+                    getMap()
                     updateCarouselVies(state.data.mediaFiles)
-                    binding.isLoading = false
                     binding.imageLender.setOnClickListener {
                     val action = ExpandedCarFragmentDirections.actionGlobalProfileFragment(state.data.basicUser.userID)
                     findNavController().navigate(action)
                 }
             }
-            is State.Loading -> {
-                binding.isLoading = true
-            }
-
         }
     }
 
