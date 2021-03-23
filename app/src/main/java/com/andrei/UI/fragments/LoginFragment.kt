@@ -1,7 +1,6 @@
 package com.andrei.UI.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -12,15 +11,10 @@ import com.andrei.UI.FieldValidation
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentLoginLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelLogin
-import com.andrei.engine.helpers.SessionManager
 import com.andrei.engine.states.LoginFlowState
-import com.andrei.utils.reObserve
-import com.andrei.utils.text
+import com.andrei.utils.parseText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.lang.Exception
 
 @AndroidEntryPoint
 class LoginFragment :Fragment(R.layout.fragment_login_layout) {
@@ -65,8 +59,8 @@ class LoginFragment :Fragment(R.layout.fragment_login_layout) {
     private fun attachViewListeners() {
         binding.apply {
             btLogin.setOnClickListener {
-                val password = binding.tfPassword.editText.text()
-                val email = binding.tfEmail.editText.text()
+                val password = binding.tfPassword.editText.parseText()
+                val email = binding.tfEmail.editText.parseText()
                 viewModelLogin.login(email,password)
         }
             tfRegister.setOnClickListener {

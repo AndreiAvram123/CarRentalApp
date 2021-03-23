@@ -2,7 +2,6 @@ package com.andrei.UI.adapters.bookings
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.andrei.UI.fragments.BookingsFragment
 import com.andrei.carrental.entities.Booking
 import com.andrei.carrental.entities.BookingType
 import com.andrei.carrental.factories.BookingsVHFactory

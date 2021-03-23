@@ -1,11 +1,9 @@
 package com.andrei.UI.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.activityViewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.andrei.carrental.R
-import com.andrei.carrental.viewmodels.ViewModelLogin
 import com.andrei.engine.helpers.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

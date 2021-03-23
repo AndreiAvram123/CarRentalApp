@@ -1,8 +1,6 @@
 package com.andrei.UI.fragments
 
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -31,7 +29,6 @@ import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
 import pl.aprilapps.easyphotopicker.MediaFile
 import pl.aprilapps.easyphotopicker.MediaSource
-import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 

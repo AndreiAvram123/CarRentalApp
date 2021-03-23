@@ -15,8 +15,6 @@ import com.andrei.engine.State
 import com.andrei.messenger.MessengerService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint

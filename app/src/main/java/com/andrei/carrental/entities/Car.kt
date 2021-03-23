@@ -11,7 +11,7 @@ data class Car(
         val mediaFiles:List<MediaFile>,
         @SerializedName("pricePerDay")
         val pricePerDay:Double,
-        @SerializedName("basicUser")
+        @SerializedName("user")
         val basicUser: UserDTO,
         @SerializedName("location")
         val location:GeoPoint,

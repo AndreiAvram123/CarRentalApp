@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.andrei.carrental.databinding.SuggestionItemCarBinding
 import com.andrei.carrental.entities.Car
 
-class CarsRVSearchAdapter : RecyclerView.Adapter<CarsRVSearchAdapter.ViewHolder>() {
+class CarsRVSearchAdapter(
+        private val navigateToCarDetails:(car:Car)->Unit
+) : RecyclerView.Adapter<CarsRVSearchAdapter.ViewHolder>() {
    private val items = ArrayList<Car>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -36,7 +38,9 @@ class CarsRVSearchAdapter : RecyclerView.Adapter<CarsRVSearchAdapter.ViewHolder>
 
         fun bind(carSearchEntity: Car){
             binding.car = carSearchEntity
-
+            binding.root.setOnClickListener {
+                navigateToCarDetails(carSearchEntity)
+            }
          }
     }
 

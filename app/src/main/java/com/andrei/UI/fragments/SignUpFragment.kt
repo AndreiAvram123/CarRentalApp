@@ -14,8 +14,8 @@ import com.andrei.engine.repository.interfaces.EmailValidationState
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.engine.states.RegistrationFlowState
+import com.andrei.utils.parseText
 import com.andrei.utils.reObserve
-import com.andrei.utils.text
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,20 +27,20 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
     private val  binding:FragmentSignUpLayoutBinding by viewBinding()
 
     private val runnableUsername  =  Runnable{
-        val text  = binding.tfUsername.editText.text()
+        val text  = binding.tfUsername.editText.parseText()
         _viewModelSignUp.setUsername(text)
     }
     private val runnableEmail = Runnable {
-        val text = binding.tfEmail.editText.text()
+        val text = binding.tfEmail.editText.parseText()
         _viewModelSignUp.setEmail(text)
     }
 
     private val runnablePassword  =  Runnable{
-        val text  = binding.tfPassword.editText.text()
+        val text  = binding.tfPassword.editText.parseText()
         _viewModelSignUp.setPassword(text)
     }
     private val runnableReenterPassword = Runnable {
-      val confirmedPassword = binding.tfReenterPassword.editText.text()
+      val confirmedPassword = binding.tfReenterPassword.editText.parseText()
       _viewModelSignUp.setReenteredPassword(confirmedPassword)
     }
 

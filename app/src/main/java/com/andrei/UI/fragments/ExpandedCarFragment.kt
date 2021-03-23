@@ -17,7 +17,6 @@ import com.andrei.carrental.entities.MediaFile
 import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.engine.DTOEntities.toLatLng
 import com.andrei.engine.State
-import com.andrei.utils.reObserve
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.MarkerOptions
@@ -78,6 +77,8 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
             findNavController().navigate(action)
         }
 
+
+
     }
 
 
@@ -96,19 +97,19 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
     private fun updateUI(state : State<Car>) {
         when (state) {
             is State.Success -> {
-                state.data?.let {
-                    binding.car = it
+                    binding.car = state.data
                     initializeMap()
-                    updateCarouselVies(it.mediaFiles)
+                    updateCarouselVies(state.data.mediaFiles)
                     binding.isLoading = false
+                    binding.imageLender.setOnClickListener {
+                    val action = ExpandedCarFragmentDirections.actionGlobalProfileFragment(state.data.basicUser.userID)
+                    findNavController().navigate(action)
                 }
             }
             is State.Loading -> {
                 binding.isLoading = true
             }
-            is State.Error -> {
 
-            }
         }
     }
 

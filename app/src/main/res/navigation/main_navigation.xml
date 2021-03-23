@@ -94,4 +94,13 @@
             android:name="chatID"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.andrei.UI.fragments.userProfile.ProfileFragment"
+        android:label="ProfileFragment" >
+        <argument
+            android:name="userID"
+            app:argType="long" />
+    </fragment>
+    <action android:id="@+id/action_global_profileFragment" app:destination="@id/profileFragment" />
 </navigation>

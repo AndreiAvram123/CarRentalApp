@@ -5,7 +5,7 @@ import com.andrei.engine.CallRunner
 import com.andrei.engine.DTOEntities.BookingDTO
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.BookingsRepository
-import com.andrei.engine.repositoryInterfaces.BookingRepoInterface
+import com.andrei.engine.APIs.BookingRepoInterface
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

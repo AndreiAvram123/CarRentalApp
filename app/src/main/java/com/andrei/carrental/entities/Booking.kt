@@ -1,6 +1,5 @@
 package com.andrei.carrental.entities
 
-import com.andrei.UI.fragments.BookingsFragment
 import com.andrei.utils.toDate
 import java.util.*
 

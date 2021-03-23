@@ -8,7 +8,6 @@ import android.view.*
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -29,7 +28,6 @@ import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.kizitonwose.calendarview.utils.yearMonth
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter

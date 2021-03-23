@@ -4,7 +4,7 @@ import com.andrei.engine.CallRunner
 import com.andrei.engine.State
 import com.andrei.engine.helpers.SessionManager
 import com.andrei.engine.repository.interfaces.LoginRepository
-import com.andrei.engine.repositoryInterfaces.LoginAPI
+import com.andrei.engine.APIs.LoginAPI
 import com.andrei.engine.requestModels.LoginRequest
 import com.andrei.engine.states.LoginFlowState
 import kotlinx.coroutines.flow.*

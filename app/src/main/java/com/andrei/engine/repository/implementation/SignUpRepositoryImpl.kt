@@ -7,7 +7,7 @@ import com.andrei.engine.repository.interfaces.EmailValidationState
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.SignUpRepository
 import com.andrei.engine.repository.interfaces.UsernameValidationState
-import com.andrei.engine.repositoryInterfaces.SignUpAPI
+import com.andrei.engine.APIs.SignUpAPI
 import com.andrei.engine.requestModels.RegisterRequest
 import com.andrei.engine.states.RegistrationFlowState
 import com.andrei.utils.isEmailValid

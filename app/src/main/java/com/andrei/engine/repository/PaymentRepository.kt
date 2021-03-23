@@ -4,7 +4,7 @@ import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.entities.CheckoutCarData
 import com.andrei.engine.CallRunner
 import com.andrei.engine.State
-import com.andrei.engine.repositoryInterfaces.PaymentRepoInterface
+import com.andrei.engine.APIs.PaymentRepoInterface
 import com.andrei.engine.requestModels.NewBookingRequestModel
 import com.andrei.engine.requestModels.PaymentRequest
 import com.andrei.engine.responseModels.TokenResponse

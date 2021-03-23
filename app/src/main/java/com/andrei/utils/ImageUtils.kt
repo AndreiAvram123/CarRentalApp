@@ -17,20 +17,16 @@ import java.io.InputStream
 suspend fun fetchBitmap(context: Context, url: String, maxWidth: Int = 400):Bitmap?{
     val imageLoader = context.imageLoader
     val imageRequest = ImageRequest.Builder(context).data(url).allowHardware(false).build()
-
-    try {
-        val result = imageLoader.execute(imageRequest)
-        result.drawable?.let {
-            val aspectRatio = getHeightWidthAspectRation(
-                    width = it.intrinsicWidth,
-                    height = it.intrinsicHeight
-            )
-            val newHeight = (maxWidth * aspectRatio).toInt()
-            return it.toBitmap(width = maxWidth, height = newHeight)
-        }
-    }catch (e:Exception){
-        return null
+    val result = imageLoader.execute(imageRequest)
+    result.drawable?.let {
+        val aspectRatio = getHeightWidthAspectRation(
+                width = it.intrinsicWidth,
+                height = it.intrinsicHeight
+        )
+        val newHeight = (maxWidth * aspectRatio).toInt()
+        return it.toBitmap(width = maxWidth, height = newHeight)
     }
+    return null
 }
 
 

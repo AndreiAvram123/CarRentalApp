@@ -4,7 +4,6 @@ import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentRegistrationCompleteLayoutBinding
-import com.andrei.carrental.databinding.FragmentRegistrationCompleteLayoutBindingImpl
 
 class RegistrationCompleteFragment : BaseFragment(R.layout.fragment_registration_complete_layout) {
 

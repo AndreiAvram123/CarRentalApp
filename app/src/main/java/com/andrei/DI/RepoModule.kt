@@ -1,13 +1,7 @@
 package com.andrei.DI
 
-import com.andrei.engine.repository.implementation.BookingsRepositoryImpl
-import com.andrei.engine.repository.implementation.ChatRepositoryImpl
-import com.andrei.engine.repository.implementation.LoginRepositoryImpl
-import com.andrei.engine.repository.implementation.SignUpRepositoryImpl
-import com.andrei.engine.repository.interfaces.BookingsRepository
-import com.andrei.engine.repository.interfaces.ChatRepository
-import com.andrei.engine.repository.interfaces.LoginRepository
-import com.andrei.engine.repository.interfaces.SignUpRepository
+import com.andrei.engine.repository.implementation.*
+import com.andrei.engine.repository.interfaces.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -29,5 +23,7 @@ abstract class RepoModule {
 
     @Binds
     abstract fun bindChatRepository(chatRepositoryImpl: ChatRepositoryImpl): ChatRepository
+    @Binds
+    abstract fun bindUserRepository(userRepositoryImpl: UserRepositoryImpl): UserRepository
 
 }

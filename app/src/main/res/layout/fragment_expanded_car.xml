@@ -9,9 +9,7 @@
         <variable
             name="isMapLoading"
             type="Boolean" />
-        <variable
-            name="error"
-            type="String" />
+
         <variable
             name="car"
             type="com.andrei.carrental.entities.Car" />

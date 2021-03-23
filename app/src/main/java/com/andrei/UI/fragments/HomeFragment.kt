@@ -1,8 +1,8 @@
 package com.andrei.UI.fragments
 
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.adapters.CustomDivider
@@ -16,7 +16,6 @@ import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.carrental.viewmodels.ViewModelLocation
 import com.andrei.engine.State
 import com.andrei.utils.hide
-import com.andrei.utils.reObserve
 import com.andrei.utils.show
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -33,14 +32,15 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private val viewModelLocation:ViewModelLocation by activityViewModels()
 
 
-  private val searchRVAdapter:CarsRVSearchAdapter by lazy {
-      CarsRVSearchAdapter()
-  }
+  private val searchRVAdapter =  CarsRVSearchAdapter(this::navigateToCarDetails)
 
-  private val bottomSheetRVAdapter:CarsRVSearchAdapter by lazy {
-      CarsRVSearchAdapter()
-  }
+  private val bottomSheetRVAdapter:CarsRVSearchAdapter =  CarsRVSearchAdapter(this::navigateToCarDetails)
 
+
+    private fun navigateToCarDetails(selectedCar:Car){
+        val action = HomeFragmentDirections.actionGlobalToExpandedCarFragment(selectedCar.id)
+        findNavController().navigate(action)
+    }
 
     override fun initializeUI() {
         configureSearchView()

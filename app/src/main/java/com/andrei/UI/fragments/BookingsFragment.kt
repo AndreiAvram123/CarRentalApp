@@ -1,7 +1,6 @@
 package com.andrei.UI.fragments
 
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -13,8 +12,6 @@ import com.andrei.carrental.entities.*
 import com.andrei.carrental.viewmodels.ViewModelBookings
 import com.andrei.engine.State
 import com.andrei.utils.hide
-import com.andrei.utils.reObserve
-import com.andrei.utils.show
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
