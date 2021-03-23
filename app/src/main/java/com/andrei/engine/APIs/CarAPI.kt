@@ -1,4 +1,4 @@
-package com.andrei.engine.repositoryInterfaces
+package com.andrei.engine.APIs
 
 import com.andrei.carrental.entities.Car
 import com.andrei.engine.configuration.APIResponse
@@ -11,7 +11,7 @@ interface CarAPI {
     suspend fun getNearbyCars(@Query("latitude") latitude:Double,
                       @Query("longitude") longitude:Double): Response<APIResponse<List<Car>>>
 
-    @GET("/cars")
+    @GET("/cars/search")
     suspend fun search(@Query("latitude") latitude:Double,
                       @Query("longitude") longitude:Double,
                       @Query("query") query: String): Response<APIResponse<List<Car>>>

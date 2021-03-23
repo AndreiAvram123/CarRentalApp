@@ -1,4 +1,4 @@
-package com.andrei.engine.repositoryInterfaces
+package com.andrei.engine.APIs
 
 import com.andrei.engine.DTOEntities.BookingDTO
 import com.andrei.engine.configuration.APIResponse

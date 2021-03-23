@@ -1,4 +1,4 @@
-package com.andrei.engine.repositoryInterfaces
+package com.andrei.engine.APIs
 
 import com.andrei.engine.configuration.APIResponse
 import com.andrei.engine.responseModels.TokenResponse

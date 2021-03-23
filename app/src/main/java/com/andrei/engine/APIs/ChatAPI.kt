@@ -1,9 +1,8 @@
-package com.andrei.engine.repositoryInterfaces
+package com.andrei.engine.APIs
 
 import com.andrei.engine.DTOEntities.ChatDTO
 import com.andrei.engine.DTOEntities.MessageDTO
 import com.andrei.engine.configuration.APIResponse
-import com.andrei.engine.configuration.CallWrapper
 import com.andreia.carrental.requestModels.CreateMessageRequest
 import retrofit2.Response
 import retrofit2.http.*
