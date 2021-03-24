@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.andrei.carrental.entities.CheckoutCarData
 import com.andrei.engine.State
 import com.andrei.engine.repository.PaymentRepository
-import com.andrei.engine.requestModels.NewBookingRequestModel
 import com.braintreepayments.api.dropin.DropInResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -19,19 +18,17 @@ class ViewModelPayment @Inject constructor(
 
 
     private val _clientToken :MutableStateFlow<State<String>> = MutableStateFlow(State.Loading)
-
     val clientToken:StateFlow<State<String>>
-    get() = _clientToken
+    get() = _clientToken.asStateFlow()
 
-    private fun clearToken(){
+    private fun clearState(){
         viewModelScope.launch {
             _clientToken.emit(State.Loading)
+            _dropInRequest.emit(null)
+            _checkoutCarData.emit(null)
         }
     }
 
-    private val _navigateForward:MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val navigateForward:StateFlow<Boolean>
-    get() = _navigateForward
 
     private  val _checkoutState:MutableStateFlow<State<Nothing>> = MutableStateFlow(State.Default)
     val checkoutState:StateFlow<State<Nothing>>
@@ -43,28 +40,26 @@ class ViewModelPayment @Inject constructor(
 
     private val _dropInRequest:MutableStateFlow<DropInResult?>  = MutableStateFlow(null)
 
-    init {
+
+
+    fun startCheckout() =
         viewModelScope.launch {
             combine(
-                _checkoutCarData.filterNotNull(),
-                _dropInRequest.filterNotNull()
+                    _checkoutCarData.filterNotNull(),
+                    _dropInRequest.filterNotNull()
             ) { carData, dropInData ->
                 Pair(carData, dropInData)
-            }.collect {
-                viewModelScope.launch {
-                    paymentRepository.checkout(it).collect {
-                        _checkoutState.emit(it)
-                        if (it is State.Success) {
-                            clearToken()
-                        }
+            }.collect{
+                paymentRepository.checkout(it).collect {state->
+                    _checkoutState.emit(state)
+                    if (state is State.Success || state is State.Error) {
+                        clearState()
                     }
                 }
-            }
         }
     }
 
-
-    fun getClientToken(){
+     fun getClientToken(){
         viewModelScope.launch {
             paymentRepository.fetchClientToken().collect { state->
                 when(state){

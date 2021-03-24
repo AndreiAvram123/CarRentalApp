@@ -40,7 +40,8 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
 
     private val dropInUIIntent = registerForActivityResult(PaymentUIContract()){
         it?.let{
-          viewModelPayment.setDropInResult(it)
+            viewModelPayment.setDropInResult(it)
+            viewModelPayment.startCheckout()
         }
     }
 
@@ -63,12 +64,12 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
                 binding.tvTotalConfirmation.text = "£$it"
             }
 
-            lifecycleScope.launchWhenResumed {
-                viewModelPayment.navigateForward.collect {
-                    if(it){
-                        val action = ConfirmSelectionFragmentDirections.actionConfirmSelectionFragmentToSuccessfulPaymentFragment()
-                        findNavController().navigate(action)
-                    }
+        }
+        lifecycleScope.launchWhenResumed {
+            viewModelPayment.checkoutState.collect {
+                if(it is State.Success){
+                    val action = ConfirmSelectionFragmentDirections.actionConfirmSelectionFragmentToSuccessfulPaymentFragment()
+                    findNavController().navigate(action)
                 }
             }
         }
@@ -78,7 +79,7 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
         }
 
         binding.buttonConfirm.setOnClickListener {
-            startPaymentFlow()
+            prepareDropInUI()
         }
 
     }
@@ -94,9 +95,11 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
     }
 
 
-    private fun startPaymentFlow() {
+    private fun prepareDropInUI() {
         viewModelPayment.getClientToken()
-        viewModelCar.newCarCheckoutData()?.let { viewModelPayment.setCheckoutData(it) }
+        viewModelCar.newCarCheckoutData()?.let {
+            viewModelPayment.setCheckoutData(it)
+        }
 
         lifecycleScope.launch {
             viewModelPayment.clientToken.collect {

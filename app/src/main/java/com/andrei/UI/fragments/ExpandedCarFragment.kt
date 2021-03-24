@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import coil.load
 import com.andrei.carrental.R
+import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.databinding.FragmentExpandedCarBinding
 import com.andrei.carrental.entities.Car
 import com.andrei.carrental.entities.MediaFile
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.flow.collect
+import javax.inject.Inject
 
 
 class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
@@ -34,16 +36,20 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
 
     private val MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey"
 
+    @Inject
+    lateinit var userDataManager: UserDataManager
+
+
     private val mapReadyCallback = OnMapReadyCallback{ map ->
         binding.isMapLoaded = true
-         binding.car?.let {
-           val carLocation = it.location.toLatLng()
-           map.addMarker(MarkerOptions().position(carLocation))
-           map.moveCamera(
-                   CameraUpdateFactory
-                           .newLatLngZoom(carLocation, 15.toFloat())
-           )
-       }
+        binding.car?.let {
+            val carLocation = it.location.toLatLng()
+            map.addMarker(MarkerOptions().position(carLocation))
+            map.moveCamera(
+                    CameraUpdateFactory
+                            .newLatLngZoom(carLocation, 15.toFloat())
+            )
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,7 +77,7 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
         }
 
         binding.selectDatesButton.setOnClickListener {
-         val action = ExpandedCarFragmentDirections.actionExpandedToChooseDatesFragment()
+            val action = ExpandedCarFragmentDirections.actionExpandedToChooseDatesFragment()
             findNavController().navigate(action)
         }
 
@@ -94,18 +100,25 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
     private fun updateUI(state : State<Car>) {
         when (state) {
             is State.Success -> {
-                    binding.car = state.data
-                    getMap()
-                    updateCarouselVies(state.data.mediaFiles)
-                    binding.imageLender.setOnClickListener {
-                    val action = ExpandedCarFragmentDirections.actionGlobalProfileFragment(state.data.basicUser.userID)
-                    findNavController().navigate(action)
+                binding.apply {
+                    car = state.data
+                    imageLender.setOnClickListener {
+                        navigateToUserProfile(state.data.basicUser.userID)
+                    }
                 }
+                getMap()
+                updateCarouselVies(state.data.mediaFiles)
             }
         }
     }
+    private fun navigateToUserProfile(userID:Long){
+        if(userDataManager.userID != userID){
+            val action = ExpandedCarFragmentDirections.actionGlobalProfileFragment(userID)
+            findNavController().navigate(action)
+        }
+    }
 
-   private  fun updateCarouselVies(mediaFiles:List<MediaFile>){
+    private  fun updateCarouselVies(mediaFiles:List<MediaFile>){
         binding.carouselCarExpanded.apply {
             size = mediaFiles.size
             setCarouselViewListener { view, position ->

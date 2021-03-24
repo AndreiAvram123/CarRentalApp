@@ -8,6 +8,7 @@ import com.andrei.engine.DTOEntities.toMessage
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.ChatRepository
 import com.andrei.engine.APIs.ChatAPI
+import com.andrei.engine.requestModels.CreateChatRequest
 import com.andreia.carrental.requestModels.CreateMessageRequest
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
@@ -80,5 +81,13 @@ class ChatRepositoryImpl @Inject constructor(
             }
         }
 
+    }
+
+    override fun createChat(user1ID: Long, user2ID: Long): Flow<State<ChatDTO>> = callRunner.makeApiCall {
+        chatAPI.createChat(CreateChatRequest(user1ID,user2ID))
+    }
+
+    override fun fetchUsersChat(user1ID: Long, user2ID: Long): Flow<State<ChatDTO>> = callRunner.makeApiCall {
+        chatAPI.getUsersChat(user1ID,user2ID)
     }
 }

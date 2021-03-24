@@ -6,10 +6,7 @@ import com.andrei.carrental.entities.User
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +20,7 @@ class ViewModelUser @Inject constructor(
     get() = _currentUser.asStateFlow()
 
 
+
     fun getUser(userID:Long){
         viewModelScope.launch {
             userRepository.getUser(userID).collect {
@@ -30,5 +28,8 @@ class ViewModelUser @Inject constructor(
             }
         }
     }
+
+
+
 
 }

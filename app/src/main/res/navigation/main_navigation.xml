@@ -101,6 +101,9 @@
         <argument
             android:name="userID"
             app:argType="long" />
+        <action
+            android:id="@+id/action_profileFragment_to_messagesFragment2"
+            app:destination="@id/messagesFragment" />
     </fragment>
     <action android:id="@+id/action_global_profileFragment" app:destination="@id/profileFragment" />
 </navigation>

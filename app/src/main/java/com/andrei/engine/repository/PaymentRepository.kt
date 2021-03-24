@@ -24,7 +24,7 @@ class PaymentRepository @Inject constructor(
 
 
  fun checkout(checkoutRequest: Pair<CheckoutCarData,DropInResult>):Flow<State<Nothing>> {
-     val userID:Long = userDataManager.userID!!
+     val userID:Long = userDataManager.userID
 
      val dropInResult = checkoutRequest.second
      val carCheckoutData = checkoutRequest.first

@@ -84,21 +84,12 @@ class ChooseDateFragment : BaseFragment (R.layout.example_4_fragment){
     }
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        fetchUnavailableDates()
-        return binding.root
-    }
-
     override fun initializeUI() {
 
         binding.backButtonChooseDateFrg.setOnClickListener{
             findNavController().popBackStack()
         }
+        fetchUnavailableDates()
     }
 
     private fun fetchUnavailableDates() {

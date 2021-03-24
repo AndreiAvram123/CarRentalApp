@@ -119,6 +119,7 @@
                             android:layout_marginStart="16dp"
                             android:background="@drawable/round_image"
                             app:imageFromURL="@{car.basicUser.profilePicture}"
+                            android:clickable="@{car.basicUser.profilePicture != null}"
                             app:layout_constraintBottom_toBottomOf="@+id/tv_lender_name"
                             app:layout_constraintLeft_toRightOf="@id/tv_lender_name"
                             app:layout_constraintTop_toTopOf="@id/tv_lender_name"

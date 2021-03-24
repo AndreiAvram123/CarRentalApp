@@ -45,6 +45,9 @@ class ViewModelChat @Inject constructor(
     get() = _oldMessagesLoaded.asStateFlow()
 
 
+
+
+
     fun getUserChats(userID:Long){
         viewModelScope.launch(Dispatchers.IO) {
             chatRepository.fetchUserChats(userID).collect { state->
@@ -147,8 +150,5 @@ class ViewModelChat @Inject constructor(
             }
         }
     }
-
-
-
 
 }
