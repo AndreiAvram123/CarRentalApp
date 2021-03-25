@@ -4,7 +4,6 @@ import com.andrei.carrental.entities.User
 import com.andrei.engine.APIs.UserAPI
 import com.andrei.engine.CallRunner
 import com.andrei.engine.DTOEntities.UserDTO
-import com.andrei.engine.DTOEntities.toUser
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.UserRepository
 import kotlinx.coroutines.flow.Flow

@@ -21,18 +21,42 @@
             tools:context="com.andrei.UI.fragments.userProfile.ProfileFragment">
 
 
-            <ImageView
-                android:id="@+id/iv_user_image"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="24dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container_user_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:imageFromURL="@{user.profilePicture}"
-                tools:src="@tools:sample/avatars" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/iv_user_image"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="32dp"
+                    app:imageFromURL="@{user.profilePicture}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@tools:sample/avatars" />
+
+                <com.andrei.UI.customViews.IconAndTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    app:iconImage="@drawable/ic_email_32"
+                    app:iconText="@{user.email}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_user_image">
+
+                </com.andrei.UI.customViews.IconAndTextView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/bt_send_message"

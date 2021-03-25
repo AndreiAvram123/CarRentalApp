@@ -13,9 +13,10 @@ data class UserDTO(
         val email:String,
         @SerializedName("profilePicture")
         val profilePicture:MediaFile
-)
+){
+    fun toUser():User{
+        return User(userID = userID, username =username, profilePicture = profilePicture, email = email)
+    }
 
-fun UserDTO.toUser():User{
-    return User(userID = this.userID, username =this.username, profilePicture = this.profilePicture)
 }
 

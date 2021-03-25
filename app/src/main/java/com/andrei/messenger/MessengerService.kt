@@ -11,7 +11,6 @@ import com.andrei.carrental.room.dao.ChatDao
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.DTOEntities.Chat
 import com.andrei.engine.DTOEntities.ChatDTO
-import com.andrei.engine.DTOEntities.toUser
 import com.andrei.utils.defaultSharedFlow
 import com.pusher.client.PusherOptions
 import dagger.hilt.android.qualifiers.ApplicationContext

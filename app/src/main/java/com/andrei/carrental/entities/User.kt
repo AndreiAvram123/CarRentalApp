@@ -5,7 +5,8 @@ import com.stfalcon.chatkit.commons.models.IUser
 data class User(
         val userID :Long,
         val username:String,
-        val profilePicture:MediaFile
+        val profilePicture:MediaFile,
+        val email:String
 ):IUser{
 
 
