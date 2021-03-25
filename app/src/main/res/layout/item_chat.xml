@@ -31,7 +31,6 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            app:imageFromURL="@{chat.friend.profilePicture}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -44,7 +43,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="8dp"
-            android:text="@{chat.friend.username}"
             app:layout_constraintStart_toEndOf="@+id/user_image"
             app:layout_constraintTop_toTopOf="@+id/user_image"
             tools:text="Nela Ion" />

@@ -7,14 +7,11 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface CarAPI {
-    @GET("/cars/nearby")
-    suspend fun getNearbyCars(@Query("latitude") latitude:Double,
-                      @Query("longitude") longitude:Double): Response<APIResponse<List<Car>>>
 
     @GET("/cars/search")
     suspend fun search(@Query("latitude") latitude:Double,
                       @Query("longitude") longitude:Double,
-                      @Query("query") query: String): Response<APIResponse<List<Car>>>
+                      @Query("query") query: String?= null ): Response<APIResponse<List<Car>>>
 
     @GET("/cars/{carID}")
     suspend fun getCarByID(@Path("carID") carID:Long):Response<APIResponse<Car>>

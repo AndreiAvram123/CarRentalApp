@@ -15,11 +15,9 @@ class CarRepositoryImpl @Inject constructor(
 ) {
 
 
-
-
     fun fetchNearbyCars(position: LatLng) =
         callRunner.makeApiCall {
-            carAPI.getNearbyCars(latitude = position.latitude, longitude = position.longitude)
+            carAPI.search(latitude = position.latitude, longitude = position.longitude)
         }
 
     suspend fun fetchSuggestions(query: String, position: LatLng) =

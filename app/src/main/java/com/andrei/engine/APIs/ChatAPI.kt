@@ -9,6 +9,8 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface ChatAPI {
+
+
     @GET("/users/{userID}/chats")
     suspend fun getAllUserChats(@Path("userID") userID:Long):Response<APIResponse<List<ChatDTO>>>
 
@@ -28,7 +30,6 @@ interface ChatAPI {
 
     @GET("/chats/find")
     suspend fun getUsersChat(@Query("user1ID") user1ID: Long,
-                            @Query("user2ID") user2ID: Long,
-                            @Query("createIfNecessary") createIfNecessary:Boolean = true) : Response<APIResponse<ChatDTO>>
+                            @Query("user2ID") user2ID: Long) : Response<APIResponse<ChatDTO>>
 
 }

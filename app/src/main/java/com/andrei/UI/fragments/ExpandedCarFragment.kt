@@ -21,10 +21,12 @@ import com.andrei.engine.State
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.MarkerOptions
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
 
 

@@ -17,6 +17,6 @@ data class Car(
         val location:GeoPoint,
         @SerializedName("distanceFromLocation")
         val distanceFromLocation:Double,
-        @SerializedName("car")
+        @SerializedName("carModel")
        val carModel : CarModel
 )

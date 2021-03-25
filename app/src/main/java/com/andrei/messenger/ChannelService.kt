@@ -23,7 +23,7 @@ class ChannelService(
      val chatID:Long,
      private val pusherConfig: PusherConfig,
      private val messageDao: MessageDao,
-     val friend:User,
+     val friendID:Long,
      private val coroutineScope: CoroutineScope
     ) {
 

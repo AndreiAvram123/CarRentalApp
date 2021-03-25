@@ -105,6 +105,7 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
 
     private fun addMarkerToMap(location:GeoPoint, bitmap:Bitmap, id:Long){
        map?.let {
+
             val marker = it.addMarker( MarkerOptions().position(
                 LatLng(
                     location.latitude,
@@ -160,11 +161,8 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
     }
 
     private fun moveCameraToLocation(location :LatLng){
-        map?.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                        location, 15.toFloat()
-                )
-        )
+        val update = CameraUpdateFactory.newLatLngZoom(location,15.toFloat())
+        map?.animateCamera(update)
     }
 
 

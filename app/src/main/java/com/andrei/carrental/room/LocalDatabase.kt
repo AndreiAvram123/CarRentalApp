@@ -6,15 +6,18 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.andrei.carrental.entities.Message
+import com.andrei.carrental.room.dao.ChatDao
 import com.andrei.carrental.room.dao.MessageDao
+import com.andrei.engine.DTOEntities.Chat
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
-@Database(entities = [Message::class], version = 4, exportSchema = false)
+@Database(entities = [Message::class, Chat::class], version =6, exportSchema = false)
 @TypeConverters(RoomConverters::class)
 abstract class LocalDatabase : RoomDatabase() {
 
     abstract fun messageDao(): MessageDao
+    abstract fun chatDao():ChatDao
 
 
     companion object {

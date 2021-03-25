@@ -47,8 +47,6 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
            viewModelChat.userChats.collect {
                when(it){
                    is State.Success -> {
-                       messengerService.configureChannels(it.data)
-                       messengerService.connect()
                        chatsAdapter.setData(messengerService.getObservableChats())
                    }
                }

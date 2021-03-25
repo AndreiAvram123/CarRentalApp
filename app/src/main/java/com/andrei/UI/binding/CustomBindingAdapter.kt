@@ -24,6 +24,14 @@ fun bindImageFromURL(imageView: ImageView,
     }
 }
 
+@BindingAdapter("loadFirstImage")
+fun loadFirstImage(imageView: ImageView,
+                   mediaFiles: List<MediaFile>){
+    mediaFiles.firstOrNull()?.let {
+        imageView.load(it.mediaURL)
+    }
+}
+
 
 @BindingAdapter("isVisible")
 fun changeVisibilityBasedOnBoolean(view :View, visible:Boolean){

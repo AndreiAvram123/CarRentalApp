@@ -3,6 +3,7 @@ package com.andrei.UI.fragments
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -17,6 +18,7 @@ import com.andrei.carrental.databinding.FragmentMessagesBinding
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.viewmodels.ViewModelChat
+import com.andrei.carrental.viewmodels.ViewModelUser
 import com.andrei.engine.State
 import com.andrei.messenger.MessengerService
 import com.andreia.carrental.requestModels.CreateMessageRequest
@@ -38,6 +40,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
     private val binding:FragmentMessagesBinding by viewBinding ()
     private val viewModelChat:ViewModelChat by activityViewModels()
+    private val viewModelUser:ViewModelUser by viewModels()
 
     private val navArgs:MessagesFragmentArgs by navArgs()
 
@@ -157,7 +160,6 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
             }
         }
 
-
         lifecycleScope.launchWhenResumed {
             messengerService.getLastMessageFlow(navArgs.chatID).collect {
                 messagesAdapter.tryAddMessageToStart(it)
@@ -166,13 +168,22 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     }
 
     private fun configureToolbar() {
-             (requireActivity() as AppCompatActivity).apply {
+          val activity =    requireActivity() as AppCompatActivity
+            activity.apply {
                 setSupportActionBar(binding.toolbar)
                 supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 supportActionBar?.setDisplayShowHomeEnabled(true)
-                messengerService.getChatFriend(navArgs.chatID)?.let { supportActionBar?.title = it.username }
             }
 
+        lifecycleScope.launchWhenResumed {
+              viewModelUser.getUser(messengerService.getChatFriendID(navArgs.chatID))
+              viewModelUser.currentUser.collect {
+                  when(it){
+                      is State.Success -> activity.supportActionBar?.title = it.data.username
+                      is State.Error -> activity.supportActionBar?.title = getString(R.string.Unknown)
+                  }
+              }
+        }
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }

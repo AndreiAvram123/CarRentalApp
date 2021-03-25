@@ -2,6 +2,7 @@ package com.andrei.DI
 
 import android.content.Context
 import com.andrei.carrental.room.LocalDatabase
+import com.andrei.carrental.room.dao.ChatDao
 import com.andrei.carrental.room.dao.MessageDao
 import dagger.Module
 import dagger.Provides
@@ -24,5 +25,9 @@ class RoomDaoModule {
   @Provides
   @Singleton
   fun provideMessageDao(database: LocalDatabase):MessageDao = database.messageDao()
+
+  @Provides
+  @Singleton
+  fun provideChatDao(database: LocalDatabase):ChatDao = database.chatDao()
 
 }

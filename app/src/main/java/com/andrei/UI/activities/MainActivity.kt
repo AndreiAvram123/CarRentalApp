@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.andrei.UI.helpers.CustomNavigationController
 import com.andrei.UI.helpers.InternetConnectionHandler
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.ActivityMainBinding
@@ -24,11 +25,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val binding: ActivityMainBinding by viewBinding()
     private lateinit var navController: NavController
-    private var internetConnectionHandler: InternetConnectionHandler? = null
-
 
     @Inject
-    lateinit var messengerService: MessengerService
+    lateinit var internetConnectionHandler: InternetConnectionHandler
+
+    private val customNavigationController:CustomNavigationController by lazy {
+         CustomNavigationController(navController,internetConnectionHandler)
+    }
+
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -48,13 +52,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
             }
         }
+
     }
 
 
-    private fun startInternetConnectionHandler() {
-        internetConnectionHandler =
-            InternetConnectionHandler(navController, this.getConnectivityManager())
-    }
 
 
     private fun setUpNavigation() {
@@ -75,16 +76,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onStart() {
         super.onStart()
-        startInternetConnectionHandler()
+         customNavigationController.start()
+         internetConnectionHandler.start()
     }
 
     override fun onStop() {
         super.onStop()
-        internetConnectionHandler = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        messengerService.disconnect()
+        customNavigationController.stop()
+        internetConnectionHandler.stop()
     }
 }

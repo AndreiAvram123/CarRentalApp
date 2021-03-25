@@ -11,10 +11,12 @@ import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.databinding.FragmentProfileBinding
 import com.andrei.carrental.viewmodels.ViewModelUser
 import com.andrei.engine.State
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
 
    private val binding:FragmentProfileBinding by viewBinding()
@@ -42,6 +44,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     private fun attachListeners() {
         binding.btSendMessage.setOnClickListener {
             viewModelProfile.getUsersChat(userDataManager.userID,navArgs.userID)
+
             lifecycleScope.launchWhenResumed {
                 viewModelProfile.usersChat.collect {
                     if(it is State.Success){

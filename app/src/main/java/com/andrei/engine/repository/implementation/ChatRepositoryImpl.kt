@@ -1,6 +1,7 @@
 package com.andrei.engine.repository.implementation
 
 import com.andrei.carrental.entities.Message
+import com.andrei.carrental.room.dao.ChatDao
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.CallRunner
 import com.andrei.engine.DTOEntities.ChatDTO
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class ChatRepositoryImpl @Inject constructor(
         private val callRunner: CallRunner,
         private val chatAPI: ChatAPI,
-        private val messageDao: MessageDao
+        private val messageDao: MessageDao,
+        private val chatDao: ChatDao
 
 ): ChatRepository {
 
@@ -57,6 +59,7 @@ class ChatRepositoryImpl @Inject constructor(
                 //insert into room
                 messageDao.clean()
                 it.data.forEach { chatDTO ->
+                    chatDao.insertChat(chatDTO.toChat())
                     val messages = chatDTO.lastMessages.map { messageDTO ->
                         messageDTO.toMessage()
                     }
@@ -85,6 +88,11 @@ class ChatRepositoryImpl @Inject constructor(
 
     override fun createChat(user1ID: Long, user2ID: Long): Flow<State<ChatDTO>> = callRunner.makeApiCall {
         chatAPI.createChat(CreateChatRequest(user1ID,user2ID))
+    }.transform {
+        if(it is State.Success){
+            chatDao.insertChat(it.data.toChat())
+        }
+        emit(it)
     }
 
     override fun fetchUsersChat(user1ID: Long, user2ID: Long): Flow<State<ChatDTO>> = callRunner.makeApiCall {
