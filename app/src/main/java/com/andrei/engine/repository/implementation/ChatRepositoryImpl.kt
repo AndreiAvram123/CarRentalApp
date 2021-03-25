@@ -59,7 +59,7 @@ class ChatRepositoryImpl @Inject constructor(
                 //insert into room
                 messageDao.clean()
                 it.data.forEach { chatDTO ->
-                    chatDao.insertChat(chatDTO.toChat())
+                    chatDao.insertChat(chatDTO.toChat(userID))
                     val messages = chatDTO.lastMessages.map { messageDTO ->
                         messageDTO.toMessage()
                     }
@@ -86,11 +86,11 @@ class ChatRepositoryImpl @Inject constructor(
 
     }
 
-    override fun createChat(user1ID: Long, user2ID: Long): Flow<State<ChatDTO>> = callRunner.makeApiCall {
-        chatAPI.createChat(CreateChatRequest(user1ID,user2ID))
+    override fun createChat(currentUserID: Long, user2ID: Long): Flow<State<ChatDTO>> = callRunner.makeApiCall {
+        chatAPI.createChat(CreateChatRequest(currentUserID,user2ID))
     }.transform {
         if(it is State.Success){
-            chatDao.insertChat(it.data.toChat())
+            chatDao.insertChat(it.data.toChat(currentUserID))
         }
         emit(it)
     }

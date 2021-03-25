@@ -37,7 +37,9 @@ class MessengerService @Inject constructor (
     init {
         coroutineScope.launch {
             chatDao.findAllChatsDistinct().collect {
+                disconnect()
                 configureChannels(it)
+                connect()
             }
         }
         internetConnectionHandler.onUnavailable {
@@ -49,24 +51,20 @@ class MessengerService @Inject constructor (
     }
 
     private fun configureChannels(chats:List<Chat>){
-          disconnect()
           channels.clear()
           channels.putAll(chats.map { it.id to ChannelService(it.id,
                    pusherConfig,
                    messagesDao,
-                   it.friendID,
                    coroutineScope
-          )
-               }.toMap())
-        connect()
+          ) }.toMap())
     }
 
-    fun getObservableChats():List<ObservableChat> = channels.map {
+    suspend fun getObservableChats():List<ObservableChat> = channels.map {
+           val channel = it.value
             ObservableChat(
-                    id = it.value.chatID,
-                    friendID = it.value.friendID,
-                    isUserOnline = it.value.isUserOnline,
-                    lastMessage = messagesDao.findLastChatMessage(it.value.chatID)
+                    chat =  chatDao.findChat(channel.chatID)!!,
+                    isUserOnline = channel.isUserOnline,
+                    lastMessage = getLastMessageFlow(channel.chatID)
             )
         }
 
@@ -77,25 +75,22 @@ class MessengerService @Inject constructor (
              messagesDao.findLastUnsentChatMessageDistinct(chatID).defaultSharedFlow(coroutineScope)
 
 
-    fun getChatFriendID(chatID: Long):Long{
-        val channelService = channels[chatID]
-        check(channelService != null){"Method should not be called if the channel does not exists"}
-         return channelService.friendID
-    }
+    suspend fun getChat(chatID: Long):Chat? = chatDao.findChat(chatID)
 
 
     fun getUserOnlineFlow(chatID: Long):StateFlow<Boolean>{
-        channels[chatID]?.let { return it.isUserOnline }
-        return MutableStateFlow(false).asStateFlow()
+        val channel = channels[chatID]
+        check(channel != null){}
+        return channel.isUserOnline.asStateFlow()
     }
 
 
-    fun connect(){
+    private fun connect(){
       channels.forEach{
           it.value.connect()
       }
     }
-    fun disconnect(){
+    private fun disconnect(){
         channels.forEach{
             it.value.disconnect()
         }

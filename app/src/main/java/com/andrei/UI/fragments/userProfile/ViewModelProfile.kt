@@ -25,15 +25,15 @@ class ViewModelProfile @Inject constructor(
 
 
 
-    fun getUsersChat(user1ID:Long,user2ID:Long) {
+    fun getUsersChat(currentUserID: Long,user2ID:Long) {
         viewModelScope.launch {
-            chatRepository.fetchUsersChat(user1ID, user2ID).collect { state ->
+            chatRepository.fetchUsersChat(currentUserID, user2ID).collect { state ->
                 when (state) {
                     is State.Success -> _usersChat.emit(State.Success(state.data))
                     is State.Loading -> _usersChat.emit(State.Loading)
                     is State.Error -> {
                         if (state.error == ChatRepository.chatNotFoundError) {
-                            createChat(user1ID,user2ID)
+                            createChat(currentUserID,user2ID)
                         } else {
                             _usersChat.emit(State.Error(state.error))
                         }
@@ -42,9 +42,9 @@ class ViewModelProfile @Inject constructor(
             }
         }
     }
-        private  fun createChat(user1ID:Long,user2ID:Long){
+        private  fun createChat(currentUserID:Long,user2ID:Long){
              viewModelScope.launch {
-                 chatRepository.createChat(user1ID,user2ID).collect {
+                 chatRepository.createChat(currentUserID,user2ID).collect {
                       _usersChat.emit(it)
                  }
              }

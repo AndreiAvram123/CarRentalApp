@@ -21,7 +21,7 @@ interface ChatRepository {
     suspend fun fetchUserChats(userID:Long): Flow<State<List<ChatDTO>>>
 
     fun loadMoreMessages(chatID: Long, offset: Int): Flow<State<List<Message>>>
-    fun createChat(user1ID: Long, user2ID: Long): Flow<State<ChatDTO>>
+    fun createChat(currentUserID: Long, user2ID: Long): Flow<State<ChatDTO>>
 
     fun fetchUsersChat(user1ID: Long, user2ID: Long): Flow<State<ChatDTO>>
 

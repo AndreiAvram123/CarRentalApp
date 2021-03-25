@@ -12,7 +12,7 @@ import com.andrei.engine.DTOEntities.Chat
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
-@Database(entities = [Message::class, Chat::class], version =6, exportSchema = false)
+@Database(entities = [Message::class, Chat::class], version = 7, exportSchema = false)
 @TypeConverters(RoomConverters::class)
 abstract class LocalDatabase : RoomDatabase() {
 

@@ -8,14 +8,15 @@
         <import type="android.graphics.Color" />
 
         <variable
-            name="chat"
+            name="observableChat"
             type="com.andrei.carrental.entities.ObservableChat" />
+
         <variable
             name="isUserOnline"
             type="Boolean" />
         <variable
             name="lastMessage"
-            type="String" />
+            type="com.andrei.carrental.entities.Message" />
 
     </data>
 
@@ -34,6 +35,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:imageFromURL="@{observableChat.chat.image}"
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
@@ -45,6 +47,7 @@
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toEndOf="@+id/user_image"
             app:layout_constraintTop_toTopOf="@+id/user_image"
+            android:text="@{observableChat.chat.name}"
             tools:text="Nela Ion" />
 
         <ImageView
@@ -62,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:text="@{lastMessage}"
+            android:text="@{lastMessage.textContent}"
             tools:text="something"
             app:layout_constraintBottom_toBottomOf="@+id/user_image"
             app:layout_constraintStart_toEndOf="@+id/user_image"

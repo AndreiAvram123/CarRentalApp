@@ -176,13 +176,12 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
             }
 
         lifecycleScope.launchWhenResumed {
-              viewModelUser.getUser(messengerService.getChatFriendID(navArgs.chatID))
-              viewModelUser.currentUser.collect {
-                  when(it){
-                      is State.Success -> activity.supportActionBar?.title = it.data.username
-                      is State.Error -> activity.supportActionBar?.title = getString(R.string.Unknown)
-                  }
-              }
+             val chat =  messengerService.getChat(navArgs.chatID)
+             if(chat != null){
+                 activity.supportActionBar?.title = chat.name
+             }else{
+                 activity.supportActionBar?.title = getString(R.string.unknown)
+             }
         }
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()

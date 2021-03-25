@@ -43,14 +43,21 @@ class ChatsAdapter(private val _lifecycleOwner: LifecycleOwner,
 
     inner class ViewHolderChatImpl(private val binding: ItemChatBinding) : ViewHolderChat(binding.root) {
         override fun bind(observableChat: ObservableChat) {
-           binding.chat = observableChat
+           binding.observableChat = observableChat
+
             _lifecycleOwner.lifecycleScope.launchWhenResumed {
                 observableChat.isUserOnline.collect {
                     binding.isUserOnline = it
                 }
             }
+            _lifecycleOwner.lifecycleScope.launchWhenResumed {
+                observableChat.lastMessage.collect {
+                    binding.lastMessage = it
+                }
+            }
+
             binding.root.setOnClickListener {
-                navigateToMessagesCallback(observableChat.id)
+                navigateToMessagesCallback(observableChat.chat.id)
             }
         }
 
