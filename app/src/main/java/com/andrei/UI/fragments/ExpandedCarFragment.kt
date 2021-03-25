@@ -47,7 +47,7 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
         binding.car?.let {
             val carLocation = it.location.toLatLng()
             map.addMarker(MarkerOptions().position(carLocation))
-            map.moveCamera(
+            map.animateCamera(
                     CameraUpdateFactory
                             .newLatLngZoom(carLocation, 15.toFloat())
             )
