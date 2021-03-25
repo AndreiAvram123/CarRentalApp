@@ -125,7 +125,7 @@ class ExpandedCarFragment : BaseFragment(R.layout.fragment_expanded_car) {
         }
     }
     private fun navigateToUserProfile(userID:Long){
-            val action = ExpandedCarFragmentDirections.actionGlobalProfileFragment(userID)
+            val action = ExpandedCarFragmentDirections.actionExpandedToProfileFragment(userID)
             findNavController().navigate(action)
     }
 

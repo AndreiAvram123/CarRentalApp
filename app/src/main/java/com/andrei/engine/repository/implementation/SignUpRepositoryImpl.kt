@@ -38,14 +38,12 @@ class SignUpRepositoryImpl @Inject constructor(
 
         callRunner.makeApiCall{signUpAPI.checkIfUsernameIsAvailable(username)}.collect {
             if (it is State.Success) {
-                if (it.data != null) {
-                    result = when {
-                        it.data.valid -> UsernameValidationState.Valid
-                        it.data.reason == RegistrationFlowState.RegistrationError.usernameAlreadyTaken ->
-                            UsernameValidationState.AlreadyTaken
+                result = when {
+                    it.data.valid -> UsernameValidationState.Valid
+                    it.data.reason == RegistrationFlowState.RegistrationError.usernameAlreadyTaken ->
+                        UsernameValidationState.AlreadyTaken
 
-                        else -> UsernameValidationState.TooShort
-                    }
+                    else -> UsernameValidationState.TooShort
                 }
             }
         }

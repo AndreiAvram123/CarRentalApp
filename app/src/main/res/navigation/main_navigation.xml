@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_expanded_to_chooseDatesFragment"
             app:destination="@id/chooseDatesFragment" />
+        <action
+            android:id="@+id/action_expanded_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/home"
@@ -103,7 +106,8 @@
             app:argType="long" />
         <action
             android:id="@+id/action_profileFragment_to_messagesFragment2"
-            app:destination="@id/messagesFragment" />
+            app:destination="@id/messagesFragment"
+            app:popUpTo="@id/expanded"
+            app:popUpToInclusive="true" />
     </fragment>
-    <action android:id="@+id/action_global_profileFragment" app:destination="@id/profileFragment" />
 </navigation>

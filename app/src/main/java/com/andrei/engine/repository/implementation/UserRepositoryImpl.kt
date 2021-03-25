@@ -6,6 +6,7 @@ import com.andrei.engine.CallRunner
 import com.andrei.engine.DTOEntities.UserDTO
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.UserRepository
+import com.andrei.engine.utils.mapState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transform
 import javax.inject.Inject
@@ -23,13 +24,4 @@ class UserRepositoryImpl @Inject constructor(
            emit(state)
         }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T,R> State<T>.mapState(transformation: (data:T) -> R):State<R>{
-       return when(this){
-            is State.Success ->  State.Success(transformation(this.data))
-            is State.Loading ->  State.Loading
-            is State.Error -> State.Error(this.error)
-            is State.Default -> State.Default
-        }
-    }
 }

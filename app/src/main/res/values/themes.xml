@@ -21,6 +21,10 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="profileInfoText" parent= "important_text">
+        <item name="android:textColor">#999999</item>
+    </style>
+
 
     <style name="Example4ToolbarTheme" parent="ThemeOverlay.MaterialComponents.Light">
         <item name="colorControlNormal">@color/example_4_grey</item>

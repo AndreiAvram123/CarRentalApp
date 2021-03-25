@@ -5,6 +5,7 @@
         <variable
             name="user"
             type="com.andrei.carrental.entities.User" />
+
         <variable
             name="isLoadingChat"
             type="Boolean" />
@@ -29,17 +30,28 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <TextView
+                    style="@style/profileInfoText"
+                    android:id="@+id/tv_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    tools:text="Andrei Avram"
+                    android:text="@{user.username}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/iv_user_image"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginBottom="32dp"
+                    android:layout_marginBottom="16dp"
                     app:imageFromURL="@{user.profilePicture}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_username"
                     tools:src="@tools:sample/avatars" />
 
                 <com.andrei.UI.customViews.IconAndTextView
@@ -57,22 +69,28 @@
                 </com.andrei.UI.customViews.IconAndTextView>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bt_send_message"
+            <com.facebook.shimmer.ShimmerFrameLayout
                 android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="32dp"
-                android:text="@string/send_message"
-
-                app:backgroundTint="@color/example_4_green"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:enabled="@{!isLoadingChat}"
-                />
+                app:shimmerActive="@{isLoadingChat}">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/bt_send_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginBottom="32dp"
+                    android:text="@string/send_message"
+                    app:backgroundTint="@color/example_4_green"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>
 </layout>

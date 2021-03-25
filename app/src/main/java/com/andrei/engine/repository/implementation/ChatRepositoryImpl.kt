@@ -97,5 +97,10 @@ class ChatRepositoryImpl @Inject constructor(
 
     override fun fetchUsersChat(user1ID: Long, user2ID: Long): Flow<State<ChatDTO>> = callRunner.makeApiCall {
         chatAPI.getUsersChat(user1ID,user2ID)
+    }.transform {
+        if(it is State.Success){
+            chatDao.insertChat(it.data.toChat(user1ID))
+        }
+        emit(it)
     }
 }

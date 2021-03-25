@@ -79,8 +79,10 @@ class MessengerService @Inject constructor (
 
     fun getUserOnlineFlow(chatID: Long):StateFlow<Boolean>{
         val channel = channels[chatID]
-        check(channel != null){}
-        return channel.isUserOnline.asStateFlow()
+        channel?.let{
+            return it.isUserOnline.asStateFlow()
+        }
+        return MutableStateFlow(false).asStateFlow()
     }
 
 
