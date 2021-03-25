@@ -11,6 +11,7 @@ import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.databinding.FragmentProfileBinding
 import com.andrei.carrental.viewmodels.ViewModelUser
 import com.andrei.engine.State
+import com.andrei.utils.hide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
@@ -35,6 +36,9 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
                      is State.Success -> binding.user = it.data
                 }
             }
+        }
+        if(userDataManager.userID == navArgs.userID){
+            binding.btSendMessage.hide()
         }
         attachListeners()
     }

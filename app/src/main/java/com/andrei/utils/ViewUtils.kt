@@ -23,6 +23,8 @@ fun View.show(){
     visibility = View.VISIBLE
 }
 
+
+
 fun daysOfWeekFromLocale(): Array<DayOfWeek> {
     val firstDayOfWeek = WeekFields.of(UK).firstDayOfWeek
     var daysOfWeek = DayOfWeek.values()

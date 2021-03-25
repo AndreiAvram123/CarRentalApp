@@ -19,6 +19,7 @@ import com.andrei.carrental.viewmodels.ViewModelCar
 import com.andrei.engine.DTOEntities.toLatLng
 import com.andrei.engine.State
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,8 +27,7 @@ import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
-@AndroidEntryPoint
-class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
+class ExpandedCarFragment : BaseFragment(R.layout.fragment_expanded_car) {
 
 
     private  val  binding:FragmentExpandedCarBinding by viewBinding()
@@ -38,9 +38,9 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
 
     private val MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey"
 
-    @Inject
-    lateinit var userDataManager: UserDataManager
-
+    private  val mapView: MapView by lazy{
+        binding.mapCarLocation
+    }
 
     private val mapReadyCallback = OnMapReadyCallback{ map ->
         binding.isMapLoaded = true
@@ -56,18 +56,33 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val mapViewBundle = savedInstanceState?.getBundle(MAP_VIEW_BUNDLE_KEY)
+        mapView.onCreate(mapViewBundle)
         viewModelCar.getCar(navArgs.carID)
-        initializeUI(savedInstanceState)
     }
 
 
-    private fun initializeUI(bundle:Bundle?) {
-        var mapViewBundle: Bundle? = null
-        if (bundle != null) {
-            mapViewBundle = bundle.getBundle(MAP_VIEW_BUNDLE_KEY)
-        }
-        binding.mapCarLocation.onCreate(mapViewBundle)
 
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+    }
+    override fun onStart() {
+        super.onStart()
+        mapView.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView.onStop()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        binding.mapCarLocation.onLowMemory()
+    }
+
+    override fun initializeUI() {
         binding.backButtonExpanded.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -89,15 +104,11 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
 
 
     private fun getMap() {
-        binding.mapCarLocation.getMapAsync(mapReadyCallback)
+        mapView.getMapAsync(mapReadyCallback)
     }
 
 
 
-    override fun onStart() {
-        super.onStart()
-        binding.mapCarLocation.onStart()
-    }
 
     private fun updateUI(state : State<Car>) {
         when (state) {
@@ -114,10 +125,8 @@ class ExpandedCarFragment : Fragment(R.layout.fragment_expanded_car) {
         }
     }
     private fun navigateToUserProfile(userID:Long){
-        if(userDataManager.userID != userID){
             val action = ExpandedCarFragmentDirections.actionGlobalProfileFragment(userID)
             findNavController().navigate(action)
-        }
     }
 
     private  fun updateCarouselVies(mediaFiles:List<MediaFile>){
