@@ -127,8 +127,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
 
     }
     private fun navigateToRegistrationCompleteFragment(){
-        val action = SignUpFragmentDirections.actionSignUpFragmentToRegistrationCompleteFragment()
-        findNavController().navigate(action)
+
     }
 
     private fun attachObservers() {

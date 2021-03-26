@@ -3,10 +3,11 @@ package com.andrei.UI.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.CallSuper
+import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.andrei.UI.helpers.PermissionHandlerFragment
 
-abstract class BaseFragment (layoutID:Int) : Fragment(layoutID) {
+abstract class BaseFragment (@LayoutRes layoutID:Int) : Fragment(layoutID) {
 
     protected lateinit var permissionHandlerFragment : PermissionHandlerFragment
 

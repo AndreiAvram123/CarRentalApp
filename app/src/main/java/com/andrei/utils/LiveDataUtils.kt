@@ -14,25 +14,3 @@ fun <T> LiveData<T>.reObserve(owner: LifecycleOwner, observer: Observer<T>) {
     removeObserver(observer)
     observe(owner, observer)
 }
-fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
-    removeObserver(observer)
-    observe(lifecycleOwner, object : Observer<T> {
-        override fun onChanged(t: T?) {
-            if(t!=null){
-                observer.onChanged(t)
-                removeObserver(this)
-            }
-        }
-    })
-}
-
-fun <T> LiveData<T>.observeRequest(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
-    observe(lifecycleOwner, object : Observer<T> {
-        override fun onChanged(t: T?) {
-            observer.onChanged(t)
-            if (t !is State.Loading) {
-                removeObserver(this)
-            }
-        }
-    })
-}

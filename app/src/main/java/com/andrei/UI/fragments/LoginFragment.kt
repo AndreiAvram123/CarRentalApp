@@ -64,7 +64,7 @@ class LoginFragment :Fragment(R.layout.fragment_login_layout) {
                 viewModelLogin.login(email,password)
         }
             tfRegister.setOnClickListener {
-                val action = LoginFragmentDirections.actionLoginFragmentToSignUpFragment()
+                val action = LoginFragmentDirections.actionLoginFragmentToChooseUsernameFragment()
                 findNavController().navigate(action)
             }
 
