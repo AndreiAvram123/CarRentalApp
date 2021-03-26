@@ -28,6 +28,7 @@ fun View.gone() {
 
 
 
+
 fun daysOfWeekFromLocale(): Array<DayOfWeek> {
     val firstDayOfWeek = WeekFields.of(UK).firstDayOfWeek
     var daysOfWeek = DayOfWeek.values()

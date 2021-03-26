@@ -1,13 +1,11 @@
 package com.andrei.UI.helpers
 
 
-import android.app.Activity
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import com.andrei.carrental.MainNavigationDirections
 import com.andrei.carrental.R
 import com.andrei.utils.gone
-import com.andrei.utils.hide
 import com.andrei.utils.show
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -21,12 +19,17 @@ class CustomNavigationController(private val navigationController: NavController
     private val destinationChangedListener:NavController.OnDestinationChangedListener =
             NavController.OnDestinationChangedListener { _, destination, _ ->
                 toggleNavBar(destination)
-                if(internetConnectionHandler.isNotConnected()) {
-                    if (destination.id != R.id.noInternetFragment) {
-                        navigationToNoInternetFragment()
-                    }
-                }
+                shouldNavigateToNoInternetFragment(destination)
             }
+
+
+    private fun shouldNavigateToNoInternetFragment(destination: NavDestination) {
+        if (internetConnectionHandler.isNotConnected()) {
+            if (destination.id != R.id.noInternetFragment) {
+                navigationToNoInternetFragment()
+            }
+        }
+    }
 
     private fun toggleNavBar(destination: NavDestination) {
         bottomNavigationView.show()

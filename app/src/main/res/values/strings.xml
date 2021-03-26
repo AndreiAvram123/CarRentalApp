@@ -59,5 +59,6 @@
     <string name="send_message">Send message</string>
     <string name="unknown">Unknown</string>
     <string name="redeem">Redeem</string>
+    <string name="go_back_to_app">Go back to app</string>
 
 </resources>

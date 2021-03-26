@@ -8,19 +8,11 @@
             type="com.andrei.carrental.entities.Voucher" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/layout_voucher"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
     >
-    <ImageView
-        android:id="@+id/iv_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_close_white_32" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/watch_animation"
@@ -35,7 +27,7 @@
         app:lottie_speed="1" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/bt_register"
+        android:id="@+id/bt_redeem"
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginStart="16dp"

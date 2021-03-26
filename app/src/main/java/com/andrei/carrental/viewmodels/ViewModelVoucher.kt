@@ -14,15 +14,43 @@ import javax.inject.Inject
 @HiltViewModel
 class ViewModelVoucher @Inject constructor() :ViewModel() {
 
-    private val _availableVouchers:MutableStateFlow<State<List<Voucher>>> = MutableStateFlow(State.Loading)
+    private val _availableVouchers: MutableStateFlow<State<MutableList<Voucher>>> =
+        MutableStateFlow(State.Loading)
 
-    val availableVouchers:StateFlow<State<List<Voucher>>>
-    get() = _availableVouchers.asStateFlow()
+    val availableVouchers: StateFlow<State<List<Voucher>>>
+        get() = _availableVouchers.asStateFlow()
+
+    private val _allVouchersDismissed: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val noVouchersAvailable: StateFlow<Boolean>
+        get() = _allVouchersDismissed.asStateFlow()
 
 
-    fun getVouchers(userID:Long){
+    fun getVouchers(userID: Long) {
         viewModelScope.launch {
-            _availableVouchers.emit(State.Success(listOf(Voucher(1,"On all Tesla cars",40))))
+            val vouchers = mutableListOf(
+                Voucher(1, "On all Tesla cars", 20),
+                Voucher(2, "On all Dacia", 100),
+                Voucher(3, "On all Dacia", 100)
+            )
+
+            _availableVouchers.emit(State.Success(vouchers))
         }
+    }
+
+    fun redeemLastVoucher() {
+        val currentVouchersState = _availableVouchers.value
+        if (currentVouchersState is State.Success) {
+            removeLastVoucher(currentVouchersState.data)
+        }
+    }
+
+    private fun removeLastVoucher(data: MutableList<Voucher>) {
+        data.removeAt(0)
+        if (data.isEmpty()) {
+            viewModelScope.launch {
+                _allVouchersDismissed.emit(true)
+            }
+        }
+
     }
 }

@@ -49,6 +49,10 @@ android {
 
 dependencies {
 
+
+    implementation "com.yuyakaido.android:card-stack-view:2.3.4"
+
+
     //animation
     implementation 'com.airbnb.android:lottie:3.6.1'
 

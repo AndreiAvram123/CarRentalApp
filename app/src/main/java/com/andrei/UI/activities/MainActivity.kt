@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
 
-     fun navigateToVouchersFragment(){
+     private fun navigateToVouchersFragment(){
          val action = MainNavigationDirections.actionGlobalRedeemVoucherFragment()
          navController.navigate(action)
      }
