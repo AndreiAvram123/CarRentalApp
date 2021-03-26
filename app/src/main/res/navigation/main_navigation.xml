@@ -110,4 +110,9 @@
             app:popUpTo="@id/expanded"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/redeemVoucherFragment"
+        android:name="com.andrei.UI.fragments.vouchers.RedeemVoucherFragment"
+        android:label="RedeemVoucherFragment" />
+    <action android:id="@+id/action_global_redeemVoucherFragment" app:destination="@id/redeemVoucherFragment" />
 </navigation>

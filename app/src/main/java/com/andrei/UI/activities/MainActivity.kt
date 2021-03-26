@@ -2,16 +2,23 @@ package com.andrei.UI.activities
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.andrei.UI.fragments.HomeFragmentDirections
 import com.andrei.UI.helpers.CustomNavigationController
 import com.andrei.UI.helpers.InternetConnectionHandler
+import com.andrei.carrental.MainNavigationDirections
 import com.andrei.carrental.R
+import com.andrei.carrental.UserDataManager
 import com.andrei.carrental.databinding.ActivityMainBinding
+import com.andrei.carrental.viewmodels.ViewModelVoucher
+import com.andrei.engine.State
 import com.andrei.engine.helpers.SessionManager
 import com.andrei.messenger.MessengerService
 import com.andrei.utils.*
@@ -25,12 +32,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val binding: ActivityMainBinding by viewBinding()
     private lateinit var navController: NavController
+    private val viewModelVouchers:ViewModelVoucher by viewModels()
+
+    @Inject
+    lateinit var userDataManager: UserDataManager
 
     @Inject
     lateinit var internetConnectionHandler: InternetConnectionHandler
 
     private val customNavigationController:CustomNavigationController by lazy {
-         CustomNavigationController(navController,internetConnectionHandler)
+         CustomNavigationController(navController,internetConnectionHandler,this)
     }
 
 
@@ -52,9 +63,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
             }
         }
+        viewModelVouchers.getVouchers(userDataManager.userID)
+        lifecycleScope.launchWhenResumed {
+            viewModelVouchers.availableVouchers.collect {
+                if(it is State.Success && it.data.isNotEmpty()){
+                      navigateToVouchersFragment()
+                }
+            }
+        }
 
     }
 
+
+     fun navigateToVouchersFragment(){
+         val action = MainNavigationDirections.actionGlobalRedeemVoucherFragment()
+         navController.navigate(action)
+     }
 
 
 

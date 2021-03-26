@@ -1,23 +1,39 @@
 package com.andrei.UI.helpers
 
 
+import android.app.Activity
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import com.andrei.carrental.MainNavigationDirections
 import com.andrei.carrental.R
+import com.andrei.utils.gone
+import com.andrei.utils.hide
+import com.andrei.utils.show
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class CustomNavigationController(private val navigationController: NavController,
-                                private val  internetConnectionHandler: InternetConnectionHandler) {
+                                private val  internetConnectionHandler: InternetConnectionHandler,
+                                private val activity: Activity) {
+
+    private val destinationsWithoutBottomNav = listOf(R.id.noInternetFragment, R.id.redeemVoucherFragment)
 
 
     private val destinationChangedListener:NavController.OnDestinationChangedListener =
             NavController.OnDestinationChangedListener { _, destination, _ ->
+                toggleNavBar(destination)
                 if(internetConnectionHandler.isNotConnected()) {
                     if (destination.id != R.id.noInternetFragment) {
                         navigationToNoInternetFragment()
                     }
                 }
             }
+
+    private fun toggleNavBar(destination: NavDestination) {
+        activity.findViewById<BottomNavigationView>(R.id.bottomNavigationView).show()
+        destinationsWithoutBottomNav.find { it == destination.id }?.let {
+            activity.findViewById<BottomNavigationView>(R.id.bottomNavigationView).gone()
+        }
+    }
 
 
     private fun navigationToNoInternetFragment(){

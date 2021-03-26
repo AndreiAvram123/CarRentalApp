@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="voucher"
+            type="com.andrei.carrental.entities.Voucher" />
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    >
+    <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_close_white_32" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/watch_animation"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_fileName="animation-present.json"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_speed="1" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/bt_register"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:text="@string/redeem"
+        android:backgroundTint="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        style="@style/voucherValueStyle"
+        android:id="@+id/tv_voucher_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="19dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/watch_animation"
+        android:text="@{`-` + voucher.value + `% off`}"
+        tools:text="-20% off" />
+
+    <TextView
+        android:id="@+id/tv_voucher_description"
+        style="@style/voucherDescriptionStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/tv_voucher_value"
+        app:layout_constraintTop_toBottomOf="@+id/tv_voucher_value"
+        android:text="@{voucher.description}"
+        tools:text="On all Tesla cars" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
