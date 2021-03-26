@@ -13,7 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class CustomNavigationController(private val navigationController: NavController,
                                 private val  internetConnectionHandler: InternetConnectionHandler,
-                                private val activity: Activity) {
+                                private val bottomNavigationView: BottomNavigationView) {
 
     private val destinationsWithoutBottomNav = listOf(R.id.noInternetFragment, R.id.redeemVoucherFragment)
 
@@ -29,9 +29,9 @@ class CustomNavigationController(private val navigationController: NavController
             }
 
     private fun toggleNavBar(destination: NavDestination) {
-        activity.findViewById<BottomNavigationView>(R.id.bottomNavigationView).show()
+        bottomNavigationView.show()
         destinationsWithoutBottomNav.find { it == destination.id }?.let {
-            activity.findViewById<BottomNavigationView>(R.id.bottomNavigationView).gone()
+            bottomNavigationView.gone()
         }
     }
 

@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     lateinit var internetConnectionHandler: InternetConnectionHandler
 
     private val customNavigationController:CustomNavigationController by lazy {
-         CustomNavigationController(navController,internetConnectionHandler,this)
+         CustomNavigationController(navController,internetConnectionHandler,binding.bottomNavigationView)
     }
 
 
