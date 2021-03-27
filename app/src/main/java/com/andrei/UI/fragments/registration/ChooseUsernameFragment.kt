@@ -27,6 +27,35 @@ class ChooseUsernameFragment : BaseFragment(R.layout.fragment_choose_usename_lay
         viewModelSignUp.validateUsername()
     }
 
+    private val collectorUsernameValidation : suspend (State<UsernameValidationState>)-> Unit = {
+        when (it) {
+            is State.Success -> {
+                binding.validationInProgress = false
+
+                when (it.data) {
+                    is UsernameValidationState.AlreadyTaken -> {
+                        showUsernameError(getString(R.string.username_taken))
+                    }
+                    is UsernameValidationState.TooShort ->
+                        showUsernameError(getString(R.string.username_too_short))
+
+                    is UsernameValidationState.Valid -> {
+                        hideUsernameError()
+                        enableNextButton()
+                    }
+                    is UsernameValidationState.Unvalidated -> {
+                        hideUsernameError()
+                        disableNextButton()
+                    }
+                }
+            }
+            is State.Error -> {
+                binding.validationInProgress = false
+            }
+            else ->  binding.validationInProgress = true
+        }
+    }
+
 
     override fun initializeUI() {
         binding.tfUsername.editText?.addTextChangedListener {
@@ -37,37 +66,7 @@ class ChooseUsernameFragment : BaseFragment(R.layout.fragment_choose_usename_lay
         }
 
         lifecycleScope.launchWhenResumed {
-            viewModelSignUp.validationUsername.collect{
-                when {
-                    it is State.Success -> {
-                        binding.validationInProgress = false
-
-                        when (it.data) {
-                            is UsernameValidationState.AlreadyTaken -> {
-                                showError(getString(R.string.username_taken))
-                            }
-                            is UsernameValidationState.TooShort ->
-                                showError(getString(R.string.username_too_short))
-
-                            is UsernameValidationState.Valid -> {
-                                hideUsernameError()
-                                enableNextButton()
-                            }
-                            is UsernameValidationState.Unvalidated -> {
-                                hideUsernameError()
-                                disableNextButton()
-                            }
-                        }
-                    }
-                    it is State.Loading ->{
-                        binding.validationInProgress = true
-                    }
-                    it is State.Error -> {
-                        binding.validationInProgress = false
-                    }
-                }
-
-            }
+            viewModelSignUp.validationUsername.collect(collectorUsernameValidation)
         }
 
 
@@ -77,7 +76,9 @@ class ChooseUsernameFragment : BaseFragment(R.layout.fragment_choose_usename_lay
     }
 
 
-    private fun showError(errorText:String){
+
+
+    private fun showUsernameError(errorText:String){
         binding.apply {
             errorUsername = errorText
             btNext.isEnabled = false
