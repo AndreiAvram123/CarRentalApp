@@ -4,7 +4,6 @@ import androidx.lifecycle.*
 import com.andrei.UI.FieldValidation
 import com.andrei.engine.repository.interfaces.LoginRepository
 import com.andrei.engine.states.LoginFlowState
-import com.andrei.utils.isEmailInvalid
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -50,8 +49,8 @@ class ViewModelLogin  @Inject constructor(
             _validationPassword.emit(FieldValidation.Valid)
 
             when {
-                email.isEmailInvalid() ->
-                    _validationEmail.emit(FieldValidation.Invalid(errorInvalidEmailFormat))
+                email.isBlank() ->
+                    _validationEmail.emit(FieldValidation.Invalid(errorEmailBlank))
                 password.isBlank() -> _validationPassword.emit(FieldValidation.Invalid(errorPasswordBlank))
                 else -> {
                     loginRepository.startLoginFlow(email = email ,password = password)
@@ -64,7 +63,7 @@ class ViewModelLogin  @Inject constructor(
 
 
   companion object{
-      const val errorInvalidEmailFormat = "Invalid email format "
+      const val errorEmailBlank = "Please enter your email"
       const val errorPasswordBlank = "Please enter your password"
 
 

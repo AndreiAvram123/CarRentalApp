@@ -7,7 +7,6 @@ import com.andrei.engine.repository.interfaces.EmailValidationState
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.engine.states.RegistrationFlowState
-import com.andrei.utils.isUsernameTooShort
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -40,34 +39,12 @@ class ViewModelSignUp @Inject constructor(
     private val _validationUsername:MutableStateFlow<State<UsernameValidationState>> = MutableStateFlow(State.Success(UsernameValidationState.Unvalidated))
     val validationUsername = _validationUsername.asStateFlow()
 
+    private val _validationEmail:MutableStateFlow<State<EmailValidationState>> = MutableStateFlow(State.Success(EmailValidationState.Unvalidated))
+    val validationEmail = _validationEmail.asStateFlow()
 
-    val validationStatePassword:MediatorLiveData<PasswordValidationState> by lazy {
-        MediatorLiveData<PasswordValidationState>().apply {
-            addSource(_enteredPassword){
-                    value = signUpRepo.validatePassword(it)
-            }
-            addSource(_registrationState.asLiveData()){
-                if(it is RegistrationFlowState.RegistrationError.PasswordTooWeak){
-                    value = PasswordValidationState.TooWeak
-                }
-            }
-        }
-    }
 
-    val validationStateEmail:MediatorLiveData<EmailValidationState> by lazy {
-        MediatorLiveData<EmailValidationState>().apply {
-            addSource(_enteredEmail.asLiveData()){
-               viewModelScope.launch {
-                   value = signUpRepo.validateEmail(it)
-               }
-            }
-            addSource(registrationState.asLiveData()){
-                if(it is RegistrationFlowState.RegistrationError.EmailAlreadyTaken){
-                    value = EmailValidationState.AlreadyTaken
-                }
-            }
-        }
-    }
+
+
     val reenteredPasswordValid:LiveData<Boolean> = Transformations.map(_reenteredPassword){
         it == _enteredPassword.value
     }
@@ -86,6 +63,15 @@ class ViewModelSignUp @Inject constructor(
              }
          }
      }
+    fun validateEmail(){
+        viewModelScope.launch {
+            val email = _enteredEmail.value
+            signUpRepo.validateEmail(email).collect {
+                _validationEmail.emit(it)
+            }
+        }
+    }
+
 
 
     fun setEmail(email:String){

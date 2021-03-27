@@ -68,14 +68,8 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
             }
         }
     }
-    private val observerEmailValid = Observer<EmailValidationState>{
-       binding.errorEmail =  when(it){
-            is EmailValidationState.Valid -> null
-            is EmailValidationState.AlreadyTaken -> getString(R.string.email_already_taken)
-            is EmailValidationState.InvalidFormat -> getString(R.string.email_format_invalid)
-        }
 
-    }
+
     private val observerConfirmedPasswordValid = Observer<Boolean> {valid->
         if(valid){
             binding.errorConfirmedPassword = null
@@ -132,9 +126,8 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
 
     private fun attachObservers() {
       //   _viewModelSignUp.validationStateUsername.reObserve(viewLifecycleOwner,observerValidationStateUsername)
-         _viewModelSignUp.validationStatePassword.reObserve(viewLifecycleOwner,observerValidationStatePassword)
-        _viewModelSignUp.validationStateEmail.reObserve(viewLifecycleOwner,observerEmailValid)
-        _viewModelSignUp.reenteredPasswordValid.reObserve(viewLifecycleOwner,observerConfirmedPasswordValid)
+      //   _viewModelSignUp.validationStatePassword.reObserve(viewLifecycleOwner,observerValidationStatePassword)
+     //   _viewModelSignUp.reenteredPasswordValid.reObserve(viewLifecycleOwner,observerConfirmedPasswordValid)
      //   _viewModelSignUp.registrationState.reObserve(viewLifecycleOwner,observerRegistrationFlow)
     }
 

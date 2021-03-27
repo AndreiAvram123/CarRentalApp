@@ -1,6 +1,7 @@
 package com.andrei.engine
 
 import android.util.Log
+import timber.log.Timber
 
 object ResponseHandler {
 
@@ -16,7 +17,7 @@ object ResponseHandler {
     }
 
     fun <T > handleResponseException(exception:Exception, url: String) :State<T>{
-        Log.e(TAG,"Error with request $url")
+        Timber.e("Error with request $url")
         logException(exception)
         return State.Error("Unknown Error")
     }
@@ -27,6 +28,6 @@ object ResponseHandler {
     }
 
     private fun logException(e:Exception){
-       Log.e(ResponseHandler::class.simpleName,e.stackTraceToString())
+       Timber.e(e)
     }
 }

@@ -3,12 +3,12 @@ package com.andrei.UI.fragments.registration
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
-import com.andrei.carrental.databinding.FragmentChooseUsenameLayoutBinding
+import com.andrei.carrental.databinding.FragmentChooseEmailLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelSignUp
 import com.andrei.engine.State
+import com.andrei.engine.repository.interfaces.EmailValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.utils.executeDelayed
 import com.andrei.utils.handler
@@ -16,34 +16,35 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
-class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose_usename_layout) {
+class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_email_layout){
 
-    private val binding:FragmentChooseUsenameLayoutBinding by viewBinding()
-    private val viewModelSignUp: ViewModelSignUp by activityViewModels ()
+    private val binding:FragmentChooseEmailLayoutBinding by viewBinding()
+    private val viewModelSignUp:ViewModelSignUp by activityViewModels()
+
 
     override val runnableDetail  =  Runnable{
-        viewModelSignUp.validateUsername()
+        viewModelSignUp.validateEmail()
     }
 
 
-    private val collectorUsernameValidation : suspend (State<UsernameValidationState>)-> Unit = {
+    private val collectorEmailValidation : suspend (State<EmailValidationState>)-> Unit = {
         when (it) {
             is State.Success -> {
                 binding.validationInProgress = false
 
                 when (it.data) {
-                    is UsernameValidationState.AlreadyTaken -> {
-                        showError(getString(R.string.username_taken))
+                    is EmailValidationState.AlreadyTaken -> {
+                        showError(getString(R.string.email_already_taken))
                     }
-                    is UsernameValidationState.TooShort ->
-                        showError(getString(R.string.username_too_short))
+                    is EmailValidationState.InvalidFormat->
+                        showError(getString(R.string.email_format_invalid))
 
-                    is UsernameValidationState.Valid -> {
-                        hideUsernameError()
+                    is EmailValidationState.Valid -> {
+                        hideError()
                         enableNextButton()
                     }
-                    is UsernameValidationState.Unvalidated -> {
-                        hideUsernameError()
+                    is EmailValidationState.Unvalidated -> {
+                        hideError()
                         disableNextButton()
                     }
                 }
@@ -57,28 +58,34 @@ class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose
 
 
     override fun initializeUI() {
-        binding.tfUsername.editText?.addTextChangedListener {
-            hideUsernameError()
+        binding.tfEmail.editText?.addTextChangedListener {
+            hideError()
             disableNextButton()
             viewModelSignUp.setUsername(it.toString())
             handler.executeDelayed(runnableDetail)
         }
 
         lifecycleScope.launchWhenResumed {
-            viewModelSignUp.validationUsername.collect(collectorUsernameValidation)
+            viewModelSignUp.validationEmail.collect(collectorEmailValidation)
         }
 
 
         binding.btNext.setOnClickListener {
-            navigateForward()
+           navigateForward()
         }
     }
 
 
 
+    override fun showError(error: String) {
+        binding.apply {
+            errorEmail = error
+            btNext.isEnabled = false
+        }
+    }
 
-    private fun hideUsernameError(){
-        binding.errorUsername = null
+    override fun hideError() {
+        binding.errorEmail = null
     }
 
     override fun disableNextButton(){
@@ -87,19 +94,8 @@ class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose
     override fun enableNextButton(){
         binding.btNext.isEnabled = true
     }
-    override fun showError(error: String) {
-        binding.apply {
-            errorUsername = error
-            btNext.isEnabled = false
-        }
-    }
-
-    override fun hideError() {
-        binding.errorUsername = null
-    }
 
     override fun navigateForward() {
-        val action = ChooseUsernameFragmentDirections.actionChooseUsernameFragmentToChooseEmailFragment()
-        findNavController().navigate(action)
+
     }
 }

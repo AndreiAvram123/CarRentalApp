@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface SignUpRepository {
      fun validateUsername(username:String) : Flow<State<UsernameValidationState>>
-    fun validatePassword(password:String): PasswordValidationState
+    fun validatePassword(password:String): Flow<State<PasswordValidationState>>
     suspend fun register(username: String, email: String, password: String)
     val registrationState: MutableLiveData<RegistrationFlowState>
-    suspend fun validateEmail(email: String): EmailValidationState
+    suspend fun validateEmail(email: String): Flow<State<EmailValidationState>>
 }
 sealed class UsernameValidationState{
     object Unvalidated:UsernameValidationState()
@@ -29,4 +29,5 @@ sealed class EmailValidationState{
    object Valid: EmailValidationState()
    object AlreadyTaken : EmailValidationState()
    object InvalidFormat: EmailValidationState()
+    object Unvalidated:EmailValidationState()
 }
