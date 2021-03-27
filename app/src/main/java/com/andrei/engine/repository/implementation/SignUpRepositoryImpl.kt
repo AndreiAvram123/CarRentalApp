@@ -12,8 +12,8 @@ import com.andrei.engine.requestModels.RegisterRequest
 import com.andrei.engine.states.RegistrationFlowState
 import com.andrei.utils.isEmailValid
 import com.andrei.utils.isPasswordTooWeak
-import com.andrei.utils.isUsernameInvalid
-import kotlinx.coroutines.flow.collect
+import com.andrei.utils.isUsernameTooShort
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 
@@ -29,68 +29,64 @@ class SignUpRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun validateUsername(username: String): UsernameValidationState  {
-        var result:UsernameValidationState = UsernameValidationState.TooShort
+    override fun validateUsername(username: String): Flow<State<UsernameValidationState>> = callRunner.makeApiCall { signUpAPI.checkIfUsernameIsAvailable(username) }
+                .transform {
+                    when(it) {
+                       is State.Success -> emit(State.Success(when {
+                            it.data.valid ->UsernameValidationState.Valid
+                            it.data.reason == RegistrationFlowState.RegistrationError.usernameAlreadyTaken ->
+                                UsernameValidationState.AlreadyTaken
 
-        if(username.isUsernameInvalid()){
+                            else -> UsernameValidationState.TooShort
+                        }))
+                       is State.Loading -> emit(State.Loading)
+                       is State.Error -> emit(State.Error(it.error))
+                        is State.Default -> emit(State.Default)
+                    }
+
+                }
+
+        override suspend fun validateEmail(email:String): EmailValidationState{
+            var result:EmailValidationState = EmailValidationState.InvalidFormat
+
+            if(!email.isEmailValid()) {
+                return result
+            }
+            callRunner.makeApiCall{signUpAPI.checkIfEmailIsAvailable(email)}.collect{
+                if(it is State.Success){
+                    result = when{
+                        it.data.valid -> EmailValidationState.Valid
+                        it.data.reason == RegistrationFlowState.RegistrationError.emailAlreadyTaken -> EmailValidationState.AlreadyTaken
+                        else -> EmailValidationState.InvalidFormat
+                    }
+                }
+            }
             return result
         }
 
-        callRunner.makeApiCall{signUpAPI.checkIfUsernameIsAvailable(username)}.collect {
-            if (it is State.Success) {
-                result = when {
-                    it.data.valid -> UsernameValidationState.Valid
-                    it.data.reason == RegistrationFlowState.RegistrationError.usernameAlreadyTaken ->
-                        UsernameValidationState.AlreadyTaken
-
-                    else -> UsernameValidationState.TooShort
-                }
+        override fun validatePassword(password: String):PasswordValidationState{
+            if(password.isPasswordTooWeak()){
+                return PasswordValidationState.TooWeak
             }
+            return PasswordValidationState.Valid
         }
-        return result
-    }
-
-    override suspend fun validateEmail(email:String): EmailValidationState{
-        var result:EmailValidationState = EmailValidationState.InvalidFormat
-
-        if(!email.isEmailValid()) {
-            return result
-        }
-        callRunner.makeApiCall{signUpAPI.checkIfEmailIsAvailable(email)}.collect{
-            if(it is State.Success){
-                result = when{
-                    it.data.valid -> EmailValidationState.Valid
-                    it.data.reason == RegistrationFlowState.RegistrationError.emailAlreadyTaken -> EmailValidationState.AlreadyTaken
-                    else -> EmailValidationState.InvalidFormat
-                }
-            }
-        }
-        return result
-    }
-
-    override fun validatePassword(password: String):PasswordValidationState{
-        if(password.isPasswordTooWeak()){
-            return PasswordValidationState.TooWeak
-        }
-        return PasswordValidationState.Valid
-    }
 
 
 
-    override suspend fun register(username:String, email:String, password: String) {
-        val registerRequest = RegisterRequest(
+        override suspend fun register(username:String, email:String, password: String) {
+            val registerRequest = RegisterRequest(
                 username = username,
                 email = email,
                 password = password
-        )
-         callRunner.makeApiCall{signUpAPI.register(registerRequest)}.collect{
-             when(it){
-                 is State.Success -> registrationState.postValue(RegistrationFlowState.Finished)
-                 is State.Loading -> registrationState.postValue(RegistrationFlowState.Loading)
-                 is State.Error -> registrationState.postValue(RegistrationFlowState.RegistrationError.mapError(it.error))
-             }
-         }
-    }
+            )
+            callRunner.makeApiCall{signUpAPI.register(registerRequest)}.collect{
+                when(it){
+                    is State.Success -> registrationState.postValue(RegistrationFlowState.Finished)
+                    is State.Loading -> registrationState.postValue(RegistrationFlowState.Loading)
+                    is State.Error -> registrationState.postValue(RegistrationFlowState.RegistrationError.mapError(it.error))
+                }
+            }
+        }
 
 }
 

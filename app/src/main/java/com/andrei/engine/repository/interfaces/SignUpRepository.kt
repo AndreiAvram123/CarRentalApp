@@ -7,13 +7,14 @@ import com.andrei.engine.states.RegistrationFlowState
 import kotlinx.coroutines.flow.Flow
 
 interface SignUpRepository {
-    suspend fun validateUsername(username:String) : UsernameValidationState
+     fun validateUsername(username:String) : Flow<State<UsernameValidationState>>
     fun validatePassword(password:String): PasswordValidationState
     suspend fun register(username: String, email: String, password: String)
     val registrationState: MutableLiveData<RegistrationFlowState>
     suspend fun validateEmail(email: String): EmailValidationState
 }
 sealed class UsernameValidationState{
+    object Unvalidated:UsernameValidationState()
     object Valid : UsernameValidationState()
     object AlreadyTaken: UsernameValidationState()
     object  TooShort:UsernameValidationState()

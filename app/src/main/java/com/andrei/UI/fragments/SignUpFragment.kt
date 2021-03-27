@@ -108,7 +108,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
         binding.apply {
             btBack.setOnClickListener{findNavController().popBackStack()}
             btRegister.setOnClickListener {
-                _viewModelSignUp.startRegistrationFlow()
+               // _viewModelSignUp.startRegistrationFlow()
             }
             tfUsername.editText?.addTextChangedListener{
                 handler.executeDelayed(runnableUsername)
@@ -131,11 +131,11 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up_layout){
     }
 
     private fun attachObservers() {
-         _viewModelSignUp.validationStateUsername.reObserve(viewLifecycleOwner,observerValidationStateUsername)
+      //   _viewModelSignUp.validationStateUsername.reObserve(viewLifecycleOwner,observerValidationStateUsername)
          _viewModelSignUp.validationStatePassword.reObserve(viewLifecycleOwner,observerValidationStatePassword)
         _viewModelSignUp.validationStateEmail.reObserve(viewLifecycleOwner,observerEmailValid)
         _viewModelSignUp.reenteredPasswordValid.reObserve(viewLifecycleOwner,observerConfirmedPasswordValid)
-        _viewModelSignUp.registrationState.reObserve(viewLifecycleOwner,observerRegistrationFlow)
+     //   _viewModelSignUp.registrationState.reObserve(viewLifecycleOwner,observerRegistrationFlow)
     }
 
     private fun Handler.executeDelayed(callback:Runnable){

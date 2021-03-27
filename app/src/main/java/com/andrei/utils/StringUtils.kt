@@ -8,7 +8,8 @@ fun String.isEmailValid():Boolean{
 }
 
 fun String.isEmailInvalid():Boolean = !isEmailValid()
- fun String.isUsernameInvalid():Boolean{
+
+ fun String.isUsernameTooShort():Boolean{
     return length < 5
 }
 

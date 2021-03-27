@@ -51,7 +51,8 @@ fun showEndIcon(field:TextInputLayout,visible: Boolean){
 @BindingAdapter("shimmerActive")
 fun toggleShimmerLayout(shimmerFrameLayout: ShimmerFrameLayout, active:Boolean){
     if(active){
-        shimmerFrameLayout.startShimmer()
+            shimmerFrameLayout.showShimmer(true)
+            shimmerFrameLayout.startShimmer()
     }else{
         shimmerFrameLayout.hideShimmer()
     }

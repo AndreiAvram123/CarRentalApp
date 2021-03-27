@@ -60,5 +60,6 @@
     <string name="unknown">Unknown</string>
     <string name="redeem">Redeem</string>
     <string name="go_back_to_app">Go back to app</string>
+    <string name="choose_username">Choose your username</string>
 
 </resources>

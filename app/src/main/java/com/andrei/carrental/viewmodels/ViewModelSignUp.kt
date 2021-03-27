@@ -1,12 +1,15 @@
 package com.andrei.carrental.viewmodels
 
 import androidx.lifecycle.*
+import com.andrei.engine.State
 import com.andrei.engine.repository.implementation.SignUpRepositoryImpl
 import com.andrei.engine.repository.interfaces.EmailValidationState
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.engine.states.RegistrationFlowState
+import com.andrei.utils.isUsernameTooShort
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,12 +20,11 @@ class ViewModelSignUp @Inject constructor(
 
 
 
-    private val _enteredUsername :MutableLiveData<String> by lazy {
-        MutableLiveData<String>()
-    }
-    private val _enteredEmail:MutableLiveData<String> by lazy {
-        MutableLiveData<String>()
-    }
+    private val _enteredUsername :MutableStateFlow<String> = MutableStateFlow("")
+
+
+    private val _enteredEmail:MutableStateFlow<String> = MutableStateFlow("")
+
     private val _enteredPassword :MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
@@ -30,35 +32,21 @@ class ViewModelSignUp @Inject constructor(
         MutableLiveData<String>()
     }
 
-    private val _registrationState:MutableLiveData<RegistrationFlowState> by lazy {
-        signUpRepo.registrationState
-    }
+    private val _registrationState:MutableStateFlow<RegistrationFlowState> = MutableStateFlow(RegistrationFlowState.Loading)
 
-    val registrationState:LiveData<RegistrationFlowState>
-    get() = _registrationState
+    val registrationState:StateFlow<RegistrationFlowState>
+    get() = _registrationState.asStateFlow()
 
+    private val _validationUsername:MutableStateFlow<State<UsernameValidationState>> = MutableStateFlow(State.Success(UsernameValidationState.Unvalidated))
+    val validationUsername = _validationUsername.asStateFlow()
 
-     val validationStateUsername :MediatorLiveData<UsernameValidationState> by lazy {
-         MediatorLiveData<UsernameValidationState>().apply {
-             addSource(_enteredUsername){
-                 viewModelScope.launch {
-                     value = signUpRepo.validateUsername(it)
-                 }
-             }
-             addSource(registrationState){
-                 if(it is RegistrationFlowState.RegistrationError.UsernameAlreadyTaken){
-                     value = UsernameValidationState.AlreadyTaken
-                 }
-             }
-         }
-     }
 
     val validationStatePassword:MediatorLiveData<PasswordValidationState> by lazy {
         MediatorLiveData<PasswordValidationState>().apply {
             addSource(_enteredPassword){
                     value = signUpRepo.validatePassword(it)
             }
-            addSource(_registrationState){
+            addSource(_registrationState.asLiveData()){
                 if(it is RegistrationFlowState.RegistrationError.PasswordTooWeak){
                     value = PasswordValidationState.TooWeak
                 }
@@ -68,12 +56,12 @@ class ViewModelSignUp @Inject constructor(
 
     val validationStateEmail:MediatorLiveData<EmailValidationState> by lazy {
         MediatorLiveData<EmailValidationState>().apply {
-            addSource(_enteredEmail){
+            addSource(_enteredEmail.asLiveData()){
                viewModelScope.launch {
                    value = signUpRepo.validateEmail(it)
                }
             }
-            addSource(registrationState){
+            addSource(registrationState.asLiveData()){
                 if(it is RegistrationFlowState.RegistrationError.EmailAlreadyTaken){
                     value = EmailValidationState.AlreadyTaken
                 }
@@ -84,34 +72,26 @@ class ViewModelSignUp @Inject constructor(
         it == _enteredPassword.value
     }
 
-    private val _registrationFlowEnabled:MediatorLiveData<Boolean> by lazy {
-        MediatorLiveData<Boolean>().apply {
-            value  = false
-            addSource(validationStateUsername){
-               value = canStartRegistrationFlow()
-            }
-            addSource(validationStateEmail){
-                value = canStartRegistrationFlow()
-            }
-            addSource(validationStatePassword){
-                value = canStartRegistrationFlow()
-            }
-            addSource(reenteredPasswordValid){
-                value = canStartRegistrationFlow()
-            }
-
-        }
-    }
-    val registrationFlowEnabled:LiveData<Boolean>
-    get() = _registrationFlowEnabled
-
-
 
     fun setUsername(username:String){
-        _enteredUsername.postValue(username)
+        viewModelScope.launch {
+            _enteredUsername.emit(username)
+        }
     }
+     fun validateUsername() {
+         viewModelScope.launch {
+             val username = _enteredUsername.value
+             signUpRepo.validateUsername(username).collect {
+                 _validationUsername.emit(it)
+             }
+         }
+     }
+
+
     fun setEmail(email:String){
-        _enteredEmail.postValue(email)
+        viewModelScope.launch {
+            _enteredEmail.emit(email)
+        }
     }
 
     fun setPassword(password:String){
@@ -122,28 +102,5 @@ class ViewModelSignUp @Inject constructor(
     }
 
 
-
-    fun startRegistrationFlow() {
-        if (canStartRegistrationFlow()) {
-            val username = _enteredUsername.value
-            val password = _enteredPassword.value
-            val email = _enteredEmail.value
-            check(username != null) {}
-            check(password != null) {}
-            check(email != null) {}
-                viewModelScope.launch {
-                    signUpRepo.register(username = username,
-                        email = email,
-                        password = password)
-                }
-        }
-    }
-
-    private fun canStartRegistrationFlow():Boolean{
-        return validationStateUsername.value is UsernameValidationState.Valid
-                && validationStatePassword.value is PasswordValidationState.Valid
-                && validationStateEmail.value  is EmailValidationState.Valid
-                && reenteredPasswordValid.value == true
-    }
 
 }

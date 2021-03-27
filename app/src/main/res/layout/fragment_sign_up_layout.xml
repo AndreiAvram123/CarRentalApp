@@ -155,7 +155,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="32dp"
         android:text="@string/finish"
-        android:enabled="@{viewModelSignUp.registrationFlowEnabled}"
         app:backgroundTint="@color/example_4_green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -170,7 +169,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/bt_register"
         app:layout_constraintTop_toTopOf="@+id/bt_register"
-        app:isVisible="@{viewModelSignUp.registrationState instanceof RegistrationFlowState.Loading}"
         android:elevation="5dp"
         />
 
