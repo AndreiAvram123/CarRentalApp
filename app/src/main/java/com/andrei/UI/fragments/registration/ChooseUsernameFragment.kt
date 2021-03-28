@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.collect
 class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose_usename_layout) {
 
     private val binding:FragmentChooseUsenameLayoutBinding by viewBinding()
-    private val viewModelSignUp: ViewModelSignUp by activityViewModels ()
 
     override val runnableDetail  =  Runnable{
         viewModelSignUp.validateUsername()
@@ -88,10 +87,7 @@ class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose
         binding.btNext.isEnabled = true
     }
     override fun showError(error: String) {
-        binding.apply {
-            errorUsername = error
-            btNext.isEnabled = false
-        }
+        binding.errorUsername = error
     }
 
     override fun hideError() {

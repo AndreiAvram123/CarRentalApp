@@ -14,40 +14,47 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ViewModelSignUp @Inject constructor(
-  private val signUpRepo: SignUpRepositoryImpl
+        private val signUpRepo: SignUpRepositoryImpl
 ) : ViewModel() {
 
 
 
-    private val _enteredUsername :MutableStateFlow<String> = MutableStateFlow("")
-
-
-    private val _enteredEmail:MutableStateFlow<String> = MutableStateFlow("")
-
-    private val _enteredPassword :MutableLiveData<String> by lazy {
-        MutableLiveData<String>()
+    private val _enteredUsername :MutableStateFlow<String> by lazy {
+        MutableStateFlow("")
     }
-    private val _reenteredPassword:MutableLiveData<String> by lazy {
-        MutableLiveData<String>()
+
+
+    private val _enteredEmail:MutableStateFlow<String> by lazy {
+        MutableStateFlow("")
+    }
+
+
+    private val _enteredPassword :MutableStateFlow<String> by lazy {
+        MutableStateFlow("")
+    }
+
+
+    private val _reenteredPassword:MutableStateFlow<String> by lazy {
+        MutableStateFlow("")
     }
 
     private val _registrationState:MutableStateFlow<RegistrationFlowState> = MutableStateFlow(RegistrationFlowState.Loading)
 
-    val registrationState:StateFlow<RegistrationFlowState>
-    get() = _registrationState.asStateFlow()
 
-    private val _validationUsername:MutableStateFlow<State<UsernameValidationState>> = MutableStateFlow(State.Success(UsernameValidationState.Unvalidated))
+    private val _validationUsername:MutableStateFlow<State<UsernameValidationState>> by lazy {
+        MutableStateFlow(State.Success(UsernameValidationState.Unvalidated))
+    }
     val validationUsername = _validationUsername.asStateFlow()
 
-    private val _validationEmail:MutableStateFlow<State<EmailValidationState>> = MutableStateFlow(State.Success(EmailValidationState.Unvalidated))
+    private val _validationEmail:MutableStateFlow<State<EmailValidationState>> by lazy{
+        MutableStateFlow(State.Success(EmailValidationState.Unvalidated))
+    }
     val validationEmail = _validationEmail.asStateFlow()
 
+    private val _validationPassword:MutableStateFlow<State<PasswordValidationState>> by lazy { MutableStateFlow(State.Success(PasswordValidationState.Unvalidated)) }
+    val validationPassword = _validationPassword.asStateFlow()
 
 
-
-    val reenteredPasswordValid:LiveData<Boolean> = Transformations.map(_reenteredPassword){
-        it == _enteredPassword.value
-    }
 
 
     fun setUsername(username:String){
@@ -55,14 +62,14 @@ class ViewModelSignUp @Inject constructor(
             _enteredUsername.emit(username)
         }
     }
-     fun validateUsername() {
-         viewModelScope.launch {
-             val username = _enteredUsername.value
-             signUpRepo.validateUsername(username).collect {
-                 _validationUsername.emit(it)
-             }
-         }
-     }
+    fun validateUsername() {
+        viewModelScope.launch {
+            val username = _enteredUsername.value
+            signUpRepo.validateUsername(username).collect {
+                _validationUsername.emit(it)
+            }
+        }
+    }
     fun validateEmail(){
         viewModelScope.launch {
             val email = _enteredEmail.value
@@ -71,20 +78,28 @@ class ViewModelSignUp @Inject constructor(
             }
         }
     }
-
-
-
-    fun setEmail(email:String){
+    fun validatePassword(){
         viewModelScope.launch {
-            _enteredEmail.emit(email)
+            val password = _enteredPassword.value
+            signUpRepo.validatePassword(password).collect {
+                _validationPassword.emit(it)
+            }
         }
     }
 
-    fun setPassword(password:String){
-        _enteredPassword.postValue(password)
+
+
+
+    fun setEmail(email:String) = viewModelScope.launch {
+            _enteredEmail.emit(email)
     }
-    fun setReenteredPassword(reenteredPassword:String){
-        _reenteredPassword.postValue(reenteredPassword)
+
+    fun setPassword(password:String)= viewModelScope.launch {
+            _enteredPassword.emit(password)
+        }
+
+    fun setReenteredPassword(reenteredPassword:String) = viewModelScope.launch {
+        _reenteredPassword.emit(reenteredPassword)
     }
 
 

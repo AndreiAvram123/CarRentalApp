@@ -24,6 +24,7 @@ sealed class UsernameValidationState{
 sealed class PasswordValidationState{
     object Valid:PasswordValidationState()
     object TooWeak:PasswordValidationState()
+    object Unvalidated:PasswordValidationState()
 }
 sealed class EmailValidationState{
    object Valid: EmailValidationState()

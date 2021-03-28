@@ -27,24 +27,22 @@ class SignUpRepositoryImpl @Inject constructor(
     }
 
 
-    override fun validateUsername(username: String): Flow<State<UsernameValidationState>> = callRunner.makeApiCall { signUpAPI.checkIfUsernameIsAvailable(username) }
+    override fun validateUsername(username: String): Flow<State<UsernameValidationState>> =
+            callRunner.makeApiCall { signUpAPI.checkIfUsernameIsAvailable(username) }
                 .transform {
-                    when(it) {
-                       is State.Success -> emit(State.Success(when {
-                            it.data.valid ->UsernameValidationState.Valid
-                            it.data.reason == RegistrationFlowState.RegistrationError.usernameAlreadyTaken ->
+                    emit(it.mapState {data ->
+                        when {
+                            data.valid ->UsernameValidationState.Valid
+                            data.reason == RegistrationFlowState.RegistrationError.usernameAlreadyTaken ->
                                 UsernameValidationState.AlreadyTaken
 
                             else -> UsernameValidationState.TooShort
-                        }))
-                       is State.Loading -> emit(State.Loading)
-                       is State.Error -> emit(State.Error(it.error))
-                        is State.Default -> emit(State.Default)
-                    }
-
+                        }
+                    })
                 }
 
-        override suspend fun validateEmail(email:String): Flow<State<EmailValidationState>> = callRunner.makeApiCall{signUpAPI.checkIfEmailIsAvailable(email)}.transform{state->
+        override suspend fun validateEmail(email:String): Flow<State<EmailValidationState>> =
+                callRunner.makeApiCall{signUpAPI.checkIfEmailIsAvailable(email)}.transform{state->
                 emit(state.mapState {
                     when{
                         it.valid -> EmailValidationState.Valid
@@ -56,7 +54,13 @@ class SignUpRepositoryImpl @Inject constructor(
 
 
         override fun validatePassword(password: String):Flow<State<PasswordValidationState>> = flow{
-              emit(State.Success(PasswordValidationState.Valid))
+             val passwordValidation = if(password.length > 6){
+                 PasswordValidationState.Valid
+             }else{
+                 PasswordValidationState.TooWeak
+             }
+
+              emit(State.Success(passwordValidation))
         }
 
 

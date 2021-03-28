@@ -3,6 +3,7 @@ package com.andrei.UI.fragments.registration
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentChooseEmailLayoutBinding
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.collect
 class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_email_layout){
 
     private val binding:FragmentChooseEmailLayoutBinding by viewBinding()
-    private val viewModelSignUp:ViewModelSignUp by activityViewModels()
 
 
     override val runnableDetail  =  Runnable{
@@ -31,13 +31,13 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
         when (it) {
             is State.Success -> {
                 binding.validationInProgress = false
-
                 when (it.data) {
                     is EmailValidationState.AlreadyTaken -> {
                         showError(getString(R.string.email_already_taken))
                     }
-                    is EmailValidationState.InvalidFormat->
+                    is EmailValidationState.InvalidFormat-> {
                         showError(getString(R.string.email_format_invalid))
+                    }
 
                     is EmailValidationState.Valid -> {
                         hideError()
@@ -45,7 +45,6 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
                     }
                     is EmailValidationState.Unvalidated -> {
                         hideError()
-                        disableNextButton()
                     }
                 }
             }
@@ -61,7 +60,7 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
         binding.tfEmail.editText?.addTextChangedListener {
             hideError()
             disableNextButton()
-            viewModelSignUp.setUsername(it.toString())
+            viewModelSignUp.setEmail(it.toString())
             handler.executeDelayed(runnableDetail)
         }
 
@@ -78,10 +77,8 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
 
 
     override fun showError(error: String) {
-        binding.apply {
-            errorEmail = error
-            btNext.isEnabled = false
-        }
+            binding.errorEmail = error
+
     }
 
     override fun hideError() {
@@ -96,6 +93,7 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
     }
 
     override fun navigateForward() {
-
+        val action = ChooseEmailFragmentDirections.actionChooseEmailFragmentToChoosePasswordFragment()
+        findNavController().navigate(action)
     }
 }

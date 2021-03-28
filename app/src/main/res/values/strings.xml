@@ -19,6 +19,8 @@
     <string name="key_token">key_token</string>
     <string name="screens_login_hint_username">Username</string>
     <string name="screens_login_hint_password">Password</string>
+    <string name="screens_register_hint_password">Password</string>
+    <string name="screens_register_hint_reenter_password">Reenter password</string>
     <string name="screens_login_hint_email">Email</string>
     <string name="key_user_id">key_user_id</string>
     <string name="key_user_email">key_user_email</string>
@@ -56,5 +58,6 @@
     <string name="go_back_to_app">Go back to app</string>
     <string name="choose_username">Choose your username</string>
     <string name="choose_email">Choose your Email</string>
+    <string name="choose_password">Choose your Password</string>
 
 </resources>

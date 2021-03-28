@@ -34,7 +34,11 @@
         android:name="com.andrei.UI.fragments.registration.ChooseEmailFragment"
         android:label="ChooseEmailFragment" >
         <action
-            android:id="@+id/action_chooseEmailFragment_to_registrationCompleteFragment"
-            app:destination="@id/registrationCompleteFragment" />
+            android:id="@+id/action_chooseEmailFragment_to_choosePasswordFragment"
+            app:destination="@id/choosePasswordFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/choosePasswordFragment"
+        android:name="com.andrei.UI.fragments.registration.ChoosePasswordFragment"
+        android:label="ChoosePasswordFragment" />
 </navigation>
