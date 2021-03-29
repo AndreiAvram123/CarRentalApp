@@ -1,13 +1,16 @@
 package com.andrei.carrental.viewmodels
 
+import android.graphics.drawable.Drawable
 import androidx.lifecycle.*
 import com.andrei.engine.State
 import com.andrei.engine.repository.implementation.SignUpRepositoryImpl
 import com.andrei.engine.repository.interfaces.EmailValidationState
 import com.andrei.engine.repository.interfaces.PasswordValidationState
 import com.andrei.engine.repository.interfaces.UsernameValidationState
-import com.andrei.engine.states.RegistrationFlowState
+import com.andrei.engine.states.RegistrationResponse
+import com.andrei.utils.toBase64
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,7 +41,12 @@ class ViewModelSignUp @Inject constructor(
         MutableStateFlow("")
     }
 
-    private val _registrationState:MutableStateFlow<RegistrationFlowState> = MutableStateFlow(RegistrationFlowState.Loading)
+    private val _profilePictureBase64:MutableStateFlow<String> by lazy {
+        MutableStateFlow("")
+    }
+
+    private val _registrationState:MutableStateFlow<RegistrationResponse> = MutableStateFlow(RegistrationResponse.Loading)
+    val registrationState = _registrationState.asStateFlow()
 
 
     private val _validationUsername:MutableStateFlow<State<UsernameValidationState>> by lazy {
@@ -88,6 +96,40 @@ class ViewModelSignUp @Inject constructor(
     }
 
 
+    init {
+        viewModelScope.launch {
+            combine(_enteredUsername, _enteredEmail, _enteredPassword, _profilePictureBase64) { username, email, password, profilePicture ->
+                return@combine username.isNotBlank() && email.isNotBlank() && password.isNotBlank() && profilePicture.isNotBlank()
+            }.collectLatest {
+                if (it) {
+                    registerUser()
+                }
+            }
+        }
+    }
+
+    private fun registerUser(){
+        viewModelScope.launch {
+            signUpRepo.register(username = _enteredUsername.value, email = _enteredEmail.value, password = _enteredPassword.value,
+                    base64ProfilePicture = _profilePictureBase64.value).collect {
+                when(it){
+                    is RegistrationResponse.Complete -> clear()
+                }
+               _registrationState.emit(it)
+            }
+        }
+    }
+
+    private fun clear(){
+        viewModelScope.launch {
+            _enteredUsername.emit("")
+            _enteredEmail.emit("")
+            _enteredPassword.emit("")
+            _profilePictureBase64.emit("")
+        }
+    }
+
+
 
 
     fun setEmail(email:String) = viewModelScope.launch {
@@ -101,6 +143,11 @@ class ViewModelSignUp @Inject constructor(
     fun setReenteredPassword(reenteredPassword:String) = viewModelScope.launch {
         _reenteredPassword.emit(reenteredPassword)
     }
+
+    fun setProfilePicture(drawable:Drawable)= viewModelScope.launch(Dispatchers.IO) {
+            val base64String = drawable.toBase64()
+            _profilePictureBase64.emit(base64String)
+        }
 
 
 

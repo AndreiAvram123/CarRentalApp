@@ -13,7 +13,7 @@
     </fragment>
     <fragment
         android:id="@+id/registrationCompleteFragment"
-        android:name="com.andrei.UI.fragments.RegistrationCompleteFragment"
+        android:name="com.andrei.UI.fragments.FinishingRegistrationFragment"
         android:label="RegistrationCompleteFragment" >
         <action
             android:id="@+id/action_registrationCompleteFragment_to_loginFragment"
@@ -40,5 +40,17 @@
     <fragment
         android:id="@+id/choosePasswordFragment"
         android:name="com.andrei.UI.fragments.registration.ChoosePasswordFragment"
-        android:label="ChoosePasswordFragment" />
+        android:label="ChoosePasswordFragment" >
+        <action
+            android:id="@+id/action_choosePasswordFragment_to_chooseProfilePictureFragment"
+            app:destination="@id/chooseProfilePictureFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chooseProfilePictureFragment"
+        android:name="com.andrei.UI.fragments.registration.ChooseProfilePictureFragment"
+        android:label="ChooseProfilePictureFragment" >
+        <action
+            android:id="@+id/action_chooseProfilePictureFragment_to_registrationCompleteFragment"
+            app:destination="@id/registrationCompleteFragment" />
+    </fragment>
 </navigation>

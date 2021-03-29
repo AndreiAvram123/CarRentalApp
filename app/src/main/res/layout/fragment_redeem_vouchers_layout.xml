@@ -29,7 +29,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:lottie_fileName="done.json"
-        app:lottie_loop="false"
         app:lottie_speed="1" />
 
     <com.yuyakaido.android.cardstackview.CardStackView

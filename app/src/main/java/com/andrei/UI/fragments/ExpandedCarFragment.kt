@@ -115,7 +115,7 @@ class ExpandedCarFragment : BaseFragment(R.layout.fragment_expanded_car) {
             is State.Success -> {
                 binding.apply {
                     car = state.data
-                    imageLender.setOnClickListener {
+                    ivLender.setOnClickListener {
                         navigateToUserProfile(state.data.basicUser.userID)
                     }
                 }

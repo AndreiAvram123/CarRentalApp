@@ -2,7 +2,7 @@ package com.andrei.engine.states
 
 
 sealed class RegistrationFlowState{
-    object Finished:RegistrationFlowState()
+    object Complete:RegistrationFlowState()
     object Loading:RegistrationFlowState()
 
     sealed class RegistrationError(val error:String)  : RegistrationFlowState() {

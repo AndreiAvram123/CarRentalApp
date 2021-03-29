@@ -2,15 +2,14 @@ package com.andrei.engine.repository.interfaces
 
 import androidx.lifecycle.MutableLiveData
 import com.andrei.engine.State
-import com.andrei.engine.requestModels.RegisterRequest
-import com.andrei.engine.states.RegistrationFlowState
+import com.andrei.engine.states.RegistrationResponse
 import kotlinx.coroutines.flow.Flow
 
 interface SignUpRepository {
      fun validateUsername(username:String) : Flow<State<UsernameValidationState>>
     fun validatePassword(password:String): Flow<State<PasswordValidationState>>
-    suspend fun register(username: String, email: String, password: String)
-    val registrationState: MutableLiveData<RegistrationFlowState>
+     fun register(username: String, email: String, password: String, base64ProfilePicture:String): Flow<RegistrationResponse>
+    val registrationState: MutableLiveData<RegistrationResponse>
     suspend fun validateEmail(email: String): Flow<State<EmailValidationState>>
 }
 sealed class UsernameValidationState{

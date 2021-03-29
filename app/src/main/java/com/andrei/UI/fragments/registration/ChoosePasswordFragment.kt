@@ -5,6 +5,7 @@ import android.os.Looper
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.UI.fragments.BaseFragment
 import com.andrei.carrental.R
@@ -121,6 +122,8 @@ class ChoosePasswordFragment : BaseFragment(R.layout.fragment_choose_password) {
      }
 
     private fun navigateForward(){
+       val action = ChoosePasswordFragmentDirections.actionChoosePasswordFragmentToChooseProfilePictureFragment()
+        findNavController().navigate(action)
 
     }
 

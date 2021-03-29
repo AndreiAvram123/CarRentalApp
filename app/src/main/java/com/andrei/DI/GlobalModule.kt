@@ -35,11 +35,6 @@ class GlobalModule {
     @Provides
     fun provideNetworkManager(@ApplicationContext context:Context) : ConnectivityManager = context.getConnectivityManager()
 
-    @Singleton
-    @Provides
-    fun provideEasyImage(@ApplicationContext context: Context):EasyImage =
-            EasyImage.Builder(context).setFolderName("Car Rental").allowMultiple(true).setChooserType(ChooserType.CAMERA_AND_GALLERY).build()
-
 
     @Provides
     @DefaultGlobalScope

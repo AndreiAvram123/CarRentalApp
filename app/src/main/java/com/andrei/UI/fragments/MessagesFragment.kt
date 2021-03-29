@@ -27,10 +27,7 @@ import com.stfalcon.chatkit.messages.MessageHolders
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import pl.aprilapps.easyphotopicker.DefaultCallback
-import pl.aprilapps.easyphotopicker.EasyImage
-import pl.aprilapps.easyphotopicker.MediaFile
-import pl.aprilapps.easyphotopicker.MediaSource
+import pl.aprilapps.easyphotopicker.*
 import java.util.*
 import javax.inject.Inject
 
@@ -40,12 +37,8 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
     private val binding:FragmentMessagesBinding by viewBinding ()
     private val viewModelChat:ViewModelChat by activityViewModels()
-    private val viewModelUser:ViewModelUser by viewModels()
 
     private val navArgs:MessagesFragmentArgs by navArgs()
-
-    @Inject
-    lateinit var easyImage: EasyImage
 
     @Inject
     lateinit var messengerService: MessengerService
@@ -53,6 +46,9 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
     @Inject
     lateinit var userDataManager: UserDataManager
 
+    private val easyImage:EasyImage by lazy {
+        EasyImage.Builder(requireContext()).allowMultiple(true).setChooserType(ChooserType.CAMERA_AND_GALLERY).build()
+    }
 
 
     private val bottomSheet:OptionsMessageBottomSheet by lazy {
