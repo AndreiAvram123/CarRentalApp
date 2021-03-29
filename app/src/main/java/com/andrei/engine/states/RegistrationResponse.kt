@@ -1,11 +1,11 @@
 package com.andrei.engine.states
 
 
-sealed class RegistrationFlowState{
-    object Complete:RegistrationFlowState()
-    object Loading:RegistrationFlowState()
+sealed class RegistrationResponse{
+    object Complete:RegistrationResponse()
+    object Loading:RegistrationResponse()
 
-    sealed class RegistrationError(val error:String)  : RegistrationFlowState() {
+    sealed class RegistrationError(val error:String)  : RegistrationResponse() {
         object UnknownError:RegistrationError(unknownError)
         object PasswordTooWeak:RegistrationError(passwordTooWeak)
         object UsernameAlreadyTaken:RegistrationError(usernameAlreadyTaken)
