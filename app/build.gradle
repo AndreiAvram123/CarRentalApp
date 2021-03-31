@@ -26,8 +26,8 @@ android {
         applicationId "com.andrei.carrental"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode getBuildNumber()
+        versionName "1.0.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -161,4 +161,14 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     testImplementation "org.robolectric:robolectric:4.4"
+}
+
+// Computes the build number from the current git commit
+static def getBuildNumber() {
+    return ['sh', '-c', gitExecutable() + ' rev-list HEAD --count'].execute().text.trim().toInteger()
+}
+
+// Finds the git executable on the current build environment
+static def gitExecutable() {
+    return ['sh', '-c', '/etc/profile; which git'].execute().text.trim()
 }
