@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
@@ -30,17 +31,13 @@ class ViewModelBookings @Inject constructor(
     }
 
     val bookings: StateFlow<State<List<Booking>>>
-        get() = _bookings
+        get() = _bookings.asStateFlow()
 
 
     private fun getBookings(){
         viewModelScope.launch {
-            bookingsRepository.fetchBookings().collect { state ->
-                when (state) {
-                    is State.Error -> _bookings.emit(state)
-                    is State.Loading -> _bookings.emit(state)
-                    is State.Success -> _bookings.emit(State.Success(state.data.map { it.toBooking() }))
-                }
+            bookingsRepository.fetchBookings().collect {
+               _bookings.emit(it)
             }
         }
 

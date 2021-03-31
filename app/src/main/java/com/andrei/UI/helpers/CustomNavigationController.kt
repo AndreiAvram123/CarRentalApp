@@ -8,6 +8,10 @@ import com.andrei.carrental.R
 import com.andrei.utils.gone
 import com.andrei.utils.show
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class CustomNavigationController(private val navigationController: NavController,
                                 private val  internetConnectionHandler: InternetConnectionHandler,
@@ -19,17 +23,9 @@ class CustomNavigationController(private val navigationController: NavController
     private val destinationChangedListener:NavController.OnDestinationChangedListener =
             NavController.OnDestinationChangedListener { _, destination, _ ->
                 toggleNavBar(destination)
-                shouldNavigateToNoInternetFragment(destination)
+
             }
 
-
-    private fun shouldNavigateToNoInternetFragment(destination: NavDestination) {
-        if (internetConnectionHandler.isNotConnected()) {
-            if (destination.id != R.id.noInternetFragment) {
-                navigationToNoInternetFragment()
-            }
-        }
-    }
 
     private fun toggleNavBar(destination: NavDestination) {
         bottomNavigationView.show()
@@ -40,25 +36,49 @@ class CustomNavigationController(private val navigationController: NavController
 
 
     private fun navigationToNoInternetFragment(){
-        val action = MainNavigationDirections.actionGlobalNoInternetFragment()
-        navigationController.navigate(action)
+        GlobalScope.launch(Dispatchers.Main) {
+            val action = MainNavigationDirections.actionGlobalNoInternetFragment()
+            navigationController.navigate(action)
+        }
+    }
+
+    init {
+        GlobalScope.launch(Dispatchers.Default) {
+              internetConnectionHandler.isConnectedState.collect{connected->
+                  if(connected){
+                      if(isNoInternetFragmentDisplayed()){
+                         popLastDestination()
+                      }
+                  }else{
+                      if(!isNoInternetFragmentDisplayed()){
+                         navigationToNoInternetFragment()
+                      }
+                  }
+              }
+        }
     }
 
     fun start(){
         navigationController.addOnDestinationChangedListener(destinationChangedListener)
-        internetConnectionHandler.onUnavailable {
-            navigationToNoInternetFragment()
+
+    }
+
+    private fun popLastDestination() {
+       GlobalScope.launch(Dispatchers.Main) {
+           navigationController.popBackStack()
         }
     }
+
     fun stop(){
         navigationController.removeOnDestinationChangedListener(destinationChangedListener)
     }
 
-    init {
-            navigationController.addOnDestinationChangedListener(destinationChangedListener)
-            internetConnectionHandler.onUnavailable {
-                navigationToNoInternetFragment()
-            }
+    private fun isNoInternetFragmentDisplayed(): Boolean{
+        val currentBackStackEntry = navigationController.currentBackStackEntry
+        if(currentBackStackEntry != null){
+            return currentBackStackEntry.destination.id == R.id.noInternetFragment
+        }
+        return false
     }
 
 }

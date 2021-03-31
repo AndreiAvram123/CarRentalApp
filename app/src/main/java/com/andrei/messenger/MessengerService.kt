@@ -33,21 +33,26 @@ class MessengerService @Inject constructor (
 
     private val channels : MutableMap<Long,ChannelService> = mutableMapOf()
 
+
     init {
         coroutineScope.launch {
             chatDao.findAllChatsDistinct().collect {
-                disconnect()
-                configureChannels(it)
-                connect()
+                if(internetConnectionHandler.isConnected()) {
+                    disconnect()
+                    configureChannels(it)
+                    connect()
+                }
+            }
+            internetConnectionHandler.isConnectedState.collect{connected->
+                    if (connected) {
+                        connect()
+                    } else {
+                        disconnect()
+                    }
             }
         }
-        internetConnectionHandler.onUnavailable {
-            disconnect()
-        }
-        internetConnectionHandler.onAvailable {
-            connect()
-        }
     }
+
 
     private fun configureChannels(chats:List<Chat>){
           channels.clear()

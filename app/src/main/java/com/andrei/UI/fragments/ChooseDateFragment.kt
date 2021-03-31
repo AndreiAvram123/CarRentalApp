@@ -182,7 +182,7 @@ class ChooseDateFragment : BaseFragment (R.layout.example_4_fragment){
                 setTextColorRes(R.color.example_4_grey)
             } else {
                 text = getString(R.string.start_date)
-                setTextColor(Color.GRAY)
+                setTextColor(Color.BLACK)
             }
         }
 
@@ -192,7 +192,7 @@ class ChooseDateFragment : BaseFragment (R.layout.example_4_fragment){
                 setTextColorRes(R.color.example_4_grey)
             } else {
                 text = getString(R.string.end_date)
-                setTextColor(Color.GRAY)
+                setTextColor(Color.BLACK)
             }
         }
 

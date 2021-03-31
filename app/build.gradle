@@ -8,37 +8,6 @@ apply plugin: "androidx.navigation.safeargs"
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'dagger.hilt.android.plugin'
 
-def getKeystoreProperties(String fileName) {
-    def properties = new Properties()
-    properties.setProperty("keyAlias", "")
-    properties.setProperty("keyPassword", "")
-    properties.setProperty("storeFile", "")
-    properties.setProperty("storePassword", "")
-    try {
-        def propsFile = rootProject.file(fileName)
-        // Attempt to get keystore properties from local file first (to build locally) before
-        // attempting to fetch from environment variables second (to build on the build server)
-        if (propsFile.exists()) {
-            properties.load(new FileInputStream(propsFile))
-        } else {
-            getPropertiesFromEnvironmentVariables(properties)
-        }
-    } catch (Exception e) {
-        properties = null
-        println "Unable to read KeyStore"
-        e.printStackTrace()
-    }
-    return properties
-}
-
-static def getPropertiesFromEnvironmentVariables(Properties properties) {
-    properties.setProperty("keyAlias", System.getenv("BITRISEIO_ANDROID_KEYSTORE_ALIAS"))
-    properties.setProperty("keyPassword", System.getenv("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD"))
-    properties.setProperty("storeFile", System.getenv("BITRISE_KEY_DOWNLOAD_PATH"))
-    properties.setProperty("storePassword", System.getenv("BITRISEIO_ANDROID_KEYSTORE_PASSWORD"))
-}
-
-def RELEASE_KEYSTORE = getKeystoreProperties('car-rental-keystore.properties')
 
 
 android {
@@ -54,26 +23,14 @@ android {
         minSdkVersion 26
         targetSdkVersion 30
         versionCode getBuildNumber()
-        versionName "1.0.2"
+        versionName "1.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         abortOnError false
     }
-
-    signingConfigs {
-
-        release {
-            if (RELEASE_KEYSTORE != null) {
-                storeFile file(RELEASE_KEYSTORE.getProperty("storeFile"))
-                storePassword RELEASE_KEYSTORE.getProperty("storePassword")
-                keyAlias RELEASE_KEYSTORE.getProperty("keyAlias")
-                keyPassword RELEASE_KEYSTORE.getProperty("keyPassword")
-            }
-            }
-        }
-
+    
     buildTypes {
         release {
             signingConfig signingConfigs.release
@@ -102,11 +59,11 @@ dependencies {
 
     implementation "com.yuyakaido.android:card-stack-view:2.3.4"
 
-
     //animation
     implementation 'com.airbnb.android:lottie:3.6.1'
-
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.5'
 
@@ -175,7 +132,7 @@ dependencies {
     implementation("io.coil-kt:coil:1.1.1")
 
 
-    // For Kotlin use paging-runtime-ktx
+
     implementation "androidx.fragment:fragment-ktx:1.3.2"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"

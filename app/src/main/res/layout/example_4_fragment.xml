@@ -27,14 +27,14 @@
             android:orientation="vertical"
             tools:context=".Example4Fragment">
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <ImageView
                 android:id="@+id/back_button_choose_date_frg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:layout_marginTop="18dp"
-                android:layout_marginStart="18dp"
-                android:layout_marginBottom="18dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_back_32" />
 
             <com.google.android.material.appbar.AppBarLayout
@@ -44,17 +44,11 @@
                 android:background="@color/white"
                 android:theme="@style/AppTheme.AppBarOverlay">
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/exFourToolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:popupTheme="@style/AppTheme.PopupOverlay"
-                    app:theme="@style/Example4ToolbarTheme"
-                    app:titleTextColor="@color/example_4_grey" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
                     android:paddingStart="14dp"
                     android:paddingTop="2dp"
                     android:paddingEnd="14dp"
@@ -67,7 +61,7 @@
                         android:layout_marginEnd="30dp"
                         android:gravity="start|center_vertical"
                         android:minLines="2"
-                        android:textColor="@color/example_4_grey"
+                        android:textColor="@color/colorPrimary"
                         android:textSize="26sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/exFourHeaderDivider"
@@ -94,7 +88,7 @@
                         android:layout_marginStart="30dp"
                         android:gravity="end|center_vertical"
                         android:minLines="2"
-                        android:textColor="@color/example_4_grey"
+                        android:textColor="@color/colorPrimaryDark"
                         android:textSize="26sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -141,8 +135,8 @@
                         android:layout_height="60dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
-                        android:text="Save"
-                        app:backgroundTint="@color/example_4_green"
+                        android:text="@string/save"
+                        app:backgroundTint="@color/colorPrimary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

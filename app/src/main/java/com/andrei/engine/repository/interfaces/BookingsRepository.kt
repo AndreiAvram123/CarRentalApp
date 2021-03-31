@@ -8,5 +8,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface BookingsRepository {
 
-     fun fetchBookings(): Flow<State<List<BookingDTO>>>
+     fun fetchBookings(): Flow<State<List<Booking>>>
 }

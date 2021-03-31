@@ -1,5 +1,6 @@
 package com.andrei.UI.fragments
 
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,9 +22,9 @@ class BookingsFragment(
         private val bookingType:BookingType) :BaseFragment(R.layout.fragment_bookings_layout){
 
 
-     val binding: FragmentBookingsLayoutBinding by viewBinding()
+    private  val binding: FragmentBookingsLayoutBinding by viewBinding()
 
-    private val viewModelBookings:ViewModelBookings by viewModels()
+    private val viewModelBookings:ViewModelBookings by activityViewModels()
 
 
      private val bookingsAdapter:BookingsAdapter by lazy {
@@ -33,7 +34,7 @@ class BookingsFragment(
 
     override fun initializeUI() {
         initializeRecyclerView()
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenResumed {
             viewModelBookings.bookings.collect { state ->
                 when (state) {
                     is State.Success -> {
@@ -49,7 +50,7 @@ class BookingsFragment(
         val filteredData = when (bookingType) {
             BookingType.PREVIOUS -> data.filter { it.isPreviousBooking() }
             BookingType.UPCOMING -> data.filter { it.isUpcomingBooking() }
-            else -> data.filter { it.isCurrentBooking() }
+            BookingType.CURRENT -> data.filter { it.isCurrentBooking() }
         }
         bookingsAdapter.setNewBookings(filteredData)
         binding.pbBookings.hide()

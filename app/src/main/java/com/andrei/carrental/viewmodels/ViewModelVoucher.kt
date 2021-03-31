@@ -30,7 +30,6 @@ class ViewModelVoucher @Inject constructor() :ViewModel() {
             val vouchers = mutableListOf(
                 Voucher(1, "On all Tesla cars", 20),
                 Voucher(2, "On all Dacia", 100),
-                Voucher(3, "On all Dacia", 100)
             )
 
             _availableVouchers.emit(State.Success(vouchers))

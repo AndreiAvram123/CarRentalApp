@@ -29,9 +29,6 @@ import javax.inject.Inject
 class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
 
     @Inject
-    lateinit var sessionManager:SessionManager
-
-    @Inject
     lateinit var userDataManager: UserDataManager
 
     private  val  binding: FragmentConfirmSelectionBinding by viewBinding()
@@ -68,8 +65,8 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
         lifecycleScope.launchWhenResumed {
             viewModelPayment.checkoutState.collect {
                 if(it is State.Success){
-                    val action = ConfirmSelectionFragmentDirections.actionConfirmSelectionFragmentToSuccessfulPaymentFragment()
-                    findNavController().navigate(action)
+                    viewModelPayment.clearState()
+                    navigateToConfirmationScreen()
                 }
             }
         }
@@ -83,6 +80,12 @@ class ConfirmSelectionFragment : Fragment(R.layout.fragment_confirm_selection) {
         }
 
     }
+
+    private fun navigateToConfirmationScreen(){
+        val action = ConfirmSelectionFragmentDirections.actionConfirmSelectionFragmentToSuccessfulPaymentFragment()
+        findNavController().navigate(action)
+    }
+
     private fun updateUIWithRentalPeriod(bookingDate: BookingDate){
         val startDate = bookingDate.startDate
         val endDate = bookingDate.endDate

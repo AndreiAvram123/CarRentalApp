@@ -21,7 +21,7 @@ class ViewModelPayment @Inject constructor(
     val clientToken:StateFlow<State<String>>
     get() = _clientToken.asStateFlow()
 
-    private fun clearState(){
+     fun clearState(){
         viewModelScope.launch {
             _clientToken.emit(State.Loading)
             _dropInRequest.emit(null)
@@ -52,9 +52,6 @@ class ViewModelPayment @Inject constructor(
             }.collect{
                 paymentRepository.checkout(it).collect {state->
                     _checkoutState.emit(state)
-                    if (state is State.Success || state is State.Error) {
-                        clearState()
-                    }
                 }
         }
     }
