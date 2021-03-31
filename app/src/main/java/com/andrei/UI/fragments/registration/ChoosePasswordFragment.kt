@@ -22,22 +22,11 @@ import kotlinx.coroutines.flow.filterNotNull
 import timber.log.Timber
 
 @AndroidEntryPoint
-class ChoosePasswordFragment : BaseFragment(R.layout.fragment_choose_password) {
+class ChoosePasswordFragment : BaseRegistrationFragment(R.layout.fragment_choose_password) {
 
     private val binding:FragmentChoosePasswordBinding by viewBinding ()
-    private val viewModelSignUp:ViewModelSignUp by activityViewModels()
 
-     private val runnablePassword: Runnable = Runnable{
-       viewModelSignUp.validatePassword()
-    }
 
-    private val runnableReenteredPassword = Runnable {
-         if(binding.tfPassword.editText.parseText() == binding.tfReenterPassword.editText.parseText()){
-             enableNextButton()
-         }else{
-             showReenterPasswordError()
-         }
-    }
 
     override fun initializeUI() {
         lifecycleScope.launchWhenResumed {
@@ -77,17 +66,28 @@ class ChoosePasswordFragment : BaseFragment(R.layout.fragment_choose_password) {
             hideReenteredPasswordError()
             disableNextButton()
             viewModelSignUp.setPassword(it.toString())
-            handler.executeDelayed(runnablePassword)
+            handler.executeDelayed{
+                viewModelSignUp.validatePassword()
+            }
 
         }
         binding.tfReenterPassword.editText?.addTextChangedListener {
             hideReenteredPasswordError()
             disableNextButton()
             viewModelSignUp.setReenteredPassword(it.toString())
-            handler.executeDelayed(runnableReenteredPassword)
+            handler.executeDelayed{
+                if(binding.tfPassword.editText.parseText() == binding.tfReenterPassword.editText.parseText()){
+                    enableNextButton()
+                }else{
+                    showReenterPasswordError()
+                }
+            }
         }
         binding.btNext.setOnClickListener {
             navigateForward()
+        }
+        binding.btBack.setOnClickListener {
+            navigateBack()
         }
     }
 
@@ -113,15 +113,22 @@ class ChoosePasswordFragment : BaseFragment(R.layout.fragment_choose_password) {
         binding.errorPassword = error
     }
 
-     private fun disableNextButton() {
+    override fun showError(error: String) {
+
+    }
+
+    override fun hideError() {
+    }
+
+    override fun disableNextButton() {
        binding.btNext.isEnabled = false
     }
 
-     private fun enableNextButton() {
+     override fun enableNextButton() {
          binding.btNext.isEnabled = true
      }
 
-    private fun navigateForward(){
+    override fun navigateForward(){
        val action = ChoosePasswordFragmentDirections.actionChoosePasswordFragmentToChooseProfilePictureFragment()
         findNavController().navigate(action)
 

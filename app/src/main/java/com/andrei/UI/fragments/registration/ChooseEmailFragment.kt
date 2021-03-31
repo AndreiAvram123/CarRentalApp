@@ -1,16 +1,13 @@
 package com.andrei.UI.fragments.registration
 
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentChooseEmailLayoutBinding
-import com.andrei.carrental.viewmodels.ViewModelSignUp
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.EmailValidationState
-import com.andrei.engine.repository.interfaces.UsernameValidationState
 import com.andrei.utils.executeDelayed
 import com.andrei.utils.handler
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,10 +18,6 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
 
     private val binding:FragmentChooseEmailLayoutBinding by viewBinding()
 
-
-    override val runnableDetail  =  Runnable{
-        viewModelSignUp.validateEmail()
-    }
 
 
     private val collectorEmailValidation : suspend (State<EmailValidationState>)-> Unit = {
@@ -61,7 +54,9 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
             hideError()
             disableNextButton()
             viewModelSignUp.setEmail(it.toString())
-            handler.executeDelayed(runnableDetail)
+            handler.executeDelayed{
+                viewModelSignUp.validateEmail()
+            }
         }
 
         lifecycleScope.launchWhenResumed {
@@ -72,13 +67,16 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
         binding.btNext.setOnClickListener {
            navigateForward()
         }
+        binding.btBack.setOnClickListener {
+            navigateBack()
+        }
+
     }
 
 
 
     override fun showError(error: String) {
             binding.errorEmail = error
-
     }
 
     override fun hideError() {
@@ -96,4 +94,5 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
         val action = ChooseEmailFragmentDirections.actionChooseEmailFragmentToChoosePasswordFragment()
         findNavController().navigate(action)
     }
+
 }

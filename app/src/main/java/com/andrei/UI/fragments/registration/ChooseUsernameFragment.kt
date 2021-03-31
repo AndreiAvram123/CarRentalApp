@@ -20,11 +20,6 @@ class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose
 
     private val binding:FragmentChooseUsenameLayoutBinding by viewBinding()
 
-    override val runnableDetail  =  Runnable{
-        viewModelSignUp.validateUsername()
-    }
-
-
     private val collectorUsernameValidation : suspend (State<UsernameValidationState>)-> Unit = {
         when (it) {
             is State.Success -> {
@@ -60,7 +55,10 @@ class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose
             hideUsernameError()
             disableNextButton()
             viewModelSignUp.setUsername(it.toString())
-            handler.executeDelayed(runnableDetail)
+            handler.executeDelayed {
+                viewModelSignUp.validateUsername()
+            }
+
         }
 
         lifecycleScope.launchWhenResumed {
@@ -71,6 +69,10 @@ class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose
         binding.btNext.setOnClickListener {
             navigateForward()
         }
+        binding.btBack.setOnClickListener {
+            navigateBack()
+        }
+
     }
 
 
@@ -98,4 +100,5 @@ class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose
         val action = ChooseUsernameFragmentDirections.actionChooseUsernameFragmentToChooseEmailFragment()
         findNavController().navigate(action)
     }
+
 }
