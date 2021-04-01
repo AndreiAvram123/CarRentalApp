@@ -5,11 +5,13 @@ import com.andrei.carrental.room.dao.ChatDao
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.CallRunner
 import com.andrei.engine.DTOEntities.ChatDTO
-import com.andrei.engine.DTOEntities.toMessage
+
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.ChatRepository
 import com.andrei.engine.APIs.ChatAPI
+import com.andrei.engine.DTOEntities.MessageDTO
 import com.andrei.engine.requestModels.CreateChatRequest
+import com.andrei.engine.utils.mapState
 import com.andreia.carrental.requestModels.CreateMessageRequest
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
@@ -73,15 +75,11 @@ class ChatRepositoryImpl @Inject constructor(
     override fun loadMoreMessages(chatID: Long, offset: Int): Flow<State<List<Message>>> {
         return callRunner.makeApiCall {
             chatAPI.loadMoreMessages(chatID, offset)
-        }.transform {
-            when {
-                it is State.Success -> {
-                    val mappedData = it.data.map { messageDTO -> messageDTO.toMessage() }
-                    emit(State.Success(mappedData))
-                }
-                it is State.Loading -> emit(State.Loading)
-                it is State.Error -> emit(State.Error(it.error))
+        }.transform {state->
+            val transformFunction: (data:List<MessageDTO>) -> List<Message>  = {
+                it.map { messageDTO -> messageDTO.toMessage() }
             }
+            state.mapState { transformFunction }
         }
 
     }

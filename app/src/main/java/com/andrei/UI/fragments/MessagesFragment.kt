@@ -59,7 +59,9 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
 
 
 
-    private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.load(it) } }
+    private  val imageLoader = ImageLoader { imageView, url, _ -> url?.let { imageView.load(it){
+        allowHardware(false)
+    } }}
 
 
     private val messagesAdapter:CustomMessagesListAdapter by lazy {

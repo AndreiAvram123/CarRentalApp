@@ -7,7 +7,6 @@ import com.andrei.carrental.factories.PusherFactory
 
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.DTOEntities.MessageDTO
-import com.andrei.engine.DTOEntities.toMessage
 import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions

@@ -11,6 +11,7 @@ import com.andrei.carrental.room.dao.ChatDao
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.DTOEntities.Chat
 import com.andrei.engine.DTOEntities.ChatDTO
+import com.andrei.engine.helpers.SessionManager
 import com.andrei.utils.defaultSharedFlow
 import com.pusher.client.PusherOptions
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,7 +28,8 @@ class MessengerService @Inject constructor (
          private val messagesDao: MessageDao,
          private val chatDao: ChatDao,
          @DefaultGlobalScope private val coroutineScope: CoroutineScope,
-         private val internetConnectionHandler: InternetConnectionHandler
+         private val internetConnectionHandler: InternetConnectionHandler,
+         private val sessionManager: SessionManager
         ){
 
 
@@ -37,18 +39,28 @@ class MessengerService @Inject constructor (
     init {
         coroutineScope.launch {
             chatDao.findAllChatsDistinct().collect {
-                if(internetConnectionHandler.isConnected()) {
+                if (internetConnectionHandler.isConnected()) {
                     disconnect()
                     configureChannels(it)
                     connect()
                 }
             }
-            internetConnectionHandler.isConnectedState.collect{connected->
-                    if (connected) {
-                        connect()
-                    } else {
-                        disconnect()
-                    }
+        }
+        coroutineScope.launch {
+            internetConnectionHandler.isConnectedState.collect { connected ->
+                if (connected) {
+                    connect()
+                } else {
+                    disconnect()
+                }
+            }
+        }
+        coroutineScope.launch {
+            sessionManager.authenticationState.collect {
+                if(it == SessionManager.AuthenticationState.NOT_AUTHENTICATED){
+                    messagesDao.clean()
+                    disconnect()
+                }
             }
         }
     }
