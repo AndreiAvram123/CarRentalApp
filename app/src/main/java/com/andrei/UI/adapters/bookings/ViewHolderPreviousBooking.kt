@@ -4,7 +4,7 @@ import com.andrei.carrental.databinding.PreviousBookingLayoutBinding
 import com.andrei.carrental.entities.Booking
 
 class ViewHolderPreviousBooking(
-        private val binding: PreviousBookingLayoutBinding) : BaseViewHolderBooking(binding.root) {
+        private val binding: PreviousBookingLayoutBinding) : ViewHolderBooking(binding.root) {
 
     override fun bind(booking: Booking) {
       binding.booking = booking

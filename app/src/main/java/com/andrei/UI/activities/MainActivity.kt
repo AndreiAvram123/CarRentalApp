@@ -40,6 +40,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     @Inject
     lateinit var internetConnectionHandler: InternetConnectionHandler
 
+    @Inject
+    lateinit var messengerService: MessengerService
+
     private val customNavigationController:CustomNavigationController by lazy {
          CustomNavigationController(navController,internetConnectionHandler,binding.bottomNavigationView)
     }
@@ -107,6 +110,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onStop() {
         super.onStop()
         customNavigationController.stop()
-        internetConnectionHandler.stop()
     }
 }

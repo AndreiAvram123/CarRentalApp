@@ -12,5 +12,5 @@ import kotlinx.coroutines.flow.StateFlow
 data class ObservableChat(
     val chat:Chat,
     val isUserOnline:StateFlow<Boolean>,
-    val lastMessage: Flow<Message>
+    val lastMessage: StateFlow<Message>
 )

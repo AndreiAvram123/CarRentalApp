@@ -3,7 +3,6 @@ package com.andrei.UI.fragments
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -18,7 +17,6 @@ import com.andrei.carrental.databinding.FragmentMessagesBinding
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.MessageType
 import com.andrei.carrental.viewmodels.ViewModelChat
-import com.andrei.carrental.viewmodels.ViewModelUser
 import com.andrei.engine.State
 import com.andrei.messenger.MessengerService
 import com.andreia.carrental.requestModels.CreateMessageRequest
@@ -153,13 +151,13 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
             }
         }
         lifecycleScope.launchWhenResumed {
-            messengerService.getUnsentMessageFlow(navArgs.chatID).collect {
+            messengerService.getUnsentMessageSharedFlow(navArgs.chatID).collect {
                 messagesAdapter.update(it)
             }
         }
 
         lifecycleScope.launchWhenResumed {
-            messengerService.getLastMessageFlow(navArgs.chatID).collect {
+            messengerService.getLastMessageSharedFlow(navArgs.chatID).collect {
                 messagesAdapter.tryAddMessageToStart(it)
             }
         }
@@ -207,7 +205,7 @@ class MessagesFragment :BaseFragment(R.layout.fragment_messages) ,
             true
         }
         binding.inputMessage.setAttachmentsListener {
-            easyImage.openChooser(this)
+            easyImage.openGallery(this)
         }
     }
 

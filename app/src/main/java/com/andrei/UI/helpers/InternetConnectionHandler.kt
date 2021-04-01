@@ -44,10 +44,6 @@ class InternetConnectionHandler @Inject constructor(
 
     }
 
-
-   fun stop(){
-       connectivityManager.unregisterNetworkCallback(networkCallback)
-   }
     fun start(){
         connectivityManager.registerDefaultNetworkCallback (networkCallback)
         _isConnected.tryEmit(connectivityManager.isConnected())

@@ -22,22 +22,22 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/tf_end_date"
+                android:id="@+id/tv_start_date"
                 style="@style/important_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="24dp"
-                android:text="@{booking.date.endDate }"
+                android:text="@{booking.date.startDate }"
                 tools:text="12/05/2022" />
 
             <TextView
-                android:id="@+id/tf_start_date"
+                android:id="@+id/tv_end_date"
                 style="@style/important_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="24dp"
-                android:text="@{booking.date.startDate}"
+                android:text="@{booking.date.endDate}"
                 tools:text="10/12/2020" />
         </LinearLayout>
 
@@ -45,7 +45,7 @@
             android:id="@+id/iv_car_booking"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            app:imageFromURL="@{booking.car.mediaFiles[0]}"
+            app:loadFirstImage="@{booking.car.mediaFiles}"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="24dp"

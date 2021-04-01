@@ -54,7 +54,7 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun fetchUserChats(userID: Long): Flow<State<List<ChatDTO>>> {
+    override suspend fun fetchUserChats(userID: Long) {
         val flow = callRunner.makeApiCall { chatAPI.getAllUserChats(userID) }
         flow.collect {
             if (it is State.Success) {
@@ -69,7 +69,6 @@ class ChatRepositoryImpl @Inject constructor(
                 }
             }
         }
-        return flow
     }
 
     override fun loadMoreMessages(chatID: Long, offset: Int): Flow<State<List<Message>>> {

@@ -61,6 +61,7 @@ class BookingsFragment(
         binding.rvBookings.apply {
             addItemDecoration(CustomDivider(10))
             layoutManager = LinearLayoutManager(context)
-            adapter = bookingsAdapter}
+            adapter = bookingsAdapter
+        }
     }
 }

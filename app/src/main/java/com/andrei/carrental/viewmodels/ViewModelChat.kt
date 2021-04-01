@@ -26,11 +26,6 @@ class ViewModelChat @Inject constructor(
 ) : AndroidViewModel(app){
 
 
-    private val _userChats:MutableStateFlow<State<List<ChatDTO>>>  = MutableStateFlow(State.Loading)
-
-    val userChats:StateFlow<State<List<ChatDTO>>>
-        get() = _userChats
-
 
     private val _messageToUnsendState = chatRepository.messageToUnsendState
     val messageToUnsendState:SharedFlow<State<Message>>
@@ -50,13 +45,7 @@ class ViewModelChat @Inject constructor(
 
     fun getUserChats(userID:Long){
         viewModelScope.launch(Dispatchers.IO) {
-            chatRepository.fetchUserChats(userID).collect { state->
-                when(state){
-                    is State.Success -> _userChats.emit(State.Success(state.data))
-                    is State.Loading -> _userChats.emit(State.Loading)
-                    is State.Error -> _userChats.emit(State.Error(state.error))
-                }
-            }
+            chatRepository.fetchUserChats(userID)
         }
     }
 

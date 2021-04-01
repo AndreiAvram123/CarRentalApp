@@ -43,10 +43,7 @@ fun changeVisibilityBasedOnBoolean(view :View, visible:Boolean){
      }
 }
 
-@BindingAdapter("endIconVisible")
-fun showEndIcon(field:TextInputLayout,visible: Boolean){
-   field.isEndIconVisible = visible
-}
+
 
 @BindingAdapter("shimmerActive")
 fun toggleShimmerLayout(shimmerFrameLayout: ShimmerFrameLayout, active:Boolean){
