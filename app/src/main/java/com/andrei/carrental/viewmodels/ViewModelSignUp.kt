@@ -142,7 +142,7 @@ class ViewModelSignUp @Inject constructor(
             _enteredPassword.emit(password)
              validatePassword()
         }
-    
+
 
     fun setProfilePicture(drawable:Drawable)= viewModelScope.launch(Dispatchers.IO) {
             val base64String = drawable.toBase64()

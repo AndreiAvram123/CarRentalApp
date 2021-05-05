@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'com.diffplug.spotless'
 }
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs"
@@ -12,7 +13,7 @@ apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     buildFeatures {
         dataBinding true
@@ -54,6 +55,14 @@ android {
 
 }
 
+spotless {
+    kotlin {
+        target project.fileTree(dir: 'src', include: '**/*.kt')
+        trimTrailingWhitespace()
+        ktlint('0.41.0')
+    }
+}
+
 dependencies {
 
     implementation "com.yuyakaido.android:card-stack-view:2.3.4"
@@ -62,12 +71,7 @@ dependencies {
     implementation 'com.airbnb.android:lottie:3.6.1'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
-
-
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.5'
-
-    implementation 'com.jakewharton.timber:timber:4.7.1'
-
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.3'
 
     //gallery
     implementation 'com.github.jkwiecien:EasyImage:3.0.4'
@@ -80,11 +84,10 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     //room
-    def room_version = "2.2.6"
+    def room_version = "2.3.0"
 
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
-
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:$room_version"
 
@@ -111,12 +114,10 @@ dependencies {
 
     implementation 'com.braintreepayments.api:drop-in:5.0.2'
     implementation 'com.braintreepayments.api:google-payment:3.3.1'
+    implementation 'com.braintreepayments.api:data-collector:2.22.0'
 
     // Google dependencies
     implementation 'com.google.android.gms:play-services-wallet:18.1.2'
-    implementation 'com.braintreepayments.api:data-collector:2.22.0'
-
-
     implementation 'com.google.android.material:material:1.3.0'
 
 
@@ -124,23 +125,21 @@ dependencies {
 
     implementation 'com.github.jama5262:CarouselView:1.1.0'
 
-
     implementation 'com.google.android.libraries.places:places:2.4.0'
 
     //image loading
     implementation("io.coil-kt:coil:1.1.1")
 
 
-
-    implementation "androidx.fragment:fragment-ktx:1.3.2"
+    implementation "androidx.fragment:fragment-ktx:1.3.3"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.1'
 
 
     //navigation
-    def nav_version = "2.3.4"
+    def nav_version = "2.3.5"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
@@ -152,7 +151,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3'
 
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
