@@ -7,7 +7,6 @@ import com.andrei.carrental.factories.PusherFactory
 
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.DTOEntities.MessageDTO
-import com.andrei.engine.DTOEntities.toMessage
 import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
@@ -16,7 +15,10 @@ import com.pusher.client.channel.SubscriptionEventListener
 import com.pusher.client.connection.ConnectionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 class ChannelService(
@@ -32,8 +34,8 @@ class ChannelService(
     private val _isUserOnline:MutableStateFlow<Boolean> =  MutableStateFlow(false)
 
 
-    val isUserOnline:MutableStateFlow<Boolean>
-    get() = _isUserOnline
+    val isUserOnline:StateFlow<Boolean>
+    get() = _isUserOnline.asStateFlow()
 
 
 
@@ -87,7 +89,9 @@ class ChannelService(
             coroutineScope.launch { _isUserOnline.emit(false) }
         }
         listener.onUsersInformationRetrieved = { _,users ->
-            coroutineScope.launch {   _isUserOnline.emit(users != null && users.size > 1) }
+            coroutineScope.launch {
+                _isUserOnline.emit(users != null && users.size > 1)
+            }
         }
 
     }
@@ -98,7 +102,7 @@ class ChannelService(
             pusherChannel.connect()
         }
         if(pusherPresenceChannel.isDisconnected()){
-            pusherChannel.connect()
+            pusherPresenceChannel.connect()
         }
     }
 

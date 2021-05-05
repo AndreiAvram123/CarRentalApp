@@ -10,53 +10,44 @@ import com.andrei.carrental.R
 import com.andrei.utils.isConnected
 import com.andrei.utils.isNotConnected
 import dagger.hilt.android.scopes.ActivityScoped
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @ActivityScoped
 class InternetConnectionHandler @Inject constructor(
         private val connectivityManager: ConnectivityManager) {
 
-    private val onAvailableCallbacks:MutableSet<()->Unit> = mutableSetOf()
-    private val onUnavailableCallbacks:MutableSet<()->Unit> = mutableSetOf()
+    private val _isConnected:MutableStateFlow<Boolean> = MutableStateFlow(
+            connectivityManager.isConnected()
+    )
+    val isConnectedState:StateFlow<Boolean> = _isConnected.asStateFlow()
 
-
-    fun onAvailable (callback : ()->Unit) {
-        onAvailableCallbacks.remove (callback)
-        onAvailableCallbacks.add(callback)
-    }
-
-    fun onUnavailable(callback: () -> Unit){
-        onUnavailableCallbacks.remove (callback)
-        onUnavailableCallbacks.add (callback)
-    }
-    fun isConnected():Boolean = connectivityManager.isConnected()
-    fun isNotConnected():Boolean = !connectivityManager.isConnected()
-
+    fun isConnected() = connectivityManager.isConnected()
 
 
      private val networkCallback:ConnectivityManager.NetworkCallback = object : ConnectivityManager.NetworkCallback() {
 
          override fun onAvailable(network: Network) {
-             onAvailableCallbacks.forEach { it() }
+             _isConnected.tryEmit(true)
          }
 
          override fun onUnavailable() {
-             onUnavailableCallbacks.forEach { it() }
+            _isConnected.tryEmit(false)
          }
 
          override fun onLost(network: Network) {
-             onUnavailableCallbacks.forEach { it() }
+           _isConnected.tryEmit(false)
         }
+
+
     }
 
-
-
-
-   fun stop(){
-       connectivityManager.unregisterNetworkCallback(networkCallback)
-   }
     fun start(){
         connectivityManager.registerDefaultNetworkCallback (networkCallback)
+        _isConnected.tryEmit(connectivityManager.isConnected())
     }
+
 
 }

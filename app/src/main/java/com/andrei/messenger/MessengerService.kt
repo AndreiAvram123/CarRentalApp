@@ -1,25 +1,19 @@
 package com.andrei.messenger
 
-import android.content.Context
 import com.andrei.DI.annotations.DefaultGlobalScope
 import com.andrei.UI.helpers.InternetConnectionHandler
-import com.andrei.carrental.R
 import com.andrei.carrental.entities.Message
 import com.andrei.carrental.entities.ObservableChat
-import com.andrei.carrental.entities.User
 import com.andrei.carrental.room.dao.ChatDao
 import com.andrei.carrental.room.dao.MessageDao
 import com.andrei.engine.DTOEntities.Chat
-import com.andrei.engine.DTOEntities.ChatDTO
+import com.andrei.engine.helpers.SessionManager
 import com.andrei.utils.defaultSharedFlow
-import com.pusher.client.PusherOptions
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @ActivityScoped
 class MessengerService @Inject constructor (
@@ -27,27 +21,47 @@ class MessengerService @Inject constructor (
          private val messagesDao: MessageDao,
          private val chatDao: ChatDao,
          @DefaultGlobalScope private val coroutineScope: CoroutineScope,
-         private val internetConnectionHandler: InternetConnectionHandler
+         private val internetConnectionHandler: InternetConnectionHandler,
+         private val sessionManager: SessionManager
         ){
 
 
     private val channels : MutableMap<Long,ChannelService> = mutableMapOf()
 
+    private val _observableChats:MutableStateFlow<List<ObservableChat>> = MutableStateFlow(emptyList())
+    val observableChats:StateFlow<List<ObservableChat>>
+    get() = _observableChats.asStateFlow()
+
     init {
         coroutineScope.launch {
             chatDao.findAllChatsDistinct().collect {
-                disconnect()
-                configureChannels(it)
-                connect()
+                if (internetConnectionHandler.isConnected()) {
+                    disconnect()
+                    configureChannels(it)
+                    getObservableChats()
+                    connect()
+                }
             }
         }
-        internetConnectionHandler.onUnavailable {
-            disconnect()
+        coroutineScope.launch {
+            internetConnectionHandler.isConnectedState.collect { connected ->
+                if (connected) {
+                    connect()
+                } else {
+                    disconnect()
+                }
+            }
         }
-        internetConnectionHandler.onAvailable {
-            connect()
+        coroutineScope.launch {
+            sessionManager.authenticationState.collect {
+                if(it == SessionManager.AuthenticationState.NOT_AUTHENTICATED){
+                    messagesDao.clean()
+                    disconnect()
+                }
+            }
         }
     }
+
 
     private fun configureChannels(chats:List<Chat>){
           channels.clear()
@@ -58,29 +72,35 @@ class MessengerService @Inject constructor (
           ) }.toMap())
     }
 
-    suspend fun getObservableChats():List<ObservableChat> = channels.map {
-           val channel = it.value
-            ObservableChat(
-                    chat =  chatDao.findChat(channel.chatID)!!,
-                    isUserOnline = channel.isUserOnline,
-                    lastMessage = getLastMessageFlow(channel.chatID)
-            )
+    private fun getObservableChats(){
+        coroutineScope.launch {
+            val observableChats = mutableListOf<ObservableChat>()
+            channels.forEach {
+                val channel = it.value
+                observableChats.add(ObservableChat(
+                        chat = chatDao.findChat(channel.chatID)!!,
+                        isUserOnline = channel.isUserOnline,
+                        lastMessage = messagesDao.findLastChatMessage(channel.chatID).stateIn(coroutineScope)
+                ))
+            }
+            _observableChats.emit(observableChats)
         }
+    }
 
-     fun getLastMessageFlow(chatID:Long): SharedFlow<Message> =
-             messagesDao.findLastChatMessageDistinct(chatID).defaultSharedFlow(coroutineScope)
+     fun getLastMessageSharedFlow(chatID:Long): SharedFlow<Message> =
+             messagesDao.findLastNotNullChatMessage(chatID).defaultSharedFlow(coroutineScope)
 
-     fun getUnsentMessageFlow(chatID:Long):SharedFlow<Message> =
+     fun getUnsentMessageSharedFlow(chatID:Long):SharedFlow<Message> =
              messagesDao.findLastUnsentChatMessageDistinct(chatID).defaultSharedFlow(coroutineScope)
+
 
 
     suspend fun getChat(chatID: Long):Chat? = chatDao.findChat(chatID)
 
 
     fun getUserOnlineFlow(chatID: Long):StateFlow<Boolean>{
-        val channel = channels[chatID]
-        channel?.let{
-            return it.isUserOnline.asStateFlow()
+          channels[chatID]?.let {
+            return it.isUserOnline
         }
         return MutableStateFlow(false).asStateFlow()
     }

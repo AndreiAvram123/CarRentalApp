@@ -10,67 +10,71 @@ import com.andrei.carrental.databinding.FragmentChooseUsenameLayoutBinding
 import com.andrei.carrental.viewmodels.ViewModelSignUp
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.UsernameValidationState
-import com.andrei.utils.executeDelayed
-import com.andrei.utils.handler
+import com.andrei.utils.onTextChanges
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose_usename_layout) {
 
     private val binding:FragmentChooseUsenameLayoutBinding by viewBinding()
 
-    override val runnableDetail  =  Runnable{
-        viewModelSignUp.validateUsername()
-    }
-
-
-    private val collectorUsernameValidation : suspend (State<UsernameValidationState>)-> Unit = {
-        when (it) {
-            is State.Success -> {
-                binding.validationInProgress = false
-
-                when (it.data) {
-                    is UsernameValidationState.AlreadyTaken -> {
-                        showError(getString(R.string.username_taken))
-                    }
-                    is UsernameValidationState.TooShort ->
-                        showError(getString(R.string.username_too_short))
-
-                    is UsernameValidationState.Valid -> {
-                        hideUsernameError()
-                        enableNextButton()
-                    }
-                    is UsernameValidationState.Unvalidated -> {
-                        hideUsernameError()
-                        disableNextButton()
-                    }
-                }
-            }
-            is State.Error -> {
-                binding.validationInProgress = false
-            }
-            else ->  binding.validationInProgress = true
-        }
-    }
 
 
     override fun initializeUI() {
-        binding.tfUsername.editText?.addTextChangedListener {
-            hideUsernameError()
-            disableNextButton()
-            viewModelSignUp.setUsername(it.toString())
-            handler.executeDelayed(runnableDetail)
-        }
+        binding.tfUsernameEditText.onTextChanges()
+            .onEach {
+                hideUsernameError()
+                disableNextButton()
+            }
+            .debounce(500)
+            .onEach {
+                viewModelSignUp.setUsername(it.toString())
+            }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
 
         lifecycleScope.launchWhenResumed {
-            viewModelSignUp.validationUsername.collect(collectorUsernameValidation)
+            viewModelSignUp.validationUsername.collect{
+                when (it) {
+                    is State.Success -> {
+                        binding.validationInProgress = false
+
+                        when (it.data) {
+                            is UsernameValidationState.AlreadyTaken -> {
+                                showError(getString(R.string.username_taken))
+                            }
+                            is UsernameValidationState.TooShort ->
+                                showError(getString(R.string.username_too_short))
+
+                            is UsernameValidationState.Valid -> {
+                                hideUsernameError()
+                                enableNextButton()
+                            }
+                            is UsernameValidationState.Unvalidated -> {
+                                hideUsernameError()
+                                disableNextButton()
+                            }
+                        }
+                    }
+                    is State.Error -> {
+                        binding.validationInProgress = false
+                    }
+                    else ->  binding.validationInProgress = true
+                }
+            }
         }
 
 
         binding.btNext.setOnClickListener {
             navigateForward()
         }
+        binding.btBack.setOnClickListener {
+            navigateBack()
+        }
+
     }
 
 
@@ -98,4 +102,5 @@ class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose
         val action = ChooseUsernameFragmentDirections.actionChooseUsernameFragmentToChooseEmailFragment()
         findNavController().navigate(action)
     }
+
 }

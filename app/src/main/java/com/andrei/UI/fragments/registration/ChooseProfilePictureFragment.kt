@@ -14,10 +14,9 @@ import pl.aprilapps.easyphotopicker.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ChooseProfilePictureFragment : BaseFragment(R.layout.fragment_choose_profile_picture){
+class ChooseProfilePictureFragment : BaseRegistrationFragment(R.layout.fragment_choose_profile_picture){
 
     private val binding:FragmentChooseProfilePictureBinding by viewBinding()
-    private val viewModelSignUp:ViewModelSignUp by activityViewModels()
 
     private val easyImage:EasyImage by lazy {
         EasyImage.Builder(requireContext()).allowMultiple(false)
@@ -34,17 +33,32 @@ class ChooseProfilePictureFragment : BaseFragment(R.layout.fragment_choose_profi
             viewModelSignUp.setProfilePicture(profilePicture)
             navigateForward()
         }
+        binding.btBack.setOnClickListener {
+            navigateBack()
+        }
+    }
+
+    override fun showError(error: String) {
+
+    }
+
+    override fun hideError() {
+
+    }
+
+    override fun disableNextButton() {
+
     }
 
 
-    private fun enableNextButton(){
+    override fun enableNextButton(){
         binding.btNext.isEnabled = true
     }
 
     private fun setProfilePicture(mediaFile: MediaFile){
         binding.ivProfilePicture.setImageURI(mediaFile.file.toUri())
     }
-    private fun navigateForward(){
+    override fun navigateForward(){
        val action = ChooseProfilePictureFragmentDirections.actionChooseProfilePictureFragmentToRegistrationCompleteFragment()
         findNavController().navigate(action)
     }

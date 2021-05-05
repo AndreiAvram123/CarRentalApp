@@ -7,7 +7,7 @@ import com.andrei.carrental.entities.BookingType
 import com.andrei.carrental.factories.BookingsVHFactory
 import com.andrei.carrental.factories.BookingsVHFactoryImpl
 
-class BookingsAdapter(private val bookingType: BookingType): RecyclerView.Adapter<BaseViewHolderBooking>() {
+class BookingsAdapter(private val bookingType: BookingType): RecyclerView.Adapter<ViewHolderBooking>() {
 
     private val bookings:MutableList<Booking> = mutableListOf()
     private val factory: BookingsVHFactory = BookingsVHFactoryImpl()
@@ -20,10 +20,10 @@ class BookingsAdapter(private val bookingType: BookingType): RecyclerView.Adapte
 
     override fun getItemCount(): Int = bookings.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolderBooking = factory.create(parent,bookingType)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderBooking = factory.create(parent,bookingType)
 
-    override fun onBindViewHolder(holderBaseBooking: BaseViewHolderBooking, position: Int) {
-        holderBaseBooking.bind(bookings[position])
+    override fun onBindViewHolder(holderBooking: ViewHolderBooking, position: Int) {
+        holderBooking.bind(bookings[position])
     }
 
 }

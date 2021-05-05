@@ -1,20 +1,19 @@
 package com.andrei.UI.fragments.registration
 
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.FragmentChooseEmailLayoutBinding
-import com.andrei.carrental.viewmodels.ViewModelSignUp
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.EmailValidationState
-import com.andrei.engine.repository.interfaces.UsernameValidationState
-import com.andrei.utils.executeDelayed
-import com.andrei.utils.handler
+import com.andrei.utils.onTextChanges
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_email_layout){
@@ -22,63 +21,60 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
     private val binding:FragmentChooseEmailLayoutBinding by viewBinding()
 
 
-    override val runnableDetail  =  Runnable{
-        viewModelSignUp.validateEmail()
-    }
-
-
-    private val collectorEmailValidation : suspend (State<EmailValidationState>)-> Unit = {
-        when (it) {
-            is State.Success -> {
-                binding.validationInProgress = false
-                when (it.data) {
-                    is EmailValidationState.AlreadyTaken -> {
-                        showError(getString(R.string.email_already_taken))
-                    }
-                    is EmailValidationState.InvalidFormat-> {
-                        showError(getString(R.string.email_format_invalid))
-                    }
-
-                    is EmailValidationState.Valid -> {
-                        hideError()
-                        enableNextButton()
-                    }
-                    is EmailValidationState.Unvalidated -> {
-                        hideError()
-                    }
-                }
-            }
-            is State.Error -> {
-                binding.validationInProgress = false
-            }
-            else ->  binding.validationInProgress = true
-        }
-    }
-
-
     override fun initializeUI() {
-        binding.tfEmail.editText?.addTextChangedListener {
-            hideError()
-            disableNextButton()
-            viewModelSignUp.setEmail(it.toString())
-            handler.executeDelayed(runnableDetail)
-        }
+        binding.tfEmailEditText.onTextChanges().onEach {
+             hideError()
+             disableNextButton()
+        }.debounce(500)
+            .onEach {
+                viewModelSignUp.setEmail(it.toString())
+            }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
 
         lifecycleScope.launchWhenResumed {
-            viewModelSignUp.validationEmail.collect(collectorEmailValidation)
+            viewModelSignUp.validationEmail.collect {
+                when (it) {
+                    is State.Success -> {
+                        binding.validationInProgress = false
+                        when (it.data) {
+                            is EmailValidationState.AlreadyTaken -> {
+                                showError(getString(R.string.email_already_taken))
+                            }
+                            is EmailValidationState.InvalidFormat-> {
+                                showError(getString(R.string.email_format_invalid))
+                            }
+
+                            is EmailValidationState.Valid -> {
+                                hideError()
+                                enableNextButton()
+                            }
+                            is EmailValidationState.Unvalidated -> {
+                                hideError()
+                            }
+                        }
+                    }
+                    is State.Error -> {
+                        binding.validationInProgress = false
+                    }
+                    else ->  binding.validationInProgress = true
+                }
+            }
         }
 
 
         binding.btNext.setOnClickListener {
            navigateForward()
         }
+        binding.btBack.setOnClickListener {
+            navigateBack()
+        }
+
     }
 
 
 
     override fun showError(error: String) {
             binding.errorEmail = error
-
     }
 
     override fun hideError() {
@@ -96,4 +92,5 @@ class ChooseEmailFragment :BaseRegistrationFragment(R.layout.fragment_choose_ema
         val action = ChooseEmailFragmentDirections.actionChooseEmailFragmentToChoosePasswordFragment()
         findNavController().navigate(action)
     }
+
 }

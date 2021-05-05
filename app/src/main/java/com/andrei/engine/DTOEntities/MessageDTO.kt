@@ -19,17 +19,18 @@ data class MessageDTO(
         val messageType: MessageType,
         @SerializedName("mediaURL")
         val mediaURl:String?
-)
+){
+        fun toMessage(): Message = Message(
+                messageID = this.id,
+                textContent = this.textContent,
+                date = this.date ,
+                sender =  this.sender.toUser(),
+                chatID = this.chatID,
+                messageType = this.messageType,
+                mediaURL = this.mediaURl
+        )
 
-fun MessageDTO.toMessage(): Message = Message(
-        messageID = this.id,
-        textContent = this.textContent,
-        date = this.date ,
-        sender =  this.sender.toUser(),
-        chatID = this.chatID,
-        messageType = this.messageType,
-        mediaURL = this.mediaURl
-)
+}
 
 
 

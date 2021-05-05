@@ -30,30 +30,25 @@ class ChatsFragment: BaseFragment(R.layout.fragment_chats) {
     private val viewModelChat:ViewModelChat by activityViewModels()
 
     private val chatsAdapter by lazy {
-        ChatsAdapter(viewLifecycleOwner,this::goToMessagesFragment)
+        ChatsAdapter(this::goToMessagesFragment)
     }
 
 
     override fun initializeUI() {
          initializeRecyclerView()
          initializeObservers()
-
-
+         chatsAdapter.setLifecycleScope(lifecycleScope)
     }
 
     private fun initializeObservers() {
         lifecycleScope.launchWhenResumed {
            viewModelChat.getUserChats(userDataManager.userID)
-           viewModelChat.userChats.collect {
-               when(it){
-                   is State.Success -> {
-                       chatsAdapter.setData(messengerService.getObservableChats())
-                   }
-               }
-           }
+            messengerService.observableChats.collect {
+                chatsAdapter.setData(it)
+
            }
 
-        }
+        }}
 
 
     private fun goToMessagesFragment(chatID:Long){

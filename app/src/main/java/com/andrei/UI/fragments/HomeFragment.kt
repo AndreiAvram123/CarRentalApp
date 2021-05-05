@@ -74,7 +74,6 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
         binding.searchViewCars.setOnClickListener {  binding.searchViewCars.isIconified = false }
 
         binding.searchViewCars.setOnQueryTextListener(object : QueryTextChangedListener {
-
             override fun onQueryTextChange(query: String): Boolean {
                 if(query.isNotEmpty()){
                     currentLocation?.let{ viewModelCar.fetchSuggestions(query,it)}
