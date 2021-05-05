@@ -2,6 +2,7 @@ package com.andrei.UI.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Looper
@@ -15,6 +16,7 @@ import com.andrei.engine.DTOEntities.GeoPoint
 import com.andrei.engine.State
 import com.andrei.utils.LocationSettingsHandler
 import com.andrei.utils.fetchBitmap
+import com.andrei.utils.isResultOk
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -27,7 +29,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.tasks.await
-import timber.log.Timber
 
 @SuppressLint("MissingPermission")
 @AndroidEntryPoint
@@ -37,10 +38,10 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
     private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
 
     private val viewModelLocation : ViewModelLocation by activityViewModels()
+    private val locationSettingsHandler = LocationSettingsHandler()
 
-    private  var map :GoogleMap? = null
+    private lateinit var map :GoogleMap
 
-    private val markersOnMap:MutableMap<Marker,Long> = mutableMapOf()
 
     private lateinit var mapFragment : SupportMapFragment
 
@@ -53,65 +54,47 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
 
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
-
-        if(permissionHandlerFragment.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)){
-            enableLocation()
-        }else{
-            permissionHandlerFragment.requestPermission(Manifest.permission.ACCESS_FINE_LOCATION){
-                if(it) {
-                    enableLocation()
-                }
-            }
-        }
-        googleMap.setOnMarkerClickListener {
-                 val id = markersOnMap[it]
-                 if(id != null){
-                  findNavController().navigate( CurrentLocationFragmentDirections.actionGlobalToExpandedCarFragment(id))
+         permissionHandlerFragment.requestPermission(Manifest.permission.ACCESS_FINE_LOCATION){granted->
+             if(granted){
+                 enableLocation()
+             }
+         }
+        googleMap.setOnMarkerClickListener {marker ->
+                 marker.snippet?.toLong()?.let {
+                     findNavController().navigate(CurrentLocationFragmentDirections.actionGlobalToExpandedCarFragment(it))
                  }
 
             true
         }
+        startCollecting()
     }
 
+
     private fun enableLocation (){
-        map?.isMyLocationEnabled = true
-        map?.uiSettings?.isMyLocationButtonEnabled = false
+        map.apply {
+            isMyLocationEnabled = true
+            uiSettings.isMyLocationButtonEnabled = false
+        }
         getDeviceLocation()
     }
 
-     override fun initializeUI() {
-         lifecycleScope.launchWhenResumed {
-             viewModelLocation.nearbyCars.collect {
-                 clearMap()
-                 val tempMap = map
-                 if(it is State.Success && tempMap != null){
-                     it.data.forEach {car->
-                         if (car.mediaFiles.isNotEmpty()) {
-                             fetchBitmap(requireContext(), car.mediaFiles.first().mediaURL, maxWidth = 300)?.let {bitmap->
-                                 val marker = tempMap.addCustomMarker(car.location,bitmap)
-                                 markersOnMap[marker] = car.id
-                             }
-
-                         }
-                     }
-                 }
-             }
-         }
-    }
-    private fun clearMap(){
-        map?.clear()
-        markersOnMap.clear()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(LocationSettingsHandler.request_check_settings == requestCode){
+            locationSettingsHandler.currentLocationNeedsSatisfied.tryEmit(resultCode.isResultOk())
+        }
     }
 
-    private fun GoogleMap.addCustomMarker(location:GeoPoint, bitmap:Bitmap):Marker{
+
+    private fun GoogleMap.addCustomMarker(location:GeoPoint, bitmap:Bitmap , id :Long):Marker{
         val marker = addMarker( MarkerOptions().position(
                 LatLng(
                         location.latitude,
                         location.longitude
-                ))).apply {
+                )))?.apply {
             setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+            snippet = id.toString()
         }
-        return marker
+        return marker!!
     }
 
 
@@ -122,13 +105,35 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
         requireAdequateLocationSettings()
     }
 
+    override fun initializeUI() {
+    }
+
+    private fun startCollecting(){
+        lifecycleScope.launchWhenResumed {
+            viewModelLocation.nearbyCars.collect {
+                map.clear()
+                if(it is State.Success){
+                    it.data.forEach { car->
+                        if (car.mediaFiles.isNotEmpty()) {
+                            fetchBitmap(requireContext(), car.mediaFiles.first().mediaURL, maxWidth = 300)?.let {bitmap->
+                                  map.addCustomMarker(
+                                        location = car.location,
+                                        bitmap = bitmap,
+                                        id= car.id)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun requireAdequateLocationSettings(){
         lifecycleScope.launchWhenResumed {
-            LocationSettingsHandler.startLocationRequest(requireActivity(),locationRequest)
-            LocationSettingsHandler.currentLocationNeedsSatisfied.collect {
+            locationSettingsHandler.startLocationRequest(requireActivity(),locationRequest)
+            locationSettingsHandler.currentLocationNeedsSatisfied.collect {
                 if(it){
                     mapFragment.getMapAsync(callback)
-                    // Construct a PlaceDetectionClient.
                     mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
                 }
             }
@@ -151,14 +156,14 @@ class CurrentLocationFragment : BaseFragment(R.layout.fragment_current_location)
                     moveCameraToLocation(currentLocation)
                     startLocationUpdates()
                 } catch (e: Exception) {
-                    Timber.e(e)
+                    e.printStackTrace()
                 }
             }
     }
 
     private fun moveCameraToLocation(location :LatLng){
         val update = CameraUpdateFactory.newLatLngZoom(location,15.toFloat())
-        map?.animateCamera(update)
+        map.animateCamera(update)
     }
 
 

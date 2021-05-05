@@ -19,7 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
-import timber.log.Timber
 
 @AndroidEntryPoint
 class ChoosePasswordFragment : BaseRegistrationFragment(R.layout.fragment_choose_password) {

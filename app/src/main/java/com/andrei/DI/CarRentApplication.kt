@@ -2,7 +2,6 @@ package com.andrei.DI
 
 import android.app.Application
 import com.andrei.carrental.BuildConfig
-import com.andrei.carrental.custom.RemoteConfig
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 

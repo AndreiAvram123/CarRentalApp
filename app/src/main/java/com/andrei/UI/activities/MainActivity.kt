@@ -92,15 +92,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         NavigationUI.setupWithNavController(binding.bottomNavigationView, navController)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (LocationSettingsHandler.REQUEST_CHECK_SETTINGS == requestCode) {
-            if (resultCode.isResultOk()) {
-                LocationSettingsHandler.currentLocationNeedsSatisfied.value = true
-            }
-        }
-    }
-
     override fun onStart() {
         super.onStart()
          customNavigationController.start()

@@ -9,7 +9,7 @@ import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.andrei.carrental.R
 import com.andrei.carrental.databinding.IconWithTextLayoutBinding
-import timber.log.Timber
+
 
 class IconAndTextView : FrameLayout {
 

@@ -65,6 +65,10 @@ spotless {
 
 dependencies {
 
+    //timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+
     implementation "com.yuyakaido.android:card-stack-view:2.3.4"
 
     //animation

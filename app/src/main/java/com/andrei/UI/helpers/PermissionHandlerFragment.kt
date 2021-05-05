@@ -10,7 +10,7 @@ class PermissionHandlerFragment(private val fragment: Fragment){
 
     private  var currentRequestCode = 1
 
-    fun hasPermission(permission:String) : Boolean{
+    private fun hasPermission(permission:String) : Boolean{
        return ContextCompat.checkSelfPermission(
                 fragment.requireContext(),
                 permission
@@ -18,9 +18,14 @@ class PermissionHandlerFragment(private val fragment: Fragment){
     }
 
     fun requestPermission(permission: String, callback: (permissionGranted:Boolean)-> Unit){
-        requestPermissionMap[currentRequestCode] = callback
-        fragment.requestSinglePermission(permission,currentRequestCode)
-        currentRequestCode ++
+        if(hasPermission(permission)){
+            callback(true)
+        }else {
+            requestPermissionMap[currentRequestCode] = callback
+            fragment.requestSinglePermission(permission, currentRequestCode)
+            currentRequestCode++
+
+        }
     }
 
 
