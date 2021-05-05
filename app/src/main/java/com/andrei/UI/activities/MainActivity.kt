@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     lateinit var messengerService: MessengerService
 
     private val customNavigationController:CustomNavigationController by lazy {
-         CustomNavigationController(navController,internetConnectionHandler,binding.bottomNavigationView)
+         CustomNavigationController(lifecycleScope,navController,internetConnectionHandler,binding.bottomNavigationView)
     }
 
 

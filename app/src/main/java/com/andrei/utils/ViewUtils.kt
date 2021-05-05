@@ -2,11 +2,19 @@ package com.andrei.utils
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.CheckResult
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.onStart
 import java.time.DayOfWeek
 import java.time.temporal.WeekFields
 import java.util.Locale.UK
@@ -24,6 +32,22 @@ fun View.show(){
 }
 fun View.gone() {
     visibility = View.GONE
+}
+
+@ExperimentalCoroutinesApi
+@CheckResult
+fun EditText.onTextChanges(): Flow<CharSequence?> {
+    return callbackFlow<CharSequence?> {
+        val listener = object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) = Unit
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                offer(s)
+            }
+        }
+        addTextChangedListener(listener)
+        awaitClose { removeTextChangedListener(listener) }
+    }.onStart { emit(text) }
 }
 
 

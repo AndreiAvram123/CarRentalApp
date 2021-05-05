@@ -1,6 +1,7 @@
 package com.andrei.UI.helpers
 
 
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import com.andrei.carrental.MainNavigationDirections
@@ -13,11 +14,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class CustomNavigationController(private val navigationController: NavController,
+class CustomNavigationController(
+                                private val lifecycleCoroutineScope: LifecycleCoroutineScope,
+                                private val navigationController: NavController,
                                 private val  internetConnectionHandler: InternetConnectionHandler,
                                 private val bottomNavigationView: BottomNavigationView) {
 
-    private val destinationsWithoutBottomNav = listOf(R.id.noInternetFragment, R.id.redeemVoucherFragment)
+    private val destinationsWithoutBottomNav = listOf(R.id.noInternetFragment, R.id.redeemVoucherFragment,R.id.expanded)
 
 
     private val destinationChangedListener:NavController.OnDestinationChangedListener =
@@ -36,43 +39,44 @@ class CustomNavigationController(private val navigationController: NavController
 
 
     private fun navigationToNoInternetFragment(){
-        GlobalScope.launch(Dispatchers.Main) {
+        lifecycleCoroutineScope.launchWhenResumed {
             val action = MainNavigationDirections.actionGlobalNoInternetFragment()
             navigationController.navigate(action)
         }
     }
 
+    private val collectorInternetState : suspend (connected:Boolean) -> Unit = {
+        connected -> if(connected){
+        if(isNoInternetFragmentDisplayed()){
+            popLastDestination()
+        }
+    }else{
+        if(!isNoInternetFragmentDisplayed()){
+            navigationToNoInternetFragment()
+        }
+    }
+    }
+
     init {
-        GlobalScope.launch(Dispatchers.Default) {
-              internetConnectionHandler.isConnectedState.collect{connected->
-                  if(connected){
-                      if(isNoInternetFragmentDisplayed()){
-                         popLastDestination()
-                      }
-                  }else{
-                      if(!isNoInternetFragmentDisplayed()){
-                         navigationToNoInternetFragment()
-                      }
-                  }
-              }
+        lifecycleCoroutineScope.launchWhenResumed {
+              internetConnectionHandler.isConnectedState.collect(collectorInternetState)
         }
     }
 
     fun start(){
         navigationController.addOnDestinationChangedListener(destinationChangedListener)
-
-    }
-
-    private fun popLastDestination() {
-       GlobalScope.launch(Dispatchers.Main) {
-           navigationController.popBackStack()
-        }
     }
 
     fun stop(){
         navigationController.removeOnDestinationChangedListener(destinationChangedListener)
     }
 
+
+    private fun popLastDestination() {
+       lifecycleCoroutineScope.launchWhenResumed {
+           navigationController.popBackStack()
+        }
+    }
     private fun isNoInternetFragmentDisplayed(): Boolean{
         val currentBackStackEntry = navigationController.currentBackStackEntry
         if(currentBackStackEntry != null){

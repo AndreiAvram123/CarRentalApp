@@ -68,9 +68,10 @@ class ViewModelSignUp @Inject constructor(
     fun setUsername(username:String){
         viewModelScope.launch {
             _enteredUsername.emit(username)
+            validateUsername()
         }
     }
-    fun validateUsername() {
+    private fun validateUsername() {
         viewModelScope.launch {
             val username = _enteredUsername.value
             signUpRepo.validateUsername(username).collect {
@@ -78,7 +79,7 @@ class ViewModelSignUp @Inject constructor(
             }
         }
     }
-    fun validateEmail(){
+    private fun validateEmail(){
         viewModelScope.launch {
             val email = _enteredEmail.value
             signUpRepo.validateEmail(email).collect {
@@ -86,7 +87,7 @@ class ViewModelSignUp @Inject constructor(
             }
         }
     }
-    fun validatePassword(){
+    private fun validatePassword(){
         viewModelScope.launch {
             val password = _enteredPassword.value
             signUpRepo.validatePassword(password).collect {
@@ -122,10 +123,10 @@ class ViewModelSignUp @Inject constructor(
 
     private fun clear(){
         viewModelScope.launch {
-            _enteredUsername.emit("")
-            _enteredEmail.emit("")
-            _enteredPassword.emit("")
-            _profilePictureBase64.emit("")
+            _enteredUsername.clean()
+            _enteredEmail.clean()
+            _enteredPassword.clean()
+            _profilePictureBase64.clean()
         }
     }
 
@@ -134,21 +135,22 @@ class ViewModelSignUp @Inject constructor(
 
     fun setEmail(email:String) = viewModelScope.launch {
             _enteredEmail.emit(email)
+            validateEmail()
     }
 
     fun setPassword(password:String)= viewModelScope.launch {
             _enteredPassword.emit(password)
+             validatePassword()
         }
-
-    fun setReenteredPassword(reenteredPassword:String) = viewModelScope.launch {
-        _reenteredPassword.emit(reenteredPassword)
-    }
+    
 
     fun setProfilePicture(drawable:Drawable)= viewModelScope.launch(Dispatchers.IO) {
             val base64String = drawable.toBase64()
             _profilePictureBase64.emit(base64String)
         }
 
-
+   private suspend fun MutableStateFlow<String>.clean(){
+       emit("")
+   }
 
 }

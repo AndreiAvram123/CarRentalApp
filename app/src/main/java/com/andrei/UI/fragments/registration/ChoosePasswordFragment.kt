@@ -13,20 +13,18 @@ import com.andrei.carrental.databinding.FragmentChoosePasswordBinding
 import com.andrei.carrental.viewmodels.ViewModelSignUp
 import com.andrei.engine.State
 import com.andrei.engine.repository.interfaces.PasswordValidationState
-import com.andrei.utils.executeDelayed
-import com.andrei.utils.handler
+import com.andrei.utils.onTextChanges
 import com.andrei.utils.parseText
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 
 @AndroidEntryPoint
 class ChoosePasswordFragment : BaseRegistrationFragment(R.layout.fragment_choose_password) {
 
     private val binding:FragmentChoosePasswordBinding by viewBinding ()
-
-
 
     override fun initializeUI() {
         lifecycleScope.launchWhenResumed {
@@ -61,28 +59,35 @@ class ChoosePasswordFragment : BaseRegistrationFragment(R.layout.fragment_choose
          attachListeners()
     }
 
+    @FlowPreview
+    @ExperimentalCoroutinesApi
     private fun attachListeners() {
-        binding.tfPassword.editText?.addTextChangedListener {
+
+        binding.tfPasswordEditText.onTextChanges().onEach {
             hideReenteredPasswordError()
             disableNextButton()
-            viewModelSignUp.setPassword(it.toString())
-            handler.executeDelayed{
-                viewModelSignUp.validatePassword()
+            }
+            .debounce(500)
+            .onEach {
+                viewModelSignUp.setPassword(it.toString())
             }
 
-        }
-        binding.tfReenterPassword.editText?.addTextChangedListener {
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        binding.tfReenterPasswordEditText.onTextChanges().onEach {
             hideReenteredPasswordError()
             disableNextButton()
-            viewModelSignUp.setReenteredPassword(it.toString())
-            handler.executeDelayed{
-                if(binding.tfPassword.editText.parseText() == binding.tfReenterPassword.editText.parseText()){
+        }.debounce(500)
+            .onEach {
+                if(binding.tfPassword.editText.parseText() == it.toString()){
                     enableNextButton()
                 }else{
                     showReenterPasswordError()
                 }
             }
-        }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
+
         binding.btNext.setOnClickListener {
             navigateForward()
         }
