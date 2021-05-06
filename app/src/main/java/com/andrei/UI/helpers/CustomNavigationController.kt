@@ -15,10 +15,10 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class CustomNavigationController(
-                                private val lifecycleCoroutineScope: LifecycleCoroutineScope,
-                                private val navigationController: NavController,
-                                private val  internetConnectionHandler: InternetConnectionHandler,
-                                private val bottomNavigationView: BottomNavigationView) {
+    private val lifecycleCoroutineScope: LifecycleCoroutineScope,
+    private val navigationController: NavController,
+    private val  internetConnectionHandler: InternetConnectionHandler,
+    private val bottomNavigationView: BottomNavigationView) {
 
     private val destinationsWithoutBottomNav = listOf(R.id.noInternetFragment, R.id.redeemVoucherFragment,R.id.expanded)
 

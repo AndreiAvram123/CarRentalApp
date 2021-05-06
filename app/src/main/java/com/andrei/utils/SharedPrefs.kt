@@ -11,14 +11,6 @@ import android.content.SharedPreferences
 fun SharedPreferences.getStringOrNull(key:String):String? {
     return this.getString(key, null)
 }
-fun SharedPreferences.getLongOrNull(key:String): Long? {
-    val value =  this.getLong(key,0)
-    return if(value == 0L){
-        null
-    }else{
-        value
-    }
-}
 
 fun SharedPreferences.removeValue(key:String){
     edit {
