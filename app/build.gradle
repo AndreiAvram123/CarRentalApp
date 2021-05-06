@@ -65,6 +65,10 @@ spotless {
 
 dependencies {
 
+    implementation platform('com.google.firebase:firebase-bom:27.1.0')
+    implementation 'com.google.firebase:firebase-config-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
     //timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
