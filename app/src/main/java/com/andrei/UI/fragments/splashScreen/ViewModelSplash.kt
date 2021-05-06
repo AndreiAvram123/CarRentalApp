@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.andrei.carrental.BuildConfig
 import com.andrei.engine.helpers.SessionManager
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,40 +15,40 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 @HiltViewModel
-class ViewModelSplash constructor(
+class ViewModelSplash @Inject constructor(
     private val sessionManager: SessionManager
 ): ViewModel() {
 
-    private val _stateFlow:MutableStateFlow<SplashState> = MutableStateFlow(SplashState.Loading)
+    private val _stateFlow: MutableStateFlow<SplashState> = MutableStateFlow(SplashState.Loading)
 
-    val stateFlow:StateFlow<SplashState>
-    get() = _stateFlow.asStateFlow()
+    val stateFlow: StateFlow<SplashState>
+        get() = _stateFlow.asStateFlow()
 
     init {
         viewModelScope.launch {
-            delay(2000)
             activateRemoteConfig()
         }
     }
 
-    private suspend fun activateRemoteConfig(){
+    private suspend fun activateRemoteConfig() {
         provideRemoteConfigSettings()
-        try{
+        try {
             val remoteConfig = Firebase.remoteConfig
             remoteConfig.fetchAndActivate().await()
             checkAppVersion()
-        }catch (e:Exception){
+        } catch (e: Exception) {
             listenToAuthenticationState()
         }
     }
 
     private suspend fun checkAppVersion() {
         val currentAppVersion = BuildConfig.VERSION_CODE
-        if(Firebase.remoteConfig.getLong("app_version_code") > currentAppVersion){
+        if (Firebase.remoteConfig.getLong("app_version_code") > currentAppVersion) {
             _stateFlow.emit(SplashState.NavigateToUpdateApp)
-        }else{
+        } else {
             listenToAuthenticationState()
         }
     }
@@ -69,21 +68,20 @@ class ViewModelSplash constructor(
             }
         }
     }
-    }
 
-    private fun provideRemoteConfigSettings(){
-        if(BuildConfig.DEBUG) {
+    private fun provideRemoteConfigSettings() {
+        if (BuildConfig.DEBUG) {
             val settings = remoteConfigSettings {
-                minimumFetchIntervalInSeconds = 3600
+                minimumFetchIntervalInSeconds = 10
             }
             Firebase.remoteConfig.setConfigSettingsAsync(settings)
         }
     }
 
-    sealed class SplashState{
-        object NavigateToLogin: SplashState()
-        object NavigateToHome:SplashState()
-        object NavigateToUpdateApp:SplashState()
-        object Loading:SplashState()
+    sealed class SplashState {
+        object NavigateToLogin : SplashState()
+        object NavigateToHome : SplashState()
+        object NavigateToUpdateApp : SplashState()
+        object Loading : SplashState()
     }
 }

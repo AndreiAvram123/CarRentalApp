@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "804421104900-58640dvsvboiv39rn39b6stcslcusq65.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.andrei.carrental",
+            "certificate_hash": "6bac8b86dc0f9d3ec77aa23e6999505b2ea97099"
+          }
+        },
+        {
+          "client_id": "804421104900-b2taccqv1rlt0elvs20kfljkicjtll1g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.andrei.carrental",
+            "certificate_hash": "25236f84420496ccaed13b5b35a3555f4cd59394"
+          }
+        },
+        {
           "client_id": "804421104900-7lqjq5msd5o4kbm17j4l8fu9nst1h3ll.apps.googleusercontent.com",
           "client_type": 3
         }

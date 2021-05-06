@@ -9,12 +9,12 @@ import com.andrei.carrental.R
 import com.andrei.utils.startNewActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import com.andrei.UI.fragments.splashScreen.ViewModelSplash.SplashState
 
 @AndroidEntryPoint
 class SplashFragment : BaseFragment(R.layout.fragment_splash) {
 
     private val viewModelSplash:ViewModelSplash by viewModels()
-
 
     override fun initializeUI() {
       lifecycleScope.launchWhenResumed {
@@ -30,7 +30,7 @@ class SplashFragment : BaseFragment(R.layout.fragment_splash) {
                     navigateToLogin()
                   }
                   SplashState.NavigateToUpdateApp -> {
-                    
+
                   }
               }
           }
