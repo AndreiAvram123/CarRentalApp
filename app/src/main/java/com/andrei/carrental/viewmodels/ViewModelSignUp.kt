@@ -11,13 +11,14 @@ import com.andrei.engine.states.RegistrationResponse
 import com.andrei.utils.toBase64
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ViewModelSignUp @Inject constructor(
-        private val signUpRepo: SignUpRepositoryImpl
+    private val signUpRepo: SignUpRepositoryImpl
 ) : ViewModel() {
 
 
@@ -26,18 +27,11 @@ class ViewModelSignUp @Inject constructor(
         MutableStateFlow("")
     }
 
-
     private val _enteredEmail:MutableStateFlow<String> by lazy {
         MutableStateFlow("")
     }
 
-
     private val _enteredPassword :MutableStateFlow<String> by lazy {
-        MutableStateFlow("")
-    }
-
-
-    private val _reenteredPassword:MutableStateFlow<String> by lazy {
         MutableStateFlow("")
     }
 
@@ -47,7 +41,6 @@ class ViewModelSignUp @Inject constructor(
 
     private val _registrationState:MutableStateFlow<RegistrationResponse> = MutableStateFlow(RegistrationResponse.Loading)
     val registrationState = _registrationState.asStateFlow()
-
 
     private val _validationUsername:MutableStateFlow<State<UsernameValidationState>> by lazy {
         MutableStateFlow(State.Success(UsernameValidationState.Unvalidated))
@@ -59,11 +52,15 @@ class ViewModelSignUp @Inject constructor(
     }
     val validationEmail = _validationEmail.asStateFlow()
 
-    private val _validationPassword:MutableStateFlow<State<PasswordValidationState>> by lazy { MutableStateFlow(State.Success(PasswordValidationState.Unvalidated)) }
+    private val _validationPassword:MutableStateFlow<State<PasswordValidationState>> by lazy {
+        MutableStateFlow(State.Success(PasswordValidationState.Unvalidated))
+    }
     val validationPassword = _validationPassword.asStateFlow()
 
 
-
+    private var usernameValidationJob:Job? = null
+    private var emailValidationJob:Job? = null
+    private var passwordValidationJob:Job? = null
 
     fun setUsername(username:String){
         viewModelScope.launch {
@@ -71,24 +68,50 @@ class ViewModelSignUp @Inject constructor(
             validateUsername()
         }
     }
-    private fun validateUsername() {
+    fun setEmail(email:String) {
         viewModelScope.launch {
+            _enteredEmail.emit(email)
+            validateEmail()
+        }
+    }
+
+    fun setPassword(password:String){
+        viewModelScope.launch {
+            _enteredPassword.emit(password)
+            validatePassword()
+        }
+    }
+
+
+    fun setProfilePicture(drawable:Drawable) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val base64String = drawable.toBase64()
+            _profilePictureBase64.emit(base64String)
+        }
+    }
+
+    private suspend fun validateUsername() {
+        //cancel current job
+        usernameValidationJob?.cancel()
+        usernameValidationJob =  viewModelScope.launch {
             val username = _enteredUsername.value
             signUpRepo.validateUsername(username).collect {
                 _validationUsername.emit(it)
             }
         }
     }
-    private fun validateEmail(){
-        viewModelScope.launch {
+    private suspend fun validateEmail(){
+        emailValidationJob?.cancel()
+        emailValidationJob =  viewModelScope.launch {
             val email = _enteredEmail.value
             signUpRepo.validateEmail(email).collect {
                 _validationEmail.emit(it)
             }
         }
     }
-    private fun validatePassword(){
-        viewModelScope.launch {
+    private suspend fun validatePassword(){
+        passwordValidationJob?.cancel()
+        passwordValidationJob =  viewModelScope.launch {
             val password = _enteredPassword.value
             signUpRepo.validatePassword(password).collect {
                 _validationPassword.emit(it)
@@ -112,16 +135,16 @@ class ViewModelSignUp @Inject constructor(
     private fun registerUser(){
         viewModelScope.launch {
             signUpRepo.register(username = _enteredUsername.value, email = _enteredEmail.value, password = _enteredPassword.value,
-                    base64ProfilePicture = _profilePictureBase64.value).collect {
+                base64ProfilePicture = _profilePictureBase64.value).collect {
                 when(it){
-                    is RegistrationResponse.Complete -> clear()
+                    is RegistrationResponse.Complete -> clearState()
                 }
-               _registrationState.emit(it)
+                _registrationState.emit(it)
             }
         }
     }
 
-    private fun clear(){
+    private fun clearState(){
         viewModelScope.launch {
             _enteredUsername.clean()
             _enteredEmail.clean()
@@ -133,24 +156,8 @@ class ViewModelSignUp @Inject constructor(
 
 
 
-    fun setEmail(email:String) = viewModelScope.launch {
-            _enteredEmail.emit(email)
-            validateEmail()
+    private suspend fun MutableStateFlow<String>.clean(){
+        emit("")
     }
-
-    fun setPassword(password:String)= viewModelScope.launch {
-            _enteredPassword.emit(password)
-             validatePassword()
-        }
-
-
-    fun setProfilePicture(drawable:Drawable)= viewModelScope.launch(Dispatchers.IO) {
-            val base64String = drawable.toBase64()
-            _profilePictureBase64.emit(base64String)
-        }
-
-   private suspend fun MutableStateFlow<String>.clean(){
-       emit("")
-   }
 
 }

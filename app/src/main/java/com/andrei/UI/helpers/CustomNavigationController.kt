@@ -24,10 +24,10 @@ class CustomNavigationController(
 
 
     private val destinationChangedListener:NavController.OnDestinationChangedListener =
-            NavController.OnDestinationChangedListener { _, destination, _ ->
-                toggleNavBar(destination)
+        NavController.OnDestinationChangedListener { _, destination, _ ->
+            toggleNavBar(destination)
 
-            }
+        }
 
 
     private fun toggleNavBar(destination: NavDestination) {
@@ -46,7 +46,7 @@ class CustomNavigationController(
     }
 
     private val collectorInternetState : suspend (connected:Boolean) -> Unit = {
-        connected -> if(connected){
+            connected -> if(connected){
         if(isNoInternetFragmentDisplayed()){
             popLastDestination()
         }
@@ -59,7 +59,7 @@ class CustomNavigationController(
 
     init {
         lifecycleCoroutineScope.launchWhenResumed {
-              internetConnectionHandler.isConnectedState.collect(collectorInternetState)
+            internetConnectionHandler.isConnectedState.collect(collectorInternetState)
         }
     }
 
@@ -73,8 +73,8 @@ class CustomNavigationController(
 
 
     private fun popLastDestination() {
-       lifecycleCoroutineScope.launchWhenResumed {
-           navigationController.popBackStack()
+        lifecycleCoroutineScope.launchWhenResumed {
+            navigationController.popBackStack()
         }
     }
     private fun isNoInternetFragmentDisplayed(): Boolean{

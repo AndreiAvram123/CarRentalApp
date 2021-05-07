@@ -29,6 +29,7 @@ class ChooseUsernameFragment : BaseRegistrationFragment(R.layout.fragment_choose
             .onEach {
                 hideUsernameError()
                 disableNextButton()
+
             }
             .debounce(500)
             .onEach {
